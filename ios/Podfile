@@ -1,0 +1,48 @@
+platform :ios, '9.0'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+target 'ReactNativeBoilerplateApp' do
+  # Pods for ReactNativeBoilerplateApp
+  pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
+  pod 'FBReactNativeBoilerplateAppNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeBoilerplateAppNativeSpec"
+  pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
+  pod 'RCTTypeSafety', :path => "../node_modules/react-native/Libraries/TypeSafety"
+  pod 'ReactNativeBoilerplateApp', :path => '../node_modules/react-native/'
+  pod 'ReactNativeBoilerplateApp-Core', :path => '../node_modules/react-native/'
+  pod 'ReactNativeBoilerplateApp-CoreModules', :path => '../node_modules/react-native/ReactNativeBoilerplateApp/CoreModules'
+  pod 'ReactNativeBoilerplateApp-Core/DevSupport', :path => '../node_modules/react-native/'
+  pod 'ReactNativeBoilerplateApp-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'
+  pod 'ReactNativeBoilerplateApp-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'
+  pod 'ReactNativeBoilerplateApp-RCTBlob', :path => '../node_modules/react-native/Libraries/Blob'
+  pod 'ReactNativeBoilerplateApp-RCTImage', :path => '../node_modules/react-native/Libraries/Image'
+  pod 'ReactNativeBoilerplateApp-RCTLinking', :path => '../node_modules/react-native/Libraries/LinkingIOS'
+  pod 'ReactNativeBoilerplateApp-RCTNetwork', :path => '../node_modules/react-native/Libraries/Network'
+  pod 'ReactNativeBoilerplateApp-RCTSettings', :path => '../node_modules/react-native/Libraries/Settings'
+  pod 'ReactNativeBoilerplateApp-RCTText', :path => '../node_modules/react-native/Libraries/Text'
+  pod 'ReactNativeBoilerplateApp-RCTVibration', :path => '../node_modules/react-native/Libraries/Vibration'
+  pod 'ReactNativeBoilerplateApp-Core/RCTWebSocket', :path => '../node_modules/react-native/'
+
+  pod 'ReactNativeBoilerplateApp-cxxreact', :path => '../node_modules/react-native/ReactNativeBoilerplateAppCommon/cxxreact'
+  pod 'ReactNativeBoilerplateApp-jsi', :path => '../node_modules/react-native/ReactNativeBoilerplateAppCommon/jsi'
+  pod 'ReactNativeBoilerplateApp-jsiexecutor', :path => '../node_modules/react-native/ReactNativeBoilerplateAppCommon/jsiexecutor'
+  pod 'ReactNativeBoilerplateApp-jsinspector', :path => '../node_modules/react-native/ReactNativeBoilerplateAppCommon/jsinspector'
+  pod 'ReactNativeBoilerplateAppCommon/jscallinvoker', :path => "../node_modules/react-native/ReactNativeBoilerplateAppCommon"
+  pod 'ReactNativeBoilerplateAppCommon/turbomodule/core', :path => "../node_modules/react-native/ReactNativeBoilerplateAppCommon"
+  pod 'Yoga', :path => '../node_modules/react-native/ReactNativeBoilerplateAppCommon/yoga'
+
+  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
+  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
+  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
+  target 'ReactNativeBoilerplateAppTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+  use_native_modules!
+end
+target 'ReactNativeBoilerplateApp-tvOS' do
+  # Pods for ReactNativeBoilerplateApp-tvOS
+  target 'ReactNativeBoilerplateApp-tvOSTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+end
