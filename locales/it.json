@@ -1,0 +1,126 @@
+{
+	"alert": {
+		"deleteDatasetDesc": "Tutte le note dell'elenco \"{{name}}\" verranno eliminate. Vuoi procedere?",
+		"deleteDatasetTitle": "Elimina note",
+		"signOutDesc": "La sessione verrà chiusa. Vuoi procedere?",
+		"signOutTitle": "Disconnettersi"
+	},
+	"btn": {
+		"add": "Aggiungere",
+		"addColumn": "Aggiungere",
+		"addMore": "Aggiungere più...",
+		"addNote": "Aggiungere nota",
+		"back": "Indietro",
+		"cancel": "Annullare",
+		"continue": "Continuare",
+		"delete": "Eliminare",
+		"newNotes": "Aggiunge note",
+		"newSession": "Iniziare una sessione",
+		"ok": "OK",
+		"options": "Opzioni",
+		"save": "Salvare",
+		"share": "Condividere",
+		"signIn": "Registrarsi",
+		"signOut": "Uscire",
+		"start": "Iniziare",
+		"startSession": "Iniziare sessione",
+		"update": "Attualizzare"
+	},
+	"dataset": {
+		"settings": {
+			"columns": "Colonne",
+			"general": "Generale",
+			"isPrivate": "Privato",
+			"noColumnWarn": "Deve almeno aggiungere una colonna alle suoi note.",
+			"others": "Altri"
+		}
+	},
+	"error": {
+		"invalidCredentialsDesc": "Verifica le informazioni di accesso e riprova.",
+		"invalidCredentialsTitle": "Credenziali non valide",
+		"noData": "Nessun dato disponibile",
+		"userAlreadyExistDesc": "Forse hai dimenticato di avere già un account?",
+		"userAlreadyExistTitle": "L'utente esiste già",
+		"userNotFoundDesc": "Nessun utente con email {{email}} trovato.",
+		"userNotFoundTitle": "Utente non trovato"
+	},
+	"field": {
+		"columnLanguage": "Linguaggio",
+		"columnName": "Nome",
+		"confirmationPlaceholder": "Conferma la tua password",
+		"dataPlaceholder": "Valore",
+		"description": "Descrizione",
+		"emailPlaceholder": "Indirizzo email",
+		"icon": "Icona",
+		"name": "Nome",
+		"passwordPlaceholder": "Password",
+		"settings": {
+			"darkMode": "Modalità scura"
+		},
+		"user": {
+			"biography": "Biografia",
+			"quote": "Citazione",
+			"screen_name": "Nome completo"
+		}
+	},
+	"header": {
+		"back": "indietro"
+	},
+	"input": {
+		"filter": "Filtro..."
+	},
+	"navigation": {
+		"notes": "Note",
+		"profile": "Profilo",
+		"sessions": "Sessioni"
+	},
+	"profile": {
+		"activities": "Attività",
+		"informations": "Informazioni",
+		"parameters": "Impostazioni",
+		"role": {
+			"administrator": "Amministratore"
+		}
+	},
+	"restricted": {
+		"backToLogin": "Torna alla pagina di accesso",
+		"forgotPassword": "Ho dimenticato la mia password",
+		"forgotPasswordDesc": "Inserisci il tuo indirizzo e-mail di seguito e ti invieremo le istruzioni per reimpostare la password.",
+		"forgotPasswordSentSubtitle": "Verifica la tua casella di posta per i passaggi da seguire.",
+		"forgotPasswordSentTitle": "Istruzioni inviate",
+		"forgotPasswordTitle": "Ho dimenticato la mia password",
+		"login": "Connessione",
+		"loginTitle": "Accedere all'account",
+		"orLoginUsing": "O accedi usando:",
+		"orRegisterUsing": "O registrati usando:",
+		"register": "Iscriviate",
+		"registerEmailSentSubtitle": "Controlla la tua casella di posta per istruzioni",
+		"registerEmailSentTitle": "Account pronto per la convalida!",
+		"registerTitle": "Crea un account"
+	},
+	"sections": {
+		"data": "Dati",
+		"settings": "Impostazioni"
+	},
+	"session": {
+		"drawerSelectList": "Sceglie una lista:"
+	},
+	"state": {
+		"deleting": "Eliminando...",
+		"generating": "Generazione ...",
+		"saving": "Salvataggio..."
+	},
+	"title": {
+		"loading": "Caricamento...",
+		"newColumn": "Nuova colonna",
+		"newList": "Nuovo elenco",
+		"notes": "Note",
+		"notesDataEdit": "Dati #{{id}}",
+		"notesDataEditNew": "Nuovi dati",
+		"profile": "Profilo",
+		"profileActivities": "Attività",
+		"profileInformations": "Informazioni",
+		"profileSettings": "Impostazioni",
+		"sessions": "Sessioni"
+	}
+}

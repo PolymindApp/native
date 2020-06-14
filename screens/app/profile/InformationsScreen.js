@@ -1,0 +1,82 @@
+import React from 'react'
+import {Platform, StyleSheet, Text, View, Keyboard} from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import PolymindSDK, { THEME, User, Helpers } from '@polymind/sdk-js';
+import I18n from '../../../locales/i18n';
+import {Divider, Input} from "react-native-elements";
+import {Button} from "react-native-paper";
+
+const $polymind = new PolymindSDK();
+const refInputs = [
+	React.createRef(),
+	React.createRef(),
+	React.createRef(),
+];
+
+export default class InformationsScreen extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			user: props.route.params.user,
+			original: new User(Helpers.deepClone(props.route.params.user)),
+		};
+	}
+
+	hasDifferences() {
+		return JSON.stringify(this.state.user) !== JSON.stringify(this.state.original);
+	}
+
+	render() {
+		return (
+			<View style={{flex: 1}}>
+				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
+					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
+						<Input
+							label={I18n.t('field.user.screen_name')}
+							inputStyle={{color:THEME.primary}}
+							defaultValue={this.state.user.screen_name}
+							onChangeText={value => this.setState({ user: {...this.state.user, screen_name: value}})}
+							returnKeyType = {"next"}
+							ref={ref => { refInputs[0] = ref }}
+							onSubmitEditing={() => refInputs[1].focus()}
+						/>
+						<Input
+							label={I18n.t('field.user.biography')}
+							inputStyle={{color:THEME.primary}}
+							defaultValue={this.state.user.biography}
+							onChangeText={value => this.setState({ user: {...this.state.user, biography: value}})}
+							multiline={true}
+							numberOfLines={4}
+							returnKeyType = {"next"}
+							ref={ref => { refInputs[1] = ref }}
+						/>
+						<Input
+							label={I18n.t('field.user.quote')}
+							inputStyle={{color:THEME.primary}}
+							defaultValue={this.state.user.quote}
+							onChangeText={value => this.setState({ user: {...this.state.user, quote: value}})}
+							multiline={true}
+							numberOfLines={2}
+							returnKeyType = {"done"}
+							ref={ref => { refInputs[2] = ref }}
+							onSubmitEditing={Keyboard.dismiss}
+						/>
+					</View>
+				</ScrollView>
+				<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
+					<Divider style={{marginBottom: 10}} />
+					<Button mode="contained" onPress={() => this.save()} disabled={!this.hasDifferences()}>
+						{I18n.t('btn.save')}
+					</Button>
+				</View>
+			</View>
+		);
+	};
+}
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1
+	}
+});

@@ -1,32 +1,65 @@
 {
   "expo": {
     "name": "Polymind",
-    "slug": "Polymind",
+    "slug": "polymind",
+	"owner": "dcoulombe",
     "platforms": [
       "ios",
-      "android",
-      "web"
+      "android"
     ],
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "polymind",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1B8E8A"
+      "backgroundColor": "#0c3238"
     },
+	"primaryColor": "#1B8E8A",
     "updates": {
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
       "**/*"
     ],
+	"android": {
+	  "package": "com.polymind",
+	  "versionCode": 1,
+	  "intentFilters": [
+		{
+		  "action": "VIEW",
+		  "autoVerify": true,
+		  "data": [
+			{
+			  "scheme": "https",
+			  "host": "*.polymind.app",
+			  "pathPrefix": "/_universal"
+			}
+		  ],
+		  "category": [
+			"BROWSABLE",
+			"DEFAULT"
+		  ]
+		}
+	  ]
+	},
     "ios": {
-      "supportsTablet": true
-    },
+	  "bundleIdentifier": "com.polymind",
+	  "buildNumber": "0.1.8",
+      "supportsTablet": true,
+	  "associatedDomains": ["polymind.app"],
+	  "infoPlist": {
+		"UIBackgroundModes": [
+		  "audio"
+		]
+	  }
+	},
     "web": {
       "favicon": "./assets/images/favicon.png"
-    }
+    },
+	"facebookScheme": "fb2369410626492819",
+	"facebookAppId": "2369410626492819",
+	"facebookDisplayName": "Polymind"
   }
 }

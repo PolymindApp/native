@@ -1,0 +1,126 @@
+{
+	"alert": {
+		"deleteDatasetDesc": "Toutes les notes de la liste \"{{name}}\" seront effacées. Désirez-vous procéder?",
+		"deleteDatasetTitle": "Effacer les notes",
+		"signOutDesc": "Votre session sera terminé. Désirez-vous continuer ?",
+		"signOutTitle": "Se déconnecter"
+	},
+	"btn": {
+		"add": "Ajouter",
+		"addColumn": "Ajouter",
+		"addMore": "Ajoutez plus...",
+		"addNote": "Ajoutez une note",
+		"back": "Retour",
+		"cancel": "Annuler",
+		"continue": "Continuer",
+		"delete": "Effacer",
+		"newNotes": "Ajoutez des notes",
+		"newSession": "Démarrez une session",
+		"ok": "OK",
+		"options": "Options",
+		"save": "Enregistrer",
+		"share": "Partager",
+		"signIn": "S'inscrire",
+		"signOut": "Se déconnecter",
+		"start": "Démarrer",
+		"startSession": "Démarrez une session",
+		"update": "Mettre à jour"
+	},
+	"dataset": {
+		"settings": {
+			"columns": "Colonnes",
+			"general": "Générale",
+			"isPrivate": "Privé",
+			"noColumnWarn": "Vous devez au moins ajouter une colonne à vos notes.",
+			"others": "Autres"
+		}
+	},
+	"error": {
+		"invalidCredentialsDesc": "Veuillez s'il-vous-plaît vérifier votre information de connexion et essayer de nouveau.",
+		"invalidCredentialsTitle": "Informations d'identification invalides",
+		"noData": "Aucune donnée disponible",
+		"userAlreadyExistDesc": "Peut-être avez-vous oublié que vous aviez déjà un compte?",
+		"userAlreadyExistTitle": "Utilisateur déjà existant",
+		"userNotFoundDesc": "Aucun utilisateur avec le courriel {{email}} n'a été trouvé.",
+		"userNotFoundTitle": "Utilisateur inexistant"
+	},
+	"field": {
+		"columnLanguage": "Langue",
+		"columnName": "Nom",
+		"confirmationPlaceholder": "Confirmez votre mot de passe",
+		"dataPlaceholder": "Valeur",
+		"description": "Description",
+		"emailPlaceholder": "Adresse courriel",
+		"icon": "Icône",
+		"name": "Nom",
+		"passwordPlaceholder": "Mot de passe",
+		"settings": {
+			"darkMode": "Mode sombre"
+		},
+		"user": {
+			"biography": "Biographie",
+			"quote": "Citation",
+			"screen_name": "Nom complet"
+		}
+	},
+	"header": {
+		"back": "Retour"
+	},
+	"input": {
+		"filter": "Filtrer..."
+	},
+	"navigation": {
+		"notes": "Notes",
+		"profile": "Profil",
+		"sessions": "Sessions"
+	},
+	"profile": {
+		"activities": "Activités",
+		"informations": "Informations",
+		"parameters": "Paramètres",
+		"role": {
+			"administrator": "Administrateur"
+		}
+	},
+	"restricted": {
+		"backToLogin": "Retour à la page de connexion",
+		"forgotPassword": "J'ai oublié mon mot de passe",
+		"forgotPasswordDesc": "Entrez votre adresse courriel ci-dessous et nous vous enverrons les instructions pour réinitialiser votre mot de passe.",
+		"forgotPasswordSentSubtitle": "Vérifiez votre boîte courriel pour les étapes à suivre.",
+		"forgotPasswordSentTitle": "Instructions envoyés",
+		"forgotPasswordTitle": "Oublie de mot de passe",
+		"login": "Connexion",
+		"loginTitle": "Accédez à votre compte",
+		"orLoginUsing": "Ou connectez-vous en utilisant :",
+		"orRegisterUsing": "Ou inscrivez-vous en utilisant :",
+		"register": "S'inscrire",
+		"registerEmailSentSubtitle": "S'il-vous-plaît, vérifiez votre boîte courriel pour les démarches à suivre",
+		"registerEmailSentTitle": "Compte prêt à être validé !",
+		"registerTitle": "Créez un compte"
+	},
+	"sections": {
+		"data": "Données",
+		"settings": "Configurations"
+	},
+	"session": {
+		"drawerSelectList": "Choisissez une liste :"
+	},
+	"state": {
+		"deleting": "Effacement...",
+		"generating": "Génération...",
+		"saving": "Enregistrement..."
+	},
+	"title": {
+		"loading": "Chargement...",
+		"newColumn": "Nouvelle colonne",
+		"newList": "Nouvelle liste",
+		"notes": "Notes",
+		"notesDataEdit": "Donnée #{{id}}",
+		"notesDataEditNew": "Nouvelle donnée",
+		"profile": "Profil",
+		"profileActivities": "Activités",
+		"profileInformations": "Informations",
+		"profileSettings": "Configurations",
+		"sessions": "Sessions"
+	}
+}

@@ -1,0 +1,126 @@
+{
+	"alert": {
+		"deleteDatasetDesc": "All notes of the \"{{name}}\" list will be deleted. Do you wish to proceed?",
+		"deleteDatasetTitle": "Delete notes",
+		"signOutDesc": "Your session will be terminated. Do you wish to proceed?",
+		"signOutTitle": "Sign Out"
+	},
+	"btn": {
+		"add": "Add",
+		"addColumn": "Add",
+		"addMore": "Add more...",
+		"addNote": "Add note",
+		"back": "Back",
+		"cancel": "Cancel",
+		"continue": "Continue",
+		"delete": "Delete",
+		"newNotes": "Add notes",
+		"newSession": "Start a session",
+		"ok": "OK",
+		"options": "Options",
+		"save": "Save",
+		"share": "Share",
+		"signIn": "Sign In",
+		"signOut": "Sign Out",
+		"start": "Start",
+		"startSession": "Start session",
+		"update": "Update"
+	},
+	"dataset": {
+		"settings": {
+			"columns": "Columns",
+			"general": "General",
+			"isPrivate": "Private",
+			"noColumnWarn": "You must at least add a column to your notes.",
+			"others": "Others"
+		}
+	},
+	"error": {
+		"invalidCredentialsDesc": "Please verify your login information and try again.",
+		"invalidCredentialsTitle": "Invalid credentials",
+		"noData": "No Data Available",
+		"userAlreadyExistDesc": "Maybe you forgot that you already had an account?",
+		"userAlreadyExistTitle": "User already exists",
+		"userNotFoundDesc": "No user with email {{email}} found.",
+		"userNotFoundTitle": "User not found"
+	},
+	"field": {
+		"columnLanguage": "Language",
+		"columnName": "Name",
+		"confirmationPlaceholder": "Confirm your password",
+		"dataPlaceholder": "Value",
+		"description": "Description",
+		"emailPlaceholder": "Email address",
+		"icon": "Icon",
+		"name": "Name",
+		"passwordPlaceholder": "Password",
+		"settings": {
+			"darkMode": "Dark mode"
+		},
+		"user": {
+			"biography": "Biography",
+			"quote": "Quote",
+			"screen_name": "Complete name"
+		}
+	},
+	"header": {
+		"back": "Back"
+	},
+	"input": {
+		"filter": "Filter..."
+	},
+	"navigation": {
+		"notes": "Notes",
+		"profile": "Profile",
+		"sessions": "Sessions"
+	},
+	"profile": {
+		"activities": "Activities",
+		"informations": "Information",
+		"parameters": "Parameters",
+		"role": {
+			"administrator": "Administrator"
+		}
+	},
+	"restricted": {
+		"backToLogin": "Back to login page",
+		"forgotPassword": "I forgot my password",
+		"forgotPasswordDesc": "Enter your email address below and we will send you instructions to reset your password.",
+		"forgotPasswordSentSubtitle": "Verify your mailbox for the steps to follow.",
+		"forgotPasswordSentTitle": "Instructions sent",
+		"forgotPasswordTitle": "Forgot Password",
+		"login": "Sign In",
+		"loginTitle": "Access your account",
+		"orLoginUsing": "Or sign in using:",
+		"orRegisterUsing": "Or register using:",
+		"register": "Sign Up",
+		"registerEmailSentSubtitle": "Please check your mailbox for instructions",
+		"registerEmailSentTitle": "Account ready to validate!",
+		"registerTitle": "Create an account"
+	},
+	"sections": {
+		"data": "Data",
+		"settings": "Settings"
+	},
+	"session": {
+		"drawerSelectList": "Choose a list :"
+	},
+	"state": {
+		"deleting": "Deleting...",
+		"generating": "Generating...",
+		"saving": "Saving..."
+	},
+	"title": {
+		"loading": "Loading...",
+		"newColumn": "New Column",
+		"newList": "New List",
+		"notes": "Notes",
+		"notesDataEdit": "Data #{{id}}",
+		"notesDataEditNew": "New Data",
+		"profile": "Profile",
+		"profileActivities": "Activities",
+		"profileInformations": "Information",
+		"profileSettings": "Settings",
+		"sessions": "Sessions"
+	}
+}
