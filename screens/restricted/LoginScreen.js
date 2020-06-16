@@ -115,7 +115,7 @@ export default class LoginScreen extends React.Component {
 					titleStyle={{
 						marginLeft: 10,
 					}}
-					disabled={!this.formIsValid()}
+					disabled={!this.formIsValid() || this.state.saving}
 					loading={this.state.loading}
 					onPress={() => this.login()}
 				/>

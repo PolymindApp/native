@@ -27,6 +27,12 @@
 		"update": "Attualizzare"
 	},
 	"dataset": {
+		"data": {
+			"edit": {
+				"didYouMean": "Intendevi:",
+				"possibleTranslation": "Traduzione possibile:"
+			}
+		},
 		"settings": {
 			"columns": "Colonne",
 			"general": "Generale",
@@ -46,6 +52,7 @@
 	},
 	"field": {
 		"columnLanguage": "Linguaggio",
+		"columnLanguageDesc": "Sceglie attentamente questo campo poiché imposterà la lingua vocale sintetica.",
 		"columnName": "Nome",
 		"confirmationPlaceholder": "Conferma la tua password",
 		"dataPlaceholder": "Valore",
@@ -66,8 +73,15 @@
 	"header": {
 		"back": "indietro"
 	},
+	"iconSelector": {
+		"chooseIcon": "Sceglie una icona:"
+	},
 	"input": {
 		"filter": "Filtro..."
+	},
+	"legal": {
+		"privacy": "Informativa sulla privacy",
+		"terms": "Termini e condizioni"
 	},
 	"navigation": {
 		"notes": "Note",
@@ -77,6 +91,8 @@
 	"profile": {
 		"activities": "Attività",
 		"informations": "Informazioni",
+		"legalSection": "Legale",
+		"myInfoSection": "I miei informazione",
 		"parameters": "Impostazioni",
 		"role": {
 			"administrator": "Amministratore"
@@ -115,7 +131,7 @@
 		"newColumn": "Nuova colonna",
 		"newList": "Nuovo elenco",
 		"notes": "Note",
-		"notesDataEdit": "Dati #{{id}}",
+		"notesDataEdit": "Dati {{index}} di {{total}}",
 		"notesDataEditNew": "Nuovi dati",
 		"profile": "Profilo",
 		"profileActivities": "Attività",

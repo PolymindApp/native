@@ -223,7 +223,7 @@ export default class SessionsScreen extends React.Component {
 				</ScrollView>
 				<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
 					<Divider style={{marginBottom: 10}} />
-					<Button mode="contained" onPress={() => this.openDrawer()} loading={this.state.drawerLoading} delayPressIn={0}>
+					<Button mode="contained" onPress={() => this.openDrawer()} loading={this.state.drawerLoading} disabled={this.state.drawerLoading} delayPressIn={0}>
 						{I18n.t('btn.start')}
 					</Button>
 				</View>

@@ -27,6 +27,12 @@
 		"update": "Update"
 	},
 	"dataset": {
+		"data": {
+			"edit": {
+				"didYouMean": "Did you mean:",
+				"possibleTranslation": "Possible translation:"
+			}
+		},
 		"settings": {
 			"columns": "Columns",
 			"general": "General",
@@ -46,6 +52,7 @@
 	},
 	"field": {
 		"columnLanguage": "Language",
+		"columnLanguageDesc": "Choose this field carefully as it will set the synthetic voice language.",
 		"columnName": "Name",
 		"confirmationPlaceholder": "Confirm your password",
 		"dataPlaceholder": "Value",
@@ -66,8 +73,15 @@
 	"header": {
 		"back": "Back"
 	},
+	"iconSelector": {
+		"chooseIcon": "Choose an icon:"
+	},
 	"input": {
 		"filter": "Filter..."
+	},
+	"legal": {
+		"privacy": "Privacy Policies",
+		"terms": "Terms and Conditions"
 	},
 	"navigation": {
 		"notes": "Notes",
@@ -77,6 +91,8 @@
 	"profile": {
 		"activities": "Activities",
 		"informations": "Information",
+		"legalSection": "Legal",
+		"myInfoSection": "My Info",
 		"parameters": "Parameters",
 		"role": {
 			"administrator": "Administrator"
@@ -115,7 +131,7 @@
 		"newColumn": "New Column",
 		"newList": "New List",
 		"notes": "Notes",
-		"notesDataEdit": "Data #{{id}}",
+		"notesDataEdit": "Data {{index}} of {{total}}",
 		"notesDataEditNew": "New Data",
 		"profile": "Profile",
 		"profileActivities": "Activities",

@@ -25,30 +25,34 @@ export default class NotesScreen extends React.Component {
 		this.setState({ search });
 	};
 
-	addDataset() {
+	handleRemove() {
+
+	}
+
+	handleAdd() {
 		const { navigation, route } = this.props;
+		const { datasets } = this.state;
 		navigation.navigate('NotesData', {
+			datasetsContext: this,
 			dataset: new Dataset({
 				columns: [new DatasetColumn()]
-			}), onAdd: this._onAdd.bind(this), onRemove: this._onRemove.bind(this)
+			}),
+			datasetIdx: datasets.length,
 		});
 	}
 
-	_onAdd(dataset, wasNew) {
-		return new Promise((resolve, reject) => {
-			const datasets = this.state.datasets;
-			if (wasNew) {
-				datasets.push(dataset);
-			} else {
-				const idx = datasets.findIndex(item => item.id === dataset.id);
-				datasets[idx] = dataset;
-			}
-			this.setState({ datasets });
-			resolve(datasets);
-		});
-	}
+	// addDataset() {
+	// 	const { navigation, route } = this.props;
+	// 	navigation.navigate('NotesData', {
+	// 		dataset: new Dataset({
+	// 			columns: [new DatasetColumn()]
+	// 		}),
+	// 		onAdd: this._onAdd.bind(this),
+	// 		onRemove: this._onRemove.bind(this),
+	// 	});
+	// }
 
-	_onRemove(dataset) {
+	onRemove(dataset) {
 		return new Promise((resolve, reject) => {
 			const datasets = this.state.datasets;
 			const idx = datasets.findIndex(item => item.id === dataset.id);
@@ -66,7 +70,7 @@ export default class NotesScreen extends React.Component {
 
 	filteredDatasets() {
 		return this.state.datasets.filter(dataset => {
-			if (dataset.name.trim().toLowerCase().indexOf(this.state.search) !== -1) {
+			if (dataset.name.trim().toLowerCase().indexOf(this.state.search.trim().toLowerCase()) !== -1) {
 				return true;
 			}
 		});
@@ -83,7 +87,7 @@ export default class NotesScreen extends React.Component {
 	}
 
 	render() {
-		const { search } = this.state;
+		const { search, datasets } = this.state;
 		const { navigation } = this.props;
 
 		navigation.setOptions({
@@ -91,10 +95,10 @@ export default class NotesScreen extends React.Component {
 			headerRight: () => (
 				<View style={{marginRight: 10}}>
 					{Platform.select({
-						ios: (<TouchableOpacity onPress={() => this.addDataset()}>
+						ios: (<TouchableOpacity onPress={() => this.handleAdd()}>
 							<Text style={{color: 'white'}}>{I18n.t('btn.add')}</Text>
 						</TouchableOpacity>),
-						default: (<Button onPress={() => this.addDataset()} icon="plus" color={'white'}>{I18n.t('btn.add')}</Button>)
+						default: (<Button onPress={() => this.handleAdd()} icon="plus" color={'white'}>{I18n.t('btn.add')}</Button>)
 					})}
 				</View>
 			)
@@ -128,7 +132,14 @@ export default class NotesScreen extends React.Component {
 								delayPressIn={0}
 								bottomDivider
 								chevron={true}
-								onPress={() => navigation.push('NotesData', { dataset, onAdd: this._onAdd.bind(this), onRemove: this._onRemove.bind(this) })}
+								onPress={() => navigation.push('NotesData', {
+									datasetsContext: this,
+									dataset,
+									datasetIdx,
+									// dataset,
+									// onAdd: this._onAdd.bind(this),
+									// onRemove: this._onRemove.bind(this)
+								})}
 							/>
 						))
 					}

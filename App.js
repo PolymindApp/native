@@ -3,7 +3,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, Platform } from 'react-native';
 import { ThemeProvider} from 'react-native-elements';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import {StatusBar, StyleSheet, View, ActivityIndicator, TouchableWithoutFeedback, Keyboard} from 'react-native';
@@ -54,7 +54,9 @@ const theme = {
 	}
 };
 
-ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+if (Platform.OS !== 'web') {
+	ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+}
 
 const $polymind = new PolymindSDK();
 const isLoadingComplete = true;//useCachedResources();

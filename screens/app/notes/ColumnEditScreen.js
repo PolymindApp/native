@@ -1,10 +1,10 @@
 import React from 'react'
-import {ActionSheetIOS, ActivityIndicator, Alert, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Alert, StyleSheet, View, Picker} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import PolymindSDK, { THEME, DatasetColumn } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
-import {Input, Text} from "react-native-elements";
-import {Button, IconButton, Menu} from 'react-native-paper';
+import {Divider, Input, Text} from "react-native-elements";
+import {Button} from 'react-native-paper';
 import ContextualOptions from "../../../components/ContextualOptions";
 
 const $polymind = new PolymindSDK();
@@ -22,14 +22,14 @@ export default class ColumnEditScreen extends React.Component {
 			const { route, navigation } = this.props;
 			const column = route.params.column;
 			if (!column.id) {
-				route.params.onRemove(route.params.column).then(() => {
+				route.params.datasetSettingsContext.onColumnRemove(route.params.column).then(() => {
 					navigation.pop();
 				});
 			} else {
 				Alert.alert(I18n.t('alert.deleteDatasetTitle'), I18n.t('alert.deleteDatasetDesc', { name: column.name }), [
 					{ text: I18n.t('btn.delete'), onPress: () => {
 						this.setState({ deleting: true });
-						route.params.onRemove(route.params.column).then(() => {
+						route.params.datasetSettingsContext.onColumnRemove(route.params.column).then(() => {
 							navigation.pop();
 						});
 					}, style: 'destructive' },
@@ -56,29 +56,8 @@ export default class ColumnEditScreen extends React.Component {
 		const { navigation, route } = this.props;
 		this.setState({ saving: true });
 		Object.assign(route.params.column, this.state.column);
-		route.params.onSave(route.params.column).then(model => {
-			navigation.pop();
-		});
-	}
 
-	add() {
-		const { navigation, route } = this.props;
-		if (route.params.column.dataset) {
-			this.setState({ saving: true });
-		}
-		Object.assign(route.params.column, this.state.column);
-		route.params.onAdd(route.params.column).then(model => {
-			navigation.pop();
-		});
-	}
-
-	update() {
-		const { navigation, route } = this.props;
-		if (route.params.column.dataset) {
-			this.setState({ saving: true });
-		}
-		Object.assign(route.params.column, this.state.column);
-		route.params.onUpdate(route.params.column).then(model => {
+		route.params.datasetSettingsContext.onColumnSave(route.params.column).then(model => {
 			navigation.pop();
 		});
 	}
@@ -96,7 +75,7 @@ export default class ColumnEditScreen extends React.Component {
 		const hasDiff = this.state.column.name !== this.props.route.params.column.name
 			|| this.state.column.lang !== this.props.route.params.column.lang;
 
-		if (this.props.route.params.adding && column.isValid()) {
+		if (!this.props.route.params.column.id && column.isValid()) {
 			return true;
 		}
 
@@ -105,16 +84,8 @@ export default class ColumnEditScreen extends React.Component {
 
 	render() {
 		const { navigation, route } = this.props;
-		const { column, adding } = route.params;
-
-		if (this.state.saving) {
-			return (
-				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-					<ActivityIndicator size="large" color={THEME.primary} />
-					<Text style={{marginTop: 10, color: THEME.primary}}>{I18n.t('state.saving')}</Text>
-				</View>
-			);
-		}
+		const { column, datasetContext } = route.params;
+		const { dataset } = datasetContext.state;
 
 		if (this.state.deleting) {
 			return (
@@ -127,7 +98,7 @@ export default class ColumnEditScreen extends React.Component {
 
 		navigation.setOptions({
 			title: column.id ? column.name : I18n.t('title.newColumn'),
-			headerRight: !adding ? () => (
+			headerRight: column.id ? () => (
 				<View style={{marginRight: 10}}>
 					<ContextualOptions items={this.optionItems} />
 				</View>
@@ -135,41 +106,53 @@ export default class ColumnEditScreen extends React.Component {
 		});
 
 		return (
-			<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
-				<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white'}}>
-					<Input
-						label={I18n.t('field.columnName')}
-						inputStyle={{color:THEME.primary}}
-						defaultValue={this.state.column.name}
-						onChangeText={value => this.setState({ column: {...this.state.column, name: value}})}
-						returnKeyType = {"next"}
-						autoFocus={this.state.autofocus}
-						ref={ref => { refInputs[0] = ref }}
-						onSubmitEditing={() => refInputs[1].focus()}
-					/>
-					<Input
-						label={I18n.t('field.columnLanguage')}
-						inputStyle={{color:THEME.primary}}
-						defaultValue={this.state.column.lang}
-						onChangeText={value => this.setState({ column: {...this.state.column, lang: value}})}
-					/>
-					<View style={{marginHorizontal: 10}}>
-						{column.id ? (
-							<Button mode="contained" onPress={() => this.save()} disabled={!column.isValid() || !this.hasDifferences()}>
-								{I18n.t('btn.save')}
-							</Button>
-						) : (adding ? (
-							<Button mode="contained" onPress={() => this.add()} disabled={!column.isValid() || !this.hasDifferences()}>
-								{I18n.t('btn.add')}
-							</Button>
-						) : (
-							<Button mode="contained" onPress={() => this.update()} disabled={!column.isValid() || !this.hasDifferences()}>
-								{I18n.t('btn.update')}
-							</Button>
-						))}
+			<View style={{flex: 1}}>
+
+				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
+					<View style={{margin: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white'}}>
+						<Input
+							label={I18n.t('field.columnName')}
+							inputStyle={{color:THEME.primary}}
+							defaultValue={this.state.column.name}
+							onChangeText={value => this.setState({ column: {...this.state.column, name: value}})}
+							returnKeyType = {"done"}
+							autoFocus={this.state.autofocus}
+							ref={ref => { refInputs[0] = ref }}
+							// onSubmitEditing={() => refInputs[1].focus()}
+						/>
+
+
+						<Text style={{padding: 10, fontWeight: 'bold', fontSize: 16, color: '#999'}}>
+							{I18n.t('field.columnLanguage')}
+						</Text>
+
+						<Picker
+							style={{marginHorizontal: 10}}
+							selectedValue={this.state.column.lang}
+							onValueChange={value => this.setState({ column: {...this.state.column, lang: value}})}
+							ref={ref => { refInputs[1] = ref }}
+						>
+							<Picker.Item label="English" value="en" />
+							<Picker.Item label="Français" value="fr" />
+							<Picker.Item label="Español" value="es" />
+							<Picker.Item label="Italian" value="it" />
+						</Picker>
+						<Text style={{padding: 10}}>
+							{I18n.t('field.columnLanguageDesc')}
+						</Text>
+
 					</View>
+				</ScrollView>
+
+				<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
+					<Divider style={{marginBottom: 10}} />
+					<Button mode="contained" onPress={() => this.save()} disabled={!column.isValid() || !this.hasDifferences() || this.state.saving} loading={this.state.saving}>
+						{!column.id || !dataset.id
+							? I18n.t('btn.add')
+							: I18n.t('btn.update')}
+					</Button>
 				</View>
-			</ScrollView>
+			</View>
 		);
 	};
 }

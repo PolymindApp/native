@@ -7,7 +7,6 @@ import ContextualOptions from "../../../components/ContextualOptions";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import DataScreenData from "./DataScreenData";
 import DataScreenSettings from "./DataScreenSettings";
-import TabBarIcon from "../../../components/TabBarIcon";
 
 const Tab = createMaterialTopTabNavigator();
 const $polymind = new PolymindSDK();
@@ -22,19 +21,12 @@ export default class DataScreen extends React.Component {
 		saving: false,
 		refreshing: false,
 		optionsMenu: false,
-		dataset: new Dataset(),
-		originalDataset: new Dataset(),
+		dataset: null,
+		originalDataset: null,
 	};
 
 	optionItems = [
 		{ name: I18n.t('btn.cancel'), callback: () => {}, cancel: true, android: false },
-		{ icon: 'plus', name: I18n.t('btn.addNote'), callback: () => {
-			const { navigation, route } = this.props;
-			const dataset = this.state.dataset;
-			navigation.navigate('NotesDataEdit', {
-				dataset, index: dataset.rows.length, onSave: row => this._onRowSave(row), onRemove: row => this._onRowRemove(row),
-			});
-		} },
 		{ icon: 'delete', name: I18n.t('btn.delete'), callback: () => {
 			const { route, navigation } = this.props;
 			const dataset = this.state.dataset;
@@ -42,7 +34,7 @@ export default class DataScreen extends React.Component {
 				{ text: I18n.t('btn.delete'), onPress: () => {
 					this.setState({ deleting: true });
 					DatasetService.remove(dataset.id).then(() => {
-						route.params.onRemove(dataset).then(() => {
+						route.params.datasetsContext.onRemove(dataset).then(() => {
 							navigation.popToTop();
 						});
 					});
@@ -52,22 +44,54 @@ export default class DataScreen extends React.Component {
 		}, destructive: true },
 	];
 
+	// _onAdd(dataset, wasNew) {
+	// 	return new Promise((resolve, reject) => {
+	// 		const { navigation } = this.props;
+	// 		this.setState({ dataset, wasValid: dataset.isValid() });
+	// 		return this.props.route.params.onAdd(dataset, wasNew).then(() => {
+	// 			if (wasNew && this.isValid()) {
+	// 				navigation.navigate('DataData', this.getScreenParams());
+	// 			}
+	// 			navigation.setOptions({
+	// 				title: dataset.name
+	// 			});
+	// 			resolve(dataset);
+	// 		});
+	// 	});
+	// }
+	//
+	//
+	// _onRowRemove(row) {
+	// 	const dataset = this.props.route.params.dataset;
+	// 	const clone = new Dataset(Helpers.deepClone(dataset));
+	// 	const idx = clone.rows.findIndex(item => item.id === row.id);
+	// 	clone.rows.splice(idx, 1);
+	// 	const transactions = clone.getTransactions(this.state.originalDataset);
+	// 	return DatasetService.save(transactions).then(response => {
+	// 		this.updateOriginal(clone);
+	// 		this.setState({ dataset: clone });
+	// 		return response;
+	// 	});
+	// }
+
 	load() {
 		const { dataset } = this.props.route.params;
 		if (!dataset.id) {
-			this.setState({ dataset, loaded: true, selectedIndex: 0 });
+			const originalDataset = Helpers.deepClone(dataset);
+			this.setState({ dataset, loaded: true, selectedIndex: 0, originalDataset });
 			return new Promise((resolve, reject) => resolve(dataset));
 		}
 
 		return $polymind.getDataset(dataset.id).then(dataset => {
-			const clone = new Dataset(Helpers.deepClone(dataset));
-			this.setState({ dataset, originalDataset: clone, loaded: true, wasValid: dataset.isValid(), selectedIndex: dataset.isValid() ? 0 : 1 });
+			const originalDataset = Helpers.deepClone(dataset);
+			this.setState({ dataset, originalDataset, loaded: true, wasValid: dataset.isValid(), selectedIndex: dataset.isValid() ? 0 : 1 });
 		});
 	}
 
 	updateOriginal(dataset) {
 		const clone = new Dataset(Helpers.deepClone(dataset));
 		this.setState({ originalDataset: clone });
+		return clone;
 	}
 
 	componentDidMount() {
@@ -75,29 +99,19 @@ export default class DataScreen extends React.Component {
 		this.load().finally(() => this.setState({ loading: false }));
 	}
 
-	add() {
-		const { navigation } = this.props;
+	hasDifferences(dataset) {
+		return dataset.getTransactions(this.state.originalDataset).length > 0;
+	}
+
+	isValid() {
 		const dataset = this.state.dataset;
-
-		navigation.push('NotesDataEdit', {
-			dataset, index: dataset.rows.length,
-			onSave: row => this._onRowSave(row),
-			onRemove: row => this._onRowRemove(row),
-		});
-	}
-
-	updateIndex (selectedIndex) {
-		this.setState({selectedIndex})
-	}
-
-	hasDifferences() {
-		return this.state.dataset.getTransactions(this.state.originalDataset).length > 0;
+		return dataset.columns.length > 0 && dataset.id && dataset.isValid() && this.state.wasValid;
 	}
 
 	render() {
-		const { navigation } = this.props;
+		const { navigation, route } = this.props;
 		const dataset = this.state.dataset;
-		const isValid = dataset.columns.length > 0 && dataset.id && dataset.isValid() && this.state.wasValid;
+		// const screenParams = this.getScreenParams();
 
 		let initialRouteName = 'DataData';
 
@@ -132,6 +146,8 @@ export default class DataScreen extends React.Component {
 			);
 		}
 
+		const isValid = this.isValid(dataset);
+
 		if (this.state.loaded) {
 			navigation.setOptions({
 				title: dataset.id ? dataset.name : I18n.t('title.newList'),
@@ -158,10 +174,10 @@ export default class DataScreen extends React.Component {
 						borderColor: THEME.primary,
 					}
 				}}>
-					<Tab.Screen name="DataData" component={DataScreenData} initialParams={{ dataset, updateOriginal: this.updateOriginal.bind(this), load: this.load.bind(this) }} options={{
+					<Tab.Screen name="DataData" component={DataScreenData} initialParams={{...route.params, dataset: this.state.dataset, originalDataset: this.state.originalDataset, datasetContext: this}} ref={ref => this.refData = ref} options={{
 						tabBarLabel: I18n.t('sections.data') + ' (' + dataset.rows.length + ')',
-					}} listeners={{ tabPress: event => !isValid ? event.preventDefault() : null}} />
-					<Tab.Screen name="DataSettings" component={DataScreenSettings} initialParams={{ dataset, updateOriginal: this.updateOriginal.bind(this), hasDifferences: this.hasDifferences.bind(this) }} options={{
+					}} listeners={{ tabPress: event => !isValid ? event.preventDefault() : null}}/>
+					<Tab.Screen name="DataSettings" component={DataScreenSettings} initialParams={{...route.params, dataset: this.state.dataset, originalDataset: this.state.originalDataset, datasetContext: this}} options={{
 						tabBarLabel: I18n.t('sections.settings'),
 					}} />
 				</Tab.Navigator>

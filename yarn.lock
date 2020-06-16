@@ -1394,6 +1394,13 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.6.tgz#c7f2ac187c1f25aa8c30d11baa8f4398eca3bb84"
   integrity sha512-PpMoeXwPUoldCRKDuSi+zK5rT+sJTW6ri6RdGPkSKRzU77Q1d9IaR0O5IKvBj0XSdL3p+dcOa05gk35aGDffBQ==
 
+"@react-native-community/voice@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@react-native-community/voice/-/voice-1.1.4.tgz#d4f2fce97ecdfc1cb926633af43e1f463f0dd7ad"
+  integrity sha512-G8G6mzMYcecQMvVh2piEfia8vEVEIkDByQY13Mt/f9z+RhJgKYGTL7oBoFuzDcHGbZBREkl3DH64VGs97B45iA==
+  dependencies:
+    invariant "^2.2.4"
+
 "@react-navigation/bottom-tabs@^5.3.1":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-5.5.0.tgz#b8b5b8909d6155048abaefe504ccad2b3c91230a"
@@ -1413,11 +1420,6 @@
     query-string "^6.12.1"
     react-is "^16.13.0"
     use-subscription "^1.4.0"
-
-"@react-navigation/material-bottom-tabs@^5.2.10":
-  version "5.2.10"
-  resolved "https://registry.yarnpkg.com/@react-navigation/material-bottom-tabs/-/material-bottom-tabs-5.2.10.tgz#f2378c5e313d9e175ba5e9b3ce41bb5815a3e615"
-  integrity sha512-UG9kbE1ICGfEbKzKtBdYi7xxFCkDPtubIXhwvvZoj8Ck3wOu3CjYyzZM3TOV5PlHbHk6WFJmdB4GclstX7ztmQ==
 
 "@react-navigation/material-top-tabs@^5.2.10":
   version "5.2.10"

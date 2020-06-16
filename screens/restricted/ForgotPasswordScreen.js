@@ -72,7 +72,7 @@ export default class ForgotPasswordScreen extends React.Component {
 					}}
 					loading={this.state.loading}
 					onPress={() => this.sendRequest()}
-					disabled={!this.formIsValid()}
+					disabled={!this.formIsValid() || this.state.saving}
 				/>
 			</ClassicForm>
 		)

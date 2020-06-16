@@ -5,7 +5,7 @@ import I18n from "../../../locales/i18n";
 import {ScrollView} from "react-native-gesture-handler";
 import {Row, Table} from "react-native-table-component";
 import {FAB} from "react-native-paper";
-import { THEME, Dataset, DatasetService } from '@polymind/sdk-js';
+import { THEME } from '@polymind/sdk-js';
 
 export default class DataScreenData extends React.Component {
 
@@ -13,39 +13,7 @@ export default class DataScreenData extends React.Component {
 		super(props);
 		this.state = {
 			search: '',
-			dataset: props.route.params.dataset,
 		};
-	}
-
-	_onRowSave(row) {
-		const dataset = this.state.dataset;
-		const clone = new Dataset(Helpers.deepClone(dataset));
-		if (row.id) {
-			const idx = clone.rows.findIndex(item => item.id === row.id);
-			Object.assign(clone.rows[idx], row);
-		} else {
-			clone.rows.push(row);
-		}
-		const transactions = clone.getTransactions(this.state.originalDataset);
-		return DatasetService.save(transactions).then(response => {
-			dataset.applyTransactionResponse(response);
-			this.props.route.params.updateOriginal(dataset);
-			this.setState({ dataset });
-			return row;
-		});
-	}
-
-	_onRowRemove(row) {
-		const dataset = this.state.dataset;
-		const clone = new Dataset(Helpers.deepClone(dataset));
-		const idx = clone.rows.findIndex(item => item.id === row.id);
-		clone.rows.splice(idx, 1);
-		const transactions = clone.getTransactions(this.state.originalDataset);
-		return DatasetService.save(transactions).then(response => {
-			this.props.route.params.updateOriginal(clone);
-			this.setState({ dataset: clone });
-			return response;
-		});
 	}
 
 	updateSearch = search => {
@@ -54,11 +22,12 @@ export default class DataScreenData extends React.Component {
 
 	onRefresh() {
 		this.setState({ refreshing: true });
-		this.props.route.params.load().finally(() => this.setState({ refreshing: false }));
+		this.props.route.params.datasetContext.load().finally(() => this.setState({ refreshing: false }));
 	}
 
 	filteredRows() {
-		return this.state.dataset.rows.filter(row => {
+		const dataset = this.props.route.params.datasetContext.state.dataset;
+		return dataset.rows.filter(row => {
 			const found = false;
 			for (let i = 0; i < row.cells.length; i++) {
 				const cell = row.cells[i];
@@ -70,40 +39,68 @@ export default class DataScreenData extends React.Component {
 		});
 	}
 
+	getRowParams(index) {
+		const { route } = this.props;
+		const dataset = this.props.route.params.datasetContext.state.dataset;
+		return {
+			dataset,
+			index,
+			onSave: row => {
+				return route.params.onRowSave(row).then(() => {
+					if (row.id) {
+						const idx = dataset.rows.findIndex(item => item.id === row.id);
+						Object.assign(dataset.rows[idx], row);
+					} else {
+						dataset.rows.push(row);
+					}
+					this.setState({ dataset });
+				});
+			},
+			onRemove: row => route.params.onRowRemove.bind(this),
+		}
+	}
+
+	add() {
+		const { route, navigation } = this.props;
+		navigation.push('NotesDataEdit', {...route.params, rowIdx: route.params.datasetContext.state.dataset.rows.length, datasetDataContext: this});
+	}
+
 	tableData() {
+		const dataset = this.props.route.params.datasetContext.state.dataset;
+		const statusSize = 30;
 		const data = {
 			header: [],
 			width: [],
 			rows: [],
 		};
 
-		data.header.push('Key');
-		data.width.push(40);
+		data.header.push('');
+		data.width.push(statusSize);
 
 		let width = Dimensions.get('window').width;
-		if (this.state.dataset.columns.length > 1) {
+		if (dataset.columns.length > 1) {
 			width = width / 2;
 		}
 
-		this.state.dataset.columns.forEach((column, columnIdx) => {
+		dataset.columns.forEach((column, columnIdx) => {
 			data.header.push(column.name);
 			data.width.push(width);
 		});
 
 		this.filteredRows().forEach((row, rowIdx) => {
 			const item = [];
-			item.push(row.id);
-			this.state.dataset.columns.forEach((column, columnIdx) => {
+			item.push(<Icon name={'circle'} size={12} color={THEME.primary} />);
+			dataset.columns.forEach((column, columnIdx) => {
 				item.push(row.cells[columnIdx].text);
 			});
 			data.rows.push(item);
 		});
 
-		if (this.state.dataset.columns.length > 1) {
-			data.width[1] -= 20;
-			data.width[2] -= 20;
+		if (dataset.columns.length > 1) {
+			data.width[1] -= (statusSize / 2) + 1;
+			data.width[2] -= (statusSize / 2) + 1;
 		} else {
-			data.width[1] -= 20;
+			data.width[1] -= statusSize + 1;
 		}
 
 		return data;
@@ -111,8 +108,8 @@ export default class DataScreenData extends React.Component {
 
 	render() {
 		const tableData = this.tableData();
-		const dataset = this.state.dataset;
-		const { navigation } = this.props;
+		const dataset = this.props.route.params.datasetContext.state.dataset;
+		const { navigation, route } = this.props;
 
 		return (
 			<View style={{flex: 1}}>
@@ -133,7 +130,7 @@ export default class DataScreenData extends React.Component {
 
 						<ScrollView horizontal={true} enabled={dataset.columns.length > 2} >
 							<View>
-								<Table borderStyle={{borderWidth: 1, borderLeftWidth: 0, borderColor: '#bbb'}}>
+								<Table borderStyle={{borderWidth: 1, borderLeftWidth: 0, borderColor: '#ccc'}}>
 									<Row data={tableData.header} widthArr={tableData.width} style={styles.header} textStyle={styles.text}/>
 								</Table>
 								<ScrollView style={styles.dataWrapper} keyboardShouldPersistTaps={'handled'} refreshControl={
@@ -145,7 +142,7 @@ export default class DataScreenData extends React.Component {
 												key={rowIdx}
 												delayPressIn={0}
 												style={[styles.row, rowIdx % 2 && {backgroundColor: 'rgba(27, 141, 138, 0.05)'}]}
-												onPress={() => navigation.push('NotesDataEdit', { index: rowIdx, dataset: dataset, onSave: row => this._onRowSave(row), onRemove: row => this._onRowRemove(row), })}
+												onPress={() => navigation.push('NotesDataEdit', {...route.params, rowIdx, datasetDataContext: this})}
 											>
 												<Row
 													data={row}
@@ -192,7 +189,7 @@ const styles = StyleSheet.create({
 		backgroundColor: THEME.primary,
 	},
 
-	header: { backgroundColor: '#ccc' },
+	header: { backgroundColor: '#eee' },
 	text: { textAlign: 'left', padding: 5 },
 	dataWrapper: {  },
 	row: { backgroundColor: 'white' }

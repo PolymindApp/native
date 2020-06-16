@@ -10,6 +10,7 @@ import {AppContext} from "../../contexts";
 import PolymindSDK from "@polymind/sdk-js";
 import ActivitiesScreen from "./profile/ActivitiesScreen";
 import SettingsScreen from "./profile/SettingsScreen";
+import PageScreen from "../shared/PageScreen";
 
 const $polymind = new PolymindSDK();
 const Stack = createStackNavigator();
@@ -62,6 +63,7 @@ export default class ProfileNavigator extends React.Component {
 				<Stack.Screen name="ProfileSettings" component={SettingsScreen} options={{
 					title: I18n.t('title.profileSettings'),
 				}} />
+				<Stack.Screen name="ProfilePage" component={PageScreen} />
 			</Stack.Navigator>
 		);
 	}

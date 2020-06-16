@@ -27,6 +27,12 @@
 		"update": "Mettre à jour"
 	},
 	"dataset": {
+		"data": {
+			"edit": {
+				"didYouMean": "Vouliez-vous dire :",
+				"possibleTranslation": "Traduction possible :"
+			}
+		},
 		"settings": {
 			"columns": "Colonnes",
 			"general": "Générale",
@@ -46,6 +52,7 @@
 	},
 	"field": {
 		"columnLanguage": "Langue",
+		"columnLanguageDesc": "Choisissez ce champ avec soin car il définira le langage vocal synthétique.",
 		"columnName": "Nom",
 		"confirmationPlaceholder": "Confirmez votre mot de passe",
 		"dataPlaceholder": "Valeur",
@@ -66,8 +73,15 @@
 	"header": {
 		"back": "Retour"
 	},
+	"iconSelector": {
+		"chooseIcon": "Choisissez une icône :"
+	},
 	"input": {
 		"filter": "Filtrer..."
+	},
+	"legal": {
+		"privacy": "Politiques de confidentialités",
+		"terms": "Termes et conditions"
 	},
 	"navigation": {
 		"notes": "Notes",
@@ -77,6 +91,8 @@
 	"profile": {
 		"activities": "Activités",
 		"informations": "Informations",
+		"legalSection": "Légale",
+		"myInfoSection": "Mes informations",
 		"parameters": "Paramètres",
 		"role": {
 			"administrator": "Administrateur"
@@ -115,7 +131,7 @@
 		"newColumn": "Nouvelle colonne",
 		"newList": "Nouvelle liste",
 		"notes": "Notes",
-		"notesDataEdit": "Donnée #{{id}}",
+		"notesDataEdit": "Donnée {{index}} de {{total}}",
 		"notesDataEditNew": "Nouvelle donnée",
 		"profile": "Profil",
 		"profileActivities": "Activités",

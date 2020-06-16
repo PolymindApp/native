@@ -115,7 +115,7 @@ export default class RegisterScreen extends React.Component {
 					}}
 					loading={this.state.loading}
 					onPress={() => this.register()}
-					disabled={!this.formIsValid()}
+					disabled={!this.formIsValid() || this.state.saving}
 				/>
 			</ClassicForm>
 		)

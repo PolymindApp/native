@@ -34,29 +34,29 @@ export default class DataEditScreen extends React.Component {
 		{ name: I18n.t('btn.cancel'), callback: () => {}, cancel: true, android: false },
 		{ icon: 'delete', name: I18n.t('btn.delete'), callback: () => {
 
-			const { route, navigation } = this.props;
-			const { dataset, index } = route.params;
-			const row = this.state.row;
-			if (!row.id) {
-				route.params.onRemove(row).then(() => {
-					navigation.pop();
-				});
-			} else {
-				this.setState({ deleting: true });
-				route.params.onRemove(row).then(() => {
-					dataset.rows.splice(index, 1);
-					if (dataset.rows.length <= index) {
-						this.props.route.params.index--;
-					}
-					if (dataset.rows.length === 0) {
+				const { route, navigation } = this.props;
+				const { dataset, index } = route.params;
+				const row = this.state.row;
+				if (!row.id) {
+					route.params.onRemove(row).then(() => {
 						navigation.pop();
-					} else {
-						this.prepare();
-						this.setState({ deleting: false });
-					}
-				});
-			}
-		}, destructive: true },
+					});
+				} else {
+					this.setState({ deleting: true });
+					route.params.onRemove(row).then(() => {
+						dataset.rows.splice(index, 1);
+						if (dataset.rows.length <= index) {
+							this.props.route.params.index--;
+						}
+						if (dataset.rows.length === 0) {
+							navigation.pop();
+						} else {
+							this.prepare();
+							this.setState({ deleting: false });
+						}
+					});
+				}
+			}, destructive: true },
 	]
 
 	getRow(newRow = false) {
