@@ -1,22 +1,15 @@
 import React from 'react'
-import {
-	ActionSheetIOS, ActivityIndicator,
-	Alert,
-	Keyboard,
-	KeyboardAvoidingView,
-	Platform,
-	StyleSheet, TouchableOpacity,
-	TouchableWithoutFeedback,
-	View
-} from 'react-native';
+import {ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import PolymindSDK, { THEME, DatasetRow, DatasetCell } from '@polymind/sdk-js';
+import PolymindSDK, { THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
-import { Divider, Icon, Input, Text} from "react-native-elements";
+import {Divider, Icon, Input, Text} from "react-native-elements";
 import {Button, IconButton, Menu} from "react-native-paper";
 import ContextualOptions from "../../../components/ContextualOptions";
 
 const $polymind = new PolymindSDK();
+let checkServiceTimeout;
+let lastCheckServiceFieldContent = '';
 
 export default class DataEditScreen extends React.Component {
 
@@ -27,7 +20,9 @@ export default class DataEditScreen extends React.Component {
 		autofocus: true,
 		deleting: false,
 		saving: false,
-		row: new DatasetRow()
+		row: new DatasetRow(),
+		spellCheckFields: [],
+		translationFields: [],
 	};
 
 	optionItems = [
@@ -35,18 +30,19 @@ export default class DataEditScreen extends React.Component {
 		{ icon: 'delete', name: I18n.t('btn.delete'), callback: () => {
 
 				const { route, navigation } = this.props;
-				const { dataset, index } = route.params;
+				const { dataset } = this.props.route.params.datasetContext.state;
+				const { rowIdx } = route.params;
 				const row = this.state.row;
+
 				if (!row.id) {
-					route.params.onRemove(row).then(() => {
+					this.onRowRemove(row).then(() => {
 						navigation.pop();
 					});
 				} else {
 					this.setState({ deleting: true });
-					route.params.onRemove(row).then(() => {
-						dataset.rows.splice(index, 1);
-						if (dataset.rows.length <= index) {
-							this.props.route.params.index--;
+					this.onRowRemove(row).then(() => {
+						if (dataset.rows.length <= rowIdx) {
+							this.props.route.params.rowIdx--;
 						}
 						if (dataset.rows.length === 0) {
 							navigation.pop();
@@ -60,8 +56,9 @@ export default class DataEditScreen extends React.Component {
 	]
 
 	getRow(newRow = false) {
-		const { dataset, index } = this.props.route.params;
-		let row = dataset.rows[index];
+		const { dataset } = this.props.route.params.datasetContext.state;
+		const { rowIdx } = this.props.route.params;
+		let row = dataset.rows[rowIdx];
 
 		if (!row || newRow) {
 			row = new DatasetRow();
@@ -72,19 +69,52 @@ export default class DataEditScreen extends React.Component {
 		return row;
 	}
 
+	onRowRemove(row) {
+		const { datasetContext, datasetDataContext } = this.props.route.params;
+		const { dataset } = datasetContext.state;
+
+		const idx = dataset.rows.findIndex(item => item.id === row.id);
+		dataset.rows.splice(idx, 1);
+
+		return DatasetRowService.remove(row.id).then(response => {
+			datasetContext.updateOriginal(dataset);
+			datasetDataContext.setState({ dataset });
+			return response;
+		});
+	}
+
 	save(addMore = false) {
 		const { navigation, route } = this.props;
+		const { datasetContext, datasetDataContext } = this.props.route.params;
+		const { dataset, originalDataset } = datasetContext.state;
+		const { rowIdx } = route.params;
 		const row = this.state.row;
 
 		this.setState({ saving: true, autofocus: addMore });
-		route.params.dataset.columns.forEach((column, columnIdx) => {
+		dataset.columns.forEach((column, columnIdx) => {
 			row.cells[columnIdx].text = this.state.fields[columnIdx];
 		});
-		route.params.onSave(row).then(model => {
+
+		const clone = new Dataset(Helpers.deepClone(dataset));
+
+		if (row.id) {
+			clone.rows[rowIdx] = row;
+		} else {
+			clone.rows.push(row);
+		}
+
+		const transactions = clone.getTransactions(originalDataset);
+
+		this.setState({ saving: true });
+		DatasetService.save(transactions).then(response => {
+
+			dataset.applyTransactionResponse(response);
+			datasetContext.updateOriginal(dataset);
+			datasetDataContext.setState({dataset});
 
 			const moreState = {};
 			if (addMore) {
-				this.props.route.params.index++;
+				this.props.route.params.rowIdx++;
 				this.prepare(true);
 			}
 			this.setState({ saving: false, autofocus: addMore });
@@ -94,7 +124,7 @@ export default class DataEditScreen extends React.Component {
 
 	prepare(newRow = false) {
 		const { navigation } = this.props;
-		const { dataset } = this.props.route.params;
+		const { dataset } = this.props.route.params.datasetContext.state;
 		const fields = [];
 		const refInputs = [];
 		let row = this.getRow(newRow);
@@ -104,21 +134,6 @@ export default class DataEditScreen extends React.Component {
 		});
 
 		this.setState({ fields, refInputs, row, autofocus: row.id === null });
-	}
-
-	showIOSOptions(items) {
-		const iosItems = items.filter(item => item.ios !== false);
-		const texts = iosItems.map(item => item.name);
-		const destructiveButtonIndex = iosItems.findIndex(item => item.destructive);
-		const cancelButtonIndex = iosItems.findIndex(item => item.cancel);
-
-		ActionSheetIOS.showActionSheetWithOptions({
-			options: texts,
-			destructiveButtonIndex,
-			cancelButtonIndex
-		}, buttonIndex => {
-			items[buttonIndex].callback(this.props);
-		});
 	}
 
 	componentDidMount() {
@@ -136,28 +151,30 @@ export default class DataEditScreen extends React.Component {
 	}
 
 	previous() {
-		const { dataset, index } = this.props.route.params;
+		const { dataset } = this.props.route.params.datasetContext.state;
+		const { rowIdx } = this.props.route.params;
 		const { navigation } = this.props;
 
-		let newIndex = index - 1;
+		let newIndex = rowIdx - 1;
 		if (newIndex < 0) {
 			newIndex = dataset.rows.length - 1;
 		}
 
-		this.props.route.params.index = newIndex;
+		this.props.route.params.rowIdx = newIndex;
 		this.prepare();
 	}
 
 	next() {
-		const { dataset, index } = this.props.route.params;
+		const { dataset } = this.props.route.params.datasetContext.state;
+		const { rowIdx } = this.props.route.params;
 		const { navigation } = this.props;
 
-		let newIndex = index + 1;
+		let newIndex = rowIdx + 1;
 		if (newIndex > dataset.rows.length - 1) {
 			newIndex = 0;
 		}
 
-		this.props.route.params.index = newIndex;
+		this.props.route.params.rowIdx = newIndex;
 		this.prepare();
 	}
 
@@ -185,17 +202,110 @@ export default class DataEditScreen extends React.Component {
 		return false;
 	}
 
-	translate(fieldIdx) {
+	checkServices(fieldIdx) {
 
+		if (this.state.fields[fieldIdx] === lastCheckServiceFieldContent || !this.state.fields[fieldIdx]) {
+			return;
+		}
+		lastCheckServiceFieldContent = this.state.fields[fieldIdx];
+
+		const { spellCheckFields } = this.state;
+		this.fetchSpellChecking(fieldIdx).then(spellCheck => {
+
+			spellCheckFields[fieldIdx] = spellCheck;
+			this.setState({ spellCheckFields });
+
+			if (!spellCheck) {
+				this.fetchTranslations(fieldIdx).then(translationFields => {
+					this.setState({ spellCheckFields, translationFields });
+				});
+			}
+		});
 	}
 
-	speechToText(fieldIdx) {
+	fetchSpellChecking(fieldIdx) {
+		const text = this.state.fields[fieldIdx].trim();
+		const dataset = this.props.route.params.datasetContext.state.dataset;
+		const locale = dataset.columns[fieldIdx].lang;
 
+		return SpellCheckService.check(text, locale).then(tokens => {
+			let offset = 0;
+			const item = {
+				original: text,
+				suggestion: '',
+				parts: [],
+			};
+			tokens.forEach((token, tokenIdx) => {
+				const suggestion = token.suggestions[0].suggestion;
+				const start = token.offset;
+				const end = start + token.token.length;
+
+				if (start > offset) {
+					const rest = text.substring(offset, start);
+					item.suggestion += rest;
+					item.parts.push(<Text key={tokenIdx + rest} style={{marginLeft: 3}}>{rest}</Text>);
+				}
+
+				item.suggestion += suggestion;
+				item.parts.push(<Text key={tokenIdx + suggestion} style={{color: THEME.success, fontWeight: 'bold', marginLeft: tokenIdx > 0 ? 3 : 0}}>{suggestion}</Text>);
+				offset = end;
+			});
+
+			if (offset < text.length) {
+				const rest = text.substring(offset);
+				item.suggestion += rest;
+				item.parts.push(<Text key={tokenIdx + rest} style={{marginLeft: 3}}>{rest}</Text>);
+			}
+
+			const result = item.parts.length > 0 ? item : false;
+			return result;
+		});
+	}
+
+	fetchTranslations(fieldIdx) {
+
+		if (this.state.fields.length > 1) {
+			return;
+		}
+
+		const text = this.state.fields[fieldIdx].trim();
+		const dataset = this.props.route.params.datasetContext.state.dataset;
+		const fromLocale = dataset.columns[fieldIdx].lang;
+
+		let toLocales = []
+		for (let i = 0; i < this.state.fields.length; i++) {
+			if (i !== fieldIdx) {
+				toLocales.push(dataset.columns[i].lang);
+			}
+		}
+
+		return TranslateService.translate(text, fromLocale, toLocales).then(propositions => {
+			console.log(propositions);
+			// translationFields
+			return propositions;
+		});
+	}
+
+	applyValue(fieldIdx, value) {
+		const { fields, spellCheckFields, translationFields } = this.state;
+
+		if (spellCheckFields[fieldIdx] && spellCheckFields[fieldIdx].suggestion === value) {
+			spellCheckFields[fieldIdx] = false;
+		}
+		if (translationFields[fieldIdx] === value) {
+			translationFields[fieldIdx] = false;
+		}
+
+		fields[fieldIdx] = value;
+		this.setState({ fields, spellCheckFields, translationFields });
+
+		this.checkServices(fieldIdx);
 	}
 
 	render() {
-		const { navigation } = this.props;
-		const { dataset } = this.props.route.params;
+		const { navigation, route } = this.props;
+		const { rowIdx } = route.params;
+		const { dataset } = this.props.route.params.datasetContext.state;
 		const row = this.state.row;
 
 		if (this.state.deleting) {
@@ -209,7 +319,7 @@ export default class DataEditScreen extends React.Component {
 
 		navigation.setOptions({
 			title: row.id
-				? I18n.t('title.notesDataEdit', { id: row.id })
+				? I18n.t('title.notesDataEdit', { index: rowIdx + 1, total: dataset.rows.length })
 				: I18n.t('title.notesDataEditNew'),
 			headerRight: row.id ? () => (
 				<View style={{marginRight: 10, flexDirection: 'row'}}>
@@ -225,54 +335,93 @@ export default class DataEditScreen extends React.Component {
 			>
 				<View style={{flex: 1}}>
 					<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
-						{this.state.fields.map((field, fieldIdx) => (
-							<View key={dataset.columns[fieldIdx].guid} style={{marginHorizontal: 10, borderRadius: 10, padding: 5, paddingTop: 15, backgroundColor: 'white', marginBottom: this.state.fields.length - 1 === fieldIdx ? 15 : 10}}>
-								<Input
-									autoFocus={this.state.autofocus && fieldIdx === 0}
-									label={
-										<View style={{flexDirection: 'row', alignItems: 'center'}}>
-											<Icon name={'circle'} size={12} color={THEME.primary} style={{marginRight: 10}} />
-											<Text>{dataset.columns[fieldIdx].name}</Text>
-										</View>
-									}
-									placeholder={I18n.t('field.dataPlaceholder')}
-									inputStyle={{color:THEME.primary}}
-									defaultValue={row.cells[fieldIdx].text}
-									onChangeText={value => {this.state.fields[fieldIdx] = value; this.setState({ fields: this.state.fields });}}
-									returnKeyType = {fieldIdx === dataset.columns.length - 1 ? 'done' : "next"}
-									ref={ref => { this.state.refInputs[fieldIdx] = ref }}
-									autoCapitalize={'sentences'}
-									spellCheck={true}
-									renderErrorMessage={false}
-									rightIcon={
-										<View style={{flexDirection: 'row'}}>
-											<IconButton icon={'translate'} color={THEME.primary} onPress={() => this.translate(fieldIdx)} delayPressIn={0} />
-											<IconButton icon={'microphone'} color={THEME.primary} onPress={() => this.speechToText(fieldIdx)} delayPressIn={0} />
-										</View>
-									}
-									onSubmitEditing={() => {
-										if (fieldIdx === dataset.columns.length - 1) {
-											this.save(true);
-										} else {
-											this.state.refInputs[fieldIdx + 1].focus();
+						{this.state.fields.map((field, fieldIdx) => {
+							const spellCheck = this.state.spellCheckFields[fieldIdx];
+							const translation = this.state.translationFields[fieldIdx];
+							return (
+								<View key={dataset.columns[fieldIdx].guid} style={{marginHorizontal: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white', marginBottom: this.state.fields.length - 1 === fieldIdx ? 15 : 10}}>
+									<Input
+										autoFocus={this.state.autofocus && fieldIdx === 0}
+										label={
+											<View style={{flexDirection: 'row', alignItems: 'center'}}>
+												<Icon name={'circle'} size={12} color={THEME.primary} style={{marginRight: 10}} />
+												<Text style={{flex: 1}}>{dataset.columns[fieldIdx].name}</Text>
+												<Text style={{opacity: 0.3}}>{dataset.columns[fieldIdx].lang.toUpperCase()}</Text>
+											</View>
 										}
-									}}
-								/>
-								<View style={{padding: 10}}>
-									<Text style={{color: THEME.error}}>Did you mean:</Text>
+										placeholder={I18n.t('field.dataPlaceholder')}
+										inputStyle={{color:THEME.primary}}
+										defaultValue={row.cells[fieldIdx].text}
+										value={this.state.fields[fieldIdx]}
+										onChangeText={value => {
+											clearTimeout(checkServiceTimeout);
+											checkServiceTimeout = setTimeout(() => this.checkServices(fieldIdx), 1000);
+											this.applyValue(fieldIdx, value);
+										}}
+										returnKeyType = {fieldIdx === dataset.columns.length - 1 ? 'done' : "next"}
+										ref={ref => { this.state.refInputs[fieldIdx] = ref }}
+										autoCapitalize={'sentences'}
+										spellCheck={true}
+										renderErrorMessage={false}
+										// rightIcon={
+										// 	<View style={{flexDirection: 'row'}}>
+										// 		<IconButton icon={'microphone'} color={THEME.primary} onPress={() => this.speechToText(fieldIdx)} delayPressIn={0} />
+										// 	</View>
+										// }
+										onSubmitEditing={() => {
+											if (fieldIdx === dataset.columns.length - 1) {
+												this.save(true);
+											} else {
+												this.state.refInputs[fieldIdx + 1].focus();
+											}
+										}}
+									/>
+									{(spellCheck || translation) && (
+										<View style={{padding: 10, paddingBottom: 0}}>
+											{spellCheck && (
+												<View style={{flexDirection: 'row', alignItems: 'center'}}>
+													<Text style={{color: THEME.error, marginRight: 10}}>
+														{I18n.t('dataset.data.edit.didYouMean')}
+													</Text>
+													<TouchableOpacity
+														style={{padding: 5, borderRadius: 5, backgroundColor: '#eee', flexDirection: 'row'}}
+														onPress={() => this.applyValue(fieldIdx, spellCheck.suggestion)}
+													>
+														{spellCheck.parts.map((part, partIdx) => part)}
+													</TouchableOpacity>
+												</View>
+											)}
+											{translation && (
+												<View style={{flexDirection: 'row', alignItems: 'center'}}>
+													<Text style={{color: THEME.error, marginRight: 10}}>
+														{I18n.t('dataset.data.edit.possibleTranslation')}
+													</Text>
+													<TouchableOpacity
+														style={{padding: 5, borderRadius: 5, backgroundColor: '#eee'}}
+														onPress={() => this.applyValue(fieldIdx, translation)}
+													>
+														<Text>{translation}</Text>
+													</TouchableOpacity>
+												</View>
+											)}
+										</View>
+									)}
 								</View>
-							</View>
-						))}
+							);
+						})}
 					</ScrollView>
 
-					<View style={{flexDirection: 'row', padding: 5, alignItems: 'center'}}>
-						<IconButton icon={'chevron-left'} type={'clear'} onPress={() => this.previous()} delayPressIn={0} disabled={dataset.rows.length <= 1} />
-						<View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-							<Button style={{flex: 1}} mode="contained" loading={this.state.saving} onPress={() => this.save(row.id ? false : true)} disabled={!row.isValid() || !this.hasDifferences()}>
-								{I18n.t(row.id ? 'btn.save' : 'btn.add')}
-							</Button>
+					<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
+						<Divider style={{marginBottom: 10}} />
+						<View style={{flexDirection: 'row', alignItems: 'center'}}>
+							<IconButton icon={'chevron-left'} type={'clear'} onPress={() => this.previous()} delayPressIn={0} disabled={dataset.rows.length <= 1} style={{marginVertical: -5, marginLeft: -0}} />
+							<View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+								<Button style={{flex: 1}} mode="contained" loading={this.state.saving} onPress={() => this.save(row.id ? false : true)} disabled={!row.isValid() || !this.hasDifferences() || this.state.saving}>
+									{I18n.t(row.id ? 'btn.save' : 'btn.add')}
+								</Button>
+							</View>
+							<IconButton icon={'chevron-right'} type={'clear'} onPress={() => this.next()} delayPressIn={0} disabled={dataset.rows.length <= 1} style={{marginVertical: -5, marginRight: -0}} />
 						</View>
-						<IconButton icon={'chevron-right'} type={'clear'} onPress={() => this.next()} delayPressIn={0} disabled={dataset.rows.length <= 1} />
 					</View>
 				</View>
 			</KeyboardAvoidingView>

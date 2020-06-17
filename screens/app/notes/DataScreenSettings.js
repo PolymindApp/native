@@ -91,7 +91,7 @@ export default class DataScreenSettings extends React.Component {
 				const idx = datasetsContext.state.datasets.findIndex(item => item.id === dataset.id);
 				datasetsContext.state.datasets[idx] = dataset;
 			}
-			datasetsContext.setState({datasets: datasetsContext.state.datasets})
+			datasetsContext.setState({datasets: datasetsContext.state.datasets});
 			if (wasNew) {
 				navigation.navigate('DataData', route.params);
 			}
