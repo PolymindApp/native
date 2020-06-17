@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {StyleSheet, View, RefreshControl, TouchableOpacity, ActivityIndicator, Dimensions} from 'react-native';
+import {StyleSheet, View, RefreshControl, TouchableOpacity, ActivityIndicator, Dimensions, Slider} from 'react-native';
 import {Card, Icon, Text, Divider, Input, ListItem} from 'react-native-elements';
 import { Button } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import I18n from '../../../locales/i18n';
-import PolymindSDK, { THEME, Time, SessionStatsService } from '@polymind/sdk-js';
+import PolymindSDK, { Dataset, THEME, Time, SessionStatsService, AssemblyParameters } from '@polymind/sdk-js';
 import RBSheet from "react-native-raw-bottom-sheet";
 import moment from 'moment';
 import 'moment/locale/fr';
@@ -12,6 +12,7 @@ import 'moment/locale/es';
 import 'moment/locale/it';
 
 const $polymind = new PolymindSDK();
+let sliderTimeout;
 
 export default class SessionsScreen extends React.Component {
 
@@ -20,8 +21,29 @@ export default class SessionsScreen extends React.Component {
 		loading: true,
 		drawerLoading: false,
 		datasets: [],
+		newSession: {
+			dataset: new Dataset(),
+			params: new AssemblyParameters({
+				dataset: {
+					explanation: false,
+					image: false,
+				},
+				component: {
+					speed: 10,
+					range: 10,
+					readQuestion: true,
+					readAnswer: true,
+				}
+			}),
+		},
 		stats: {},
+		step: 1,
 	}
+
+	sessionModes = [
+		{ key: 'manual', title: I18n.t('session.types.manualTitle'), desc: I18n.t('session.types.manualDesc'), icon: 'hand' },
+		{ key: 'linearPassive', title: I18n.t('session.types.autoTitle'), desc: I18n.t('session.types.autoDesc'), icon: 'play-speed' },
+	]
 
 	load() {
 		const startDate = moment().subtract(1, 'month');
@@ -42,13 +64,18 @@ export default class SessionsScreen extends React.Component {
 		this.load().then(() => this.setState({ refreshing: false }));
 	}
 
-	startSession(dataset) {
+	startSession(settings) {
 		this.RBSheet.close();
-		this.props.navigation.push('SessionsPlayer', { dataset })
+
+		// If 0 or 55, it means Unlimited
+		if ([0, 55].indexOf(settings.params.component.range) !== -1) {
+			settings.params.component.range = 0;
+		}
+		this.props.navigation.push('SessionsPlayer', { settings })
 	}
 
 	openDrawer() {
-		this.setState({ drawerLoading: true });
+		this.setState({ drawerLoading: true, step: 1 });
 		$polymind.getDatasets().then(datasets => {
 			this.setState({ datasets, drawerLoading: false });
 			this.RBSheet.open();
@@ -112,9 +139,11 @@ export default class SessionsScreen extends React.Component {
 			yearsMonths[yearIdx].months[monthIdx].days.push(date);
 		});
 
-		console.log(yearsMonths.length);
-
 		return yearsMonths;
+	}
+
+	setStep(index) {
+		this.setState({ step: index });
 	}
 
 	render() {
@@ -138,7 +167,7 @@ export default class SessionsScreen extends React.Component {
 			<View style={{flex: 1}}>
 				<RBSheet
 					ref={ref => this.RBSheet = ref}
-					height={Dimensions.get('window').height / 1.5}
+					height={Dimensions.get('window').height / 1.2}
 					animationType={'fade'}
 					closeOnDragDown={true}
 					customStyles={{
@@ -149,25 +178,238 @@ export default class SessionsScreen extends React.Component {
 					}}
 				>
 					<View style={{padding: 10, flex: 1, justifyContent: 'flex-end'}}>
-						<Text style={{marginBottom: 10}} h4>
-							{I18n.t('session.drawerSelectList')}
-						</Text>
-						<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
-							{this.state.datasets.map((dataset, datasetIdx) => (
-								<ListItem
-									key={dataset.guid}
-									leftIcon={<Icon
-										name={dataset.icon.substring(4) || 'database'}
-										color={THEME.primary}
-										containerStyle={{width: 32}}
-									/>}
-									title={dataset.name}
-									topDivider={datasetIdx !== 0}
-									delayPressIn={0}
-									onPress={() => this.startSession(dataset)}
-								/>
-							))}
-						</ScrollView>
+						{this.state.step === 1 && (
+							<View style={{flex: 1}}>
+								<Text style={{marginBottom: 10}} h4>
+									{I18n.t('session.drawerSelectList')}
+								</Text>
+								<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
+									{this.state.datasets.map((dataset, datasetIdx) => (
+										<ListItem
+											key={dataset.guid}
+											leftIcon={<Icon
+												name={dataset.icon.substring(4) || 'database'}
+												color={THEME.primary}
+												containerStyle={{width: 32}}
+											/>}
+											title={dataset.name}
+											topDivider={datasetIdx !== 0}
+											delayPressIn={0}
+											onPress={() => {
+												const newSession = this.state.newSession;
+												newSession.dataset = dataset;
+												this.setState({ newSession });
+												this.setStep(2);
+											}}
+											chevron
+										/>
+									))}
+								</ScrollView>
+							</View>
+						)}
+						{this.state.step === 2 && (
+							<View style={{flex: 1}}>
+								<Text style={{marginBottom: 10}} h4>
+									{I18n.t('session.chooseType')}
+								</Text>
+								<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
+									{this.sessionModes.map((mode, modeIdx) => (
+										<ListItem
+											key={modeIdx}
+											leftIcon={<Icon
+												name={mode.icon}
+												color={THEME.primary}
+												containerStyle={{width: 32}}
+											/>}
+											title={mode.title}
+											subtitle={mode.desc}
+											titleStyle={{color: THEME.primary}}
+											topDivider={modeIdx !== 0}
+											delayPressIn={0}
+											chevron
+											onPress={() => {
+												const newSession = this.state.newSession;
+												newSession.params.component.mode = mode.key;
+												this.setState({ newSession });
+
+												const columns = this.state.newSession.dataset.columns;
+												if (columns.length === 1) {
+													newSession.question = columns[0].guid;
+												} else {
+													this.setStep(3);
+												}
+											}}
+										/>
+									))}
+								</ScrollView>
+							</View>
+						)}
+						{this.state.step === 3 && (
+							<View style={{flex: 1}}>
+								<Text style={{marginBottom: 10}} h4>
+									{I18n.t('session.chooseQuestion')}
+								</Text>
+								<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
+									{this.state.newSession.dataset.columns.map((column, columnIdx) => (
+										<ListItem
+											key={column.guid}
+											title={column.name}
+											topDivider={columnIdx !== 0}
+											delayPressIn={0}
+											onPress={() => {
+												const newSession = this.state.newSession;
+												newSession.params.dataset.question = newSession.params.dataset.question === column.guid ? '' : column.guid;
+												this.setState({ newSession });
+												this.setStep(4);
+											}}
+										/>
+									))}
+								</ScrollView>
+							</View>
+						)}
+						{this.state.step === 4 && (
+							<View style={{flex: 1}}>
+								<Text style={{marginBottom: 10}} h4>
+									{I18n.t('session.chooseAnswer')}
+								</Text>
+								<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
+									{this.state.newSession.dataset.columns.filter(column => column.guid !== this.state.newSession.params.dataset.question).map((column, columnIdx) => (
+										<ListItem
+											key={column.guid}
+											title={column.name}
+											topDivider={columnIdx !== 0}
+											delayPressIn={0}
+											onPress={() => {
+												const newSession = this.state.newSession;
+												newSession.params.dataset.answer = newSession.params.dataset.answer === column.guid ? '' : column.guid;
+												this.setState({ newSession });
+												this.setStep(5);
+											}}
+										/>
+									))}
+									<ListItem
+										key={'none'}
+										title={I18n.t('session.noAnswer')}
+										leftIcon={{name: 'block-helper'}}
+										topDivider
+										delayPressIn={0}
+										onPress={() => {
+											const newSession = this.state.newSession;
+											newSession.params.dataset.answer = null;
+											this.setState({ newSession });
+											this.setStep(5);
+										}}
+									/>
+								</ScrollView>
+							</View>
+						)}
+						{this.state.step === 5 && (
+							<View style={{flex: 1}}>
+								<Text style={{marginBottom: 10}} h4>
+									{I18n.t('session.chooseSettings')}
+								</Text>
+								<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
+									<ListItem
+										key={'pronounceQuestion'}
+										title={I18n.t('session.pronounceQuestionTitle')}
+										titleStyle={{color: THEME.primary}}
+										leftIcon={{name: 'voice', color: THEME.primary}}
+										subtitle={I18n.t('session.pronounceQuestionDesc')}
+										checkBox={{ checked: this.state.newSession.params.component.readQuestion }}
+										delayPressIn={0}
+										onPress={() => {
+											const newSession = this.state.newSession;
+											newSession.params.component.readQuestion = !newSession.params.component.readQuestion;
+											this.setState({ newSession });
+										}}
+									/>
+									{this.state.newSession.params.dataset.answer && (<ListItem
+										key={'pronounceAnswer'}
+										title={I18n.t('session.pronounceAnswerTitle')}
+										titleStyle={{color: THEME.primary}}
+										leftIcon={{name: 'voice', color: THEME.primary}}
+										subtitle={I18n.t('session.pronounceAnswerDesc')}
+										checkBox={{ checked: this.state.newSession.params.component.readAnswer }}
+										delayPressIn={0}
+										topDivider
+										onPress={() => {
+											const newSession = this.state.newSession;
+											newSession.params.component.readAnswer = !newSession.params.component.readAnswer;
+											this.setState({ newSession });
+										}}
+									/>)}
+
+									{this.state.newSession.params.component.mode === 'linearPassive' && (
+										<ListItem
+											key={'speed'}
+											title={I18n.t('session.speed')}
+											titleStyle={{color: THEME.primary}}
+											leftIcon={{name: 'speedometer', color: THEME.primary}}
+											subtitle={() => (
+												<View>
+													<Slider
+														minimumValue={5}
+														maximumValue={120}
+														onValueChange={value => {
+															clearTimeout(sliderTimeout);
+															sliderTimeout = setTimeout(() => {
+																const newSession = this.state.newSession;
+																newSession.params.component.speed = Math.ceil(parseInt(value) / 5) * 5;
+																this.setState({ newSession });
+															}, 100);
+														}}
+														minimumTrackTintColor={THEME.primary}
+													/>
+													<Text>{I18n.t('session.speedSeconds', { seconds: this.state.newSession.params.component.speed })}</Text>
+												</View>
+											)}
+											delayPressIn={0}
+											topDivider
+										/>
+									)}
+
+									<ListItem
+										key={'range'}
+										title={I18n.t('session.range')}
+										titleStyle={{color: THEME.primary}}
+										leftIcon={{name: 'ray-start-end', color: THEME.primary}}
+										subtitle={() => (
+											<View>
+												<Slider
+													minimumValue={0}
+													maximumValue={55}
+													onValueChange={value => {
+														clearTimeout(sliderTimeout);
+														sliderTimeout = setTimeout(() => {
+															const newSession = this.state.newSession;
+															newSession.params.component.range = Math.ceil(parseInt(value) / 5) * 5;
+															this.setState({ newSession });
+														}, 100);
+													}}
+													minimumTrackTintColor={THEME.primary}
+												/>
+												<Text>{[0, 55].indexOf(this.state.newSession.params.component.range) === -1 ? I18n.t('session.rangeDesc', {
+													range: this.state.newSession.params.component.range
+												}) : I18n.t('session.rangeUnlimited')}</Text>
+											</View>
+										)}
+										delayPressIn={0}
+										topDivider
+									/>
+								</ScrollView>
+							</View>
+						)}
+						<View style={{ height: 45 }}>
+							<Divider style={{marginBottom: 10}} />
+							<View style={{flexDirection: 'row'}}>
+								<Button style={{flex: 1, marginRight: 5}} icon={'chevron-left'} mode="contained" color={'#eee'} onPress={() => this.setStep(this.state.step - 1)} disabled={this.state.step === 1} delayPressIn={0}>
+									{I18n.t('btn.back')}
+								</Button>
+								<Button style={{flex: 1, marginLeft: 5}} icon={'play'} mode="contained" onPress={() => this.startSession(this.state.newSession)} disabled={this.state.step !== 5} delayPressIn={0}>
+									{I18n.t('btn.start')}
+								</Button>
+							</View>
+						</View>
 					</View>
 				</RBSheet>
 				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'} refreshControl={

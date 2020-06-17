@@ -21,14 +21,18 @@ export default class StatsScreen extends React.Component {
 	};
 
 	componentDidMount() {
-		const { dataset } = this.props.route.params;
+		const { settings } = this.props.route.params;
 		this.setState({ generating: true });
 		ComponentService.getAll().then(components => {
+
 			const component = new Component(components.data[0]);
+			const parameters = component.getDefaultParameters(settings.dataset);
+			Object.assign(parameters, settings.params);
+
 			return SessionStructureService.generate({
-				dataset: dataset.id,
+				dataset: settings.dataset.id,
 				component: component.id,
-				parameters: component.getDefaultParameters(dataset),
+				parameters,
 			})
 				.then(session => {
 					const playerUrl = $polymind.playerUrl + '/d/' + session.hash + '/live?native=1&locale=' + I18n.locale.substring(0, 2);
@@ -88,10 +92,10 @@ export default class StatsScreen extends React.Component {
 
 	async share() {
 
-		const { dataset } = this.props.route.params;
+		const { settings } = this.props.route.params;
 		try {
 			const result = await Share.share({
-				message: dataset.name,
+				message: settings.dataset.name,
 				url: this.state.playerUrl,
 			}, {
 				tintColor: THEME.primary
@@ -114,10 +118,10 @@ export default class StatsScreen extends React.Component {
 	render() {
 
 		const { navigation } = this.props;
-		const { dataset } = this.props.route.params;
+		const { settings } = this.props.route.params;
 
 		navigation.setOptions({
-			title: dataset.name,
+			title: settings.dataset.name,
 			headerRight: () => (
 				<View style={{marginRight: 10}}>
 					<TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => this.share()}>

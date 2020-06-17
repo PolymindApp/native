@@ -119,7 +119,29 @@
 		"settings": "Configuraciones"
 	},
 	"session": {
-		"drawerSelectList": "Elige una lista:"
+		"answer": "Respuesta:",
+		"chooseAnswer": "Elige el campo de respuesta:",
+		"chooseQuestion": "Elige el campo de pregunta:",
+		"chooseSettings": "Defina los parámetros:",
+		"chooseType": "Elige el tipo de sesión:",
+		"drawerSelectList": "Elige una lista:",
+		"noAnswer": "Ningún campo de respuesta",
+		"pronounceAnswerDesc": "Mindy, una voz sintética, pronunciará la respuesta por usted.",
+		"pronounceAnswerTitle": "Pronunciar la respuesta",
+		"pronounceQuestionDesc": "Mindy, una voz sintética, pronunciará la pregunta por usted.",
+		"pronounceQuestionTitle": "Pronunciar la pregunta",
+		"question": "Pregunta:",
+		"range": "Gama de preguntas",
+		"rangeDesc": "Haga preguntas por paquete de {{range}} artículos.",
+		"rangeUnlimited": "Ilimitado",
+		"speed": "Retraso entre preguntas:",
+		"speedSeconds": "{{seconds}} segundos",
+		"types": {
+			"autoDesc": "Las notas se mostrarán automáticamente a un ritmo que puede definir.",
+			"autoTitle": "Automático",
+			"manualDesc": "Revise y responde preguntas manualmente.",
+			"manualTitle": "Manual"
+		}
 	},
 	"state": {
 		"deleting": "Eliminando...",

@@ -220,7 +220,6 @@ export default class DataEditScreen extends React.Component {
 
 				if (!spellCheck) {
 					this.fetchTranslations(fieldIdx).then(translationFields => {
-						console.log(translationFields);
 						this.setState({ spellCheckFields, translationFields });
 					});
 				} else {
@@ -328,7 +327,7 @@ export default class DataEditScreen extends React.Component {
 			}
 		}
 
-		fields[fieldIdx] = value;
+		fields[fieldIdx] = value.substring(0, 1).toUpperCase() + value.substring(1);
 		this.setState({ fields, spellCheckFields, translationFields });
 
 		if (fetchServices) {
@@ -373,7 +372,7 @@ export default class DataEditScreen extends React.Component {
 							const spellCheck = this.state.spellCheckFields[fieldIdx];
 							const translation = this.state.translationFields[fieldIdx];
 							return (
-								<View key={dataset.columns[fieldIdx].guid} style={{marginHorizontal: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white', marginBottom: this.state.fields.length - 1 === fieldIdx ? 15 : 10}}>
+								<View key={dataset.columns[fieldIdx].guid} style={{marginHorizontal: 10, borderRadius: 10, paddingVertical: 10, backgroundColor: 'white', marginBottom: this.state.fields.length - 1 === fieldIdx ? 25 : 10}}>
 									<Input
 										clearButtonMode={'while-editing'}
 										autoFocus={this.state.autofocus && fieldIdx === 0}

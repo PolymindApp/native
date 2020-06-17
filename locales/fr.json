@@ -119,7 +119,29 @@
 		"settings": "Configurations"
 	},
 	"session": {
-		"drawerSelectList": "Choisissez une liste :"
+		"answer": "Réponse :",
+		"chooseAnswer": "Choisissez le champs de réponse :",
+		"chooseQuestion": "Choisissez le champs de question :",
+		"chooseSettings": "Définissez les paramètres :",
+		"chooseType": "Choisissez le type de session :",
+		"drawerSelectList": "Choisissez une liste :",
+		"noAnswer": "Aucun champ de réponse",
+		"pronounceAnswerDesc": "Mindy, une voix de synthèse, prononcera la réponse pour vous.",
+		"pronounceAnswerTitle": "Prononcer la réponse",
+		"pronounceQuestionDesc": "Mindy, une voix de synthèse, prononcera la question pour vous.",
+		"pronounceQuestionTitle": "Prononcer la question",
+		"question": "Question :",
+		"range": "Gamme de questions",
+		"rangeDesc": "Posez les questions par paquet de {{range}} articles.",
+		"rangeUnlimited": "Illimité",
+		"speed": "Délais entre les questions :",
+		"speedSeconds": "{{seconds}} secondes",
+		"types": {
+			"autoDesc": "Les notes vous seront présentés automatiquement à un rythme que vous pouvez définir.",
+			"autoTitle": "Automatique",
+			"manualDesc": "Passez en revue et répondez aux questions manuellement.",
+			"manualTitle": "Manuel"
+		}
 	},
 	"state": {
 		"deleting": "Effacement...",
