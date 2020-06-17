@@ -202,25 +202,32 @@ export default class DataEditScreen extends React.Component {
 		return false;
 	}
 
-	checkServices(fieldIdx) {
+	checkServices(fieldIdx, delay = 1000) {
 
-		if (this.state.fields[fieldIdx] === lastCheckServiceFieldContent || !this.state.fields[fieldIdx]) {
-			return;
-		}
-		lastCheckServiceFieldContent = this.state.fields[fieldIdx];
-
-		const { spellCheckFields } = this.state;
-		this.fetchSpellChecking(fieldIdx).then(spellCheck => {
-
-			spellCheckFields[fieldIdx] = spellCheck;
-			this.setState({ spellCheckFields });
-
-			if (!spellCheck) {
-				this.fetchTranslations(fieldIdx).then(translationFields => {
-					this.setState({ spellCheckFields, translationFields });
-				});
+		clearTimeout(checkServiceTimeout);
+		checkServiceTimeout = setTimeout(() => {
+			const { spellCheckFields } = this.state;
+			if (this.state.fields[fieldIdx].toLowerCase() === lastCheckServiceFieldContent || !this.state.fields[fieldIdx] || this.state.fields[fieldIdx].length < 3) {
+				spellCheckFields[fieldIdx] = false;
+				this.setState({ spellCheckFields });
+				return;
 			}
-		});
+			lastCheckServiceFieldContent = this.state.fields[fieldIdx].toLowerCase();
+
+			this.fetchSpellChecking(fieldIdx).then(spellCheck => {
+
+				spellCheckFields[fieldIdx] = spellCheck;
+
+				if (!spellCheck) {
+					this.fetchTranslations(fieldIdx).then(translationFields => {
+						console.log(translationFields);
+						this.setState({ spellCheckFields, translationFields });
+					});
+				} else {
+					this.setState({ spellCheckFields });
+				}
+			});
+		}, delay);
 	}
 
 	fetchSpellChecking(fieldIdx) {
@@ -228,78 +235,97 @@ export default class DataEditScreen extends React.Component {
 		const dataset = this.props.route.params.datasetContext.state.dataset;
 		const locale = dataset.columns[fieldIdx].lang;
 
-		return SpellCheckService.check(text, locale).then(tokens => {
-			let offset = 0;
-			const item = {
-				original: text,
-				suggestion: '',
-				parts: [],
-			};
-			tokens.forEach((token, tokenIdx) => {
-				const suggestion = token.suggestions[0].suggestion;
-				const start = token.offset;
-				const end = start + token.token.length;
+		return new Promise((resolve, reject) => {
+			return SpellCheckService.check(text, locale).then(tokens => {
 
-				if (start > offset) {
-					const rest = text.substring(offset, start);
-					item.suggestion += rest;
-					item.parts.push(<Text key={tokenIdx + rest} style={{marginLeft: 3}}>{rest}</Text>);
+				if (!tokens) {
+					resolve(false);
 				}
 
-				item.suggestion += suggestion;
-				item.parts.push(<Text key={tokenIdx + suggestion} style={{color: THEME.success, fontWeight: 'bold', marginLeft: tokenIdx > 0 ? 3 : 0}}>{suggestion}</Text>);
-				offset = end;
+				let offset = 0;
+				const item = {
+					original: text,
+					suggestion: '',
+					parts: [],
+				};
+				tokens.forEach((token, tokenIdx) => {
+					const suggestion = token.suggestions[0].suggestion;
+					const start = token.offset;
+					const end = start + token.token.length;
+
+					if (start > offset) {
+						const rest = text.substring(offset, start);
+						item.suggestion += rest;
+						item.parts.push(<Text key={tokenIdx + rest} style={{marginLeft: 3}}>{rest}</Text>);
+					}
+
+					item.suggestion += suggestion;
+					item.parts.push(<Text key={tokenIdx + suggestion} style={{color: THEME.success, fontWeight: 'bold', marginLeft: tokenIdx > 0 ? 3 : 0}}>{suggestion}</Text>);
+					offset = end;
+				});
+
+				if (offset < text.length) {
+					const rest = text.substring(offset);
+					item.suggestion += rest;
+					item.parts.push(<Text key={'ending' + rest} style={{marginLeft: 3}}>{rest}</Text>);
+				}
+
+				const result = item.parts.length > 0 && item.suggestion.toLowerCase() !== this.state.fields[fieldIdx].toLowerCase() ? item : false;
+				resolve(result);
 			});
-
-			if (offset < text.length) {
-				const rest = text.substring(offset);
-				item.suggestion += rest;
-				item.parts.push(<Text key={tokenIdx + rest} style={{marginLeft: 3}}>{rest}</Text>);
-			}
-
-			const result = item.parts.length > 0 ? item : false;
-			return result;
 		});
 	}
 
 	fetchTranslations(fieldIdx) {
 
-		if (this.state.fields.length > 1) {
-			return;
-		}
-
-		const text = this.state.fields[fieldIdx].trim();
-		const dataset = this.props.route.params.datasetContext.state.dataset;
-		const fromLocale = dataset.columns[fieldIdx].lang;
-
-		let toLocales = []
-		for (let i = 0; i < this.state.fields.length; i++) {
-			if (i !== fieldIdx) {
-				toLocales.push(dataset.columns[i].lang);
+		return new Promise((resolve, reject) => {
+			const translationFields = [];
+			for (let i = 0; i < this.state.fields.length; i++) {
+				translationFields[i] = false;
 			}
-		}
+			if (this.state.fields.length <= 1) {
+				return resolve(translationFields);
+			}
 
-		return TranslateService.translate(text, fromLocale, toLocales).then(propositions => {
-			console.log(propositions);
-			// translationFields
-			return propositions;
+			const text = this.state.fields[fieldIdx].trim();
+			const dataset = this.props.route.params.datasetContext.state.dataset;
+			const fromLocale = dataset.columns[fieldIdx].lang;
+
+			let toLocales = []
+			for (let i = 0; i < this.state.fields.length; i++) {
+				if (i !== fieldIdx) {
+					toLocales.push(dataset.columns[i].lang);
+				}
+			}
+
+			return TranslateService.translate(text, fromLocale, toLocales).then(propositions => {
+				propositions.forEach(proposition => {
+					const idx = dataset.columns.findIndex(column => column.lang === proposition.to);
+					if (proposition.text.toLowerCase() !== this.state.fields[idx].toLowerCase()) {
+						translationFields[idx] = proposition.text;
+					}
+				});
+				return resolve(translationFields);
+			});
 		});
 	}
 
-	applyValue(fieldIdx, value) {
+	applyValue(fieldIdx, value, fetchServices = false, fetchServicesDelay = 1000) {
 		const { fields, spellCheckFields, translationFields } = this.state;
 
-		if (spellCheckFields[fieldIdx] && spellCheckFields[fieldIdx].suggestion === value) {
+		if (spellCheckFields[fieldIdx] && spellCheckFields[fieldIdx].suggestion.toLowerCase() === value.toLowerCase()) {
 			spellCheckFields[fieldIdx] = false;
 		}
-		if (translationFields[fieldIdx] === value) {
+		if (translationFields[fieldIdx].toLowerCase() === value.toLowerCase()) {
 			translationFields[fieldIdx] = false;
 		}
 
 		fields[fieldIdx] = value;
 		this.setState({ fields, spellCheckFields, translationFields });
 
-		this.checkServices(fieldIdx);
+		if (fetchServices) {
+			this.checkServices(fieldIdx, fetchServicesDelay);
+		}
 	}
 
 	render() {
@@ -354,9 +380,8 @@ export default class DataEditScreen extends React.Component {
 										defaultValue={row.cells[fieldIdx].text}
 										value={this.state.fields[fieldIdx]}
 										onChangeText={value => {
-											clearTimeout(checkServiceTimeout);
-											checkServiceTimeout = setTimeout(() => this.checkServices(fieldIdx), 1000);
-											this.applyValue(fieldIdx, value);
+											this.checkServices(fieldIdx)
+											this.applyValue(fieldIdx, value, true);
 										}}
 										returnKeyType = {fieldIdx === dataset.columns.length - 1 ? 'done' : "next"}
 										ref={ref => { this.state.refInputs[fieldIdx] = ref }}
@@ -385,7 +410,7 @@ export default class DataEditScreen extends React.Component {
 													</Text>
 													<TouchableOpacity
 														style={{padding: 5, borderRadius: 5, backgroundColor: '#eee', flexDirection: 'row'}}
-														onPress={() => this.applyValue(fieldIdx, spellCheck.suggestion)}
+														onPress={() => this.applyValue(fieldIdx, spellCheck.suggestion, true, 0)}
 													>
 														{spellCheck.parts.map((part, partIdx) => part)}
 													</TouchableOpacity>
