@@ -2,8 +2,7 @@ import React from 'react';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {ActivityIndicator, StyleSheet, StatusBar, TouchableOpacity, View, Share} from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import PolymindSDK, { THEME, SessionStructureService, ComponentService, Component } from '@polymind/sdk-js';
+import PolymindSDK, { THEME, SessionStructureService, ComponentService, Component, UserService } from '@polymind/sdk-js';
 import {Text} from "react-native-elements";
 import I18n from "../../../locales/i18n";
 import { WebView } from 'react-native-webview';
@@ -23,11 +22,18 @@ export default class StatsScreen extends React.Component {
 	componentDidMount() {
 		const { settings } = this.props.route.params;
 		this.setState({ generating: true });
-		ComponentService.getAll().then(components => {
+		Promise.all([
+			ComponentService.getAll(),
+			// $polymind.me(),
+		]).then(([components, user]) => {
 
 			const component = new Component(components.data[0]);
 			const parameters = component.getDefaultParameters(settings.dataset);
-			Object.assign(parameters, settings.params);
+			Object.assign(parameters, settings.params, {
+				// general: {
+				// 	dark: user.settings.theme === 'dark',
+				// }
+			});
 
 			return SessionStructureService.generate({
 				dataset: settings.dataset.id,
@@ -132,12 +138,8 @@ export default class StatsScreen extends React.Component {
 		});
 
 		return (
-			<View style={{flex: 1}}>
-				{this.state.generating && (<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-					<ActivityIndicator size="large" color={THEME.primary} />
-					<Text style={{marginTop: 10, color: THEME.primary}}>{I18n.t('state.generating')}</Text>
-				</View>)}
-				{this.state.playerUrl && <WebView
+			<View style={{flex: 1, backgroundColor: 'black'}}>
+				<WebView
 					originWhitelist={['*']}
 					useWebKit={true}
 					mediaPlaybackRequiresUserAction={false}
@@ -152,8 +154,8 @@ export default class StatsScreen extends React.Component {
 							<Text style={{marginTop: 10, color: THEME.primary}}>{I18n.t('state.generating')}</Text>
 						</View>
 					)}
-					source={{ uri: this.state.playerUrl }}
-				/>}
+					source={this.state.playerUrl ? { uri: this.state.playerUrl } : null }
+				/>
 			</View>
 		);
 	};
