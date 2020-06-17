@@ -129,7 +129,7 @@ export default class DataEditScreen extends React.Component {
 		const refInputs = [];
 		let row = this.getRow(newRow);
 		dataset.columns.forEach((column, columnIdx) => {
-			fields.push(row.cells[columnIdx].text);
+			fields.push(row.cells[columnIdx].text || '');
 			refInputs.push(React.createRef());
 		});
 
@@ -313,11 +313,19 @@ export default class DataEditScreen extends React.Component {
 	applyValue(fieldIdx, value, fetchServices = false, fetchServicesDelay = 1000) {
 		const { fields, spellCheckFields, translationFields } = this.state;
 
-		if (spellCheckFields[fieldIdx] && spellCheckFields[fieldIdx].suggestion.toLowerCase() === value.toLowerCase()) {
+		if (!spellCheckFields[fieldIdx] || spellCheckFields[fieldIdx].suggestion.toLowerCase() === value.toLowerCase()) {
 			spellCheckFields[fieldIdx] = false;
 		}
-		if (translationFields[fieldIdx].toLowerCase() === value.toLowerCase()) {
+		if (!translationFields[fieldIdx] || translationFields[fieldIdx].toLowerCase() === value.toLowerCase()) {
 			translationFields[fieldIdx] = false;
+		}
+
+		if (!value) {
+			for (let i = 0; i < this.state.fields.length; i++) {
+				if (i !== fieldIdx) {
+					translationFields[i] = false;
+				}
+			}
 		}
 
 		fields[fieldIdx] = value;
@@ -367,6 +375,7 @@ export default class DataEditScreen extends React.Component {
 							return (
 								<View key={dataset.columns[fieldIdx].guid} style={{marginHorizontal: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white', marginBottom: this.state.fields.length - 1 === fieldIdx ? 15 : 10}}>
 									<Input
+										clearButtonMode={'while-editing'}
 										autoFocus={this.state.autofocus && fieldIdx === 0}
 										label={
 											<View style={{flexDirection: 'row', alignItems: 'center'}}>
