@@ -25,7 +25,9 @@ export default function SessionsNavigator({ navigation, route }) {
 		}}>
 			<Stack.Screen name="Sessions" component={SessionsScreen} />
 			<Stack.Screen name="SessionsStats" component={StatsScreen} />
-			<Stack.Screen name="SessionsPlayer" component={PlayerScreen} />
+			<Stack.Screen name="SessionsPlayer" component={PlayerScreen} options={{
+				cardStyle: { backgroundColor: 'black' }
+			}} />
 		</Stack.Navigator>
 	);
 }

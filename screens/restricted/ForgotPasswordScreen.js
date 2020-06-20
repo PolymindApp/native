@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-	StyleSheet,
-	Vibration,
-	Alert,
-	Keyboard,
-} from "react-native";
+import { Linking } from 'expo';
+import {StyleSheet, Vibration, Alert} from "react-native";
 import {Button, Input, Text} from "react-native-elements";
 import { THEME, UserService, Rules } from "@polymind/sdk-js";
 import I18n from '../../locales/i18n';
@@ -12,9 +8,13 @@ import ClassicForm from "../../components/ClassicForm";
 
 export default class ForgotPasswordScreen extends React.Component {
 
-	state = {
-		loading: false,
-		email: '',
+	constructor(props) {
+		super(props);
+		console.log(props);
+		this.state = {
+			loading: false,
+			email: props.route?.params?.defaultEmail || '',
+		}
 	}
 
 	formIsValid() {
@@ -29,18 +29,41 @@ export default class ForgotPasswordScreen extends React.Component {
 
 		const { navigation } = this.props;
 		this.setState({ loading: true });
-		UserService.forgotPassword(this.state.email)
+		UserService.forgotPassword(this.state.email, Linking.makeUrl('/verify-email'))
 			.then(response => {
 				navigation.navigate('ForgotPasswordEmailSent');
 			})
 			.catch(err => {
+				console.log(err.code, err);
+				let type = 'unknown';
+				let buttons = [
+					{ text: I18n.t('btn.ok'), style: 'cancel' }
+				];
+				switch (parseInt(err.code)) {
+					case 103:
+						type = 'userInactive';
+						buttons = [
+							{ text: I18n.t('btn.cancel'), style: 'cancel' },
+							{ text: I18n.t('btn.resendActivation'), onPress: () => {
+									this.setState({ loading: true });
+									UserService.resendActivation(this.state.email, Linking.makeUrl('/verify-email'))
+										.then(response => {
+											navigation.navigate('VerifyEmailSent');
+										})
+										.catch(err => {
+											console.log(err.code, err);
+										}).finally(() => this.setState({ loading: false }))
+							}}
+						];
+						break;
+					case 107: type = 'userNotFound'; break;
+				}
+
 				Vibration.vibrate();
 				Alert.alert(
-					I18n.t('error.userNotFoundTitle'),
-					I18n.t('error.userNotFoundDesc', { email: this.state.email }),
-					[
-						{ text: I18n.t('btn.ok'), }
-					],
+					I18n.t('error.' + type + 'Title'),
+					I18n.t('error.' + type + 'Desc', { email: this.state.email }),
+					buttons,
 					{ cancelable: false }
 				);
 			})
@@ -59,6 +82,7 @@ export default class ForgotPasswordScreen extends React.Component {
 					inputStyle={{color:THEME.primary}}
 					onChangeText={value => this.setState({ email: value })}
 					returnKeyType = {"done"}
+					defaultValue={this.state.email}
 					textContentType='username'
 					keyboardType='email-address'
 					autoCapitalize='none'
@@ -72,7 +96,7 @@ export default class ForgotPasswordScreen extends React.Component {
 					}}
 					loading={this.state.loading}
 					onPress={() => this.sendRequest()}
-					disabled={!this.formIsValid() || this.state.saving}
+					disabled={!this.formIsValid() || this.state.loading}
 				/>
 			</ClassicForm>
 		)

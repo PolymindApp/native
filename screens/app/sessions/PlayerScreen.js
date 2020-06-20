@@ -75,9 +75,6 @@ export default class StatsScreen extends React.Component {
 				});
 				navigation.dangerouslyGetParent().setOptions({
 					tabBarVisible: false,
-					style: {
-						borderTopWidth: 0,
-					}
 				});
 				break;
 			case ScreenOrientation.Orientation.PORTRAIT_UP:
@@ -130,7 +127,7 @@ export default class StatsScreen extends React.Component {
 			title: settings.dataset.name,
 			headerRight: () => (
 				<View style={{marginRight: 10}}>
-					<TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => this.share()}>
+					<TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => this.share()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
 						<Text style={{color: 'white'}}>{I18n.t('btn.share')}</Text>
 					</TouchableOpacity>
 				</View>
@@ -138,7 +135,7 @@ export default class StatsScreen extends React.Component {
 		});
 
 		return (
-			<View style={{flex: 1, backgroundColor: 'black'}}>
+			<View style={{flex: 1}}>
 				<WebView
 					originWhitelist={['*']}
 					useWebKit={true}

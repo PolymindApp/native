@@ -126,7 +126,7 @@ export default class DataScreenData extends React.Component {
 					)
 				) : (
 					<View style={{flex: 1}}>
-						<SearchBar placeholder={I18n.t('input.filter')} cancelButtonTitle={I18n.t('btn.cancel')} cancelButtonProps={{ color: THEME.primary, buttonStyle: { marginTop: -7 } }} onChangeText={this.updateSearch} value={this.state.search} platform={Platform.OS === 'ios' ? 'ios' : 'android'} />
+						<SearchBar placeholder={I18n.t('input.filter')} cancelButtonTitle={I18n.t('btn.cancel')} cancelButtonProps={{ color: THEME.primary, buttonStyle: { marginTop: -3 } }} onChangeText={this.updateSearch} value={this.state.search} platform={Platform.OS === 'ios' ? 'ios' : 'android'} />
 
 						<ScrollView horizontal={true} enabled={dataset.columns.length > 2} >
 							<View>
@@ -140,6 +140,7 @@ export default class DataScreenData extends React.Component {
 										{tableData.rows.map((row, rowIdx) => (
 											<TouchableOpacity
 												key={rowIdx}
+												hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
 												delayPressIn={0}
 												style={[styles.row, rowIdx % 2 && {backgroundColor: 'rgba(27, 141, 138, 0.05)'}]}
 												onPress={() => navigation.push('NotesDataEdit', {...route.params, rowIdx, datasetDataContext: this})}
@@ -161,6 +162,7 @@ export default class DataScreenData extends React.Component {
 
 				<View style={styles.fixedView}>
 					<TouchableOpacity
+						hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
 						activeOpacity={0.8}
 						onPress={() => this.add()}
 						delayPressIn={0}

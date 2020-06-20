@@ -56,6 +56,7 @@ export default class InformationsScreen extends React.Component {
 						<Input
 							label={I18n.t('field.user.screen_name')}
 							inputStyle={{color:THEME.primary}}
+							inputContainerStyle={{borderBottomWidth: 0}}
 							defaultValue={this.state.user.screen_name}
 							onChangeText={value => this.setState({ user: {...this.state.user, screen_name: value}})}
 							returnKeyType = {"next"}
@@ -65,6 +66,7 @@ export default class InformationsScreen extends React.Component {
 						<Input
 							label={I18n.t('field.user.biography')}
 							inputStyle={{color:THEME.primary}}
+							inputContainerStyle={{borderBottomWidth: 0}}
 							defaultValue={this.state.user.biography}
 							onChangeText={value => this.setState({ user: {...this.state.user, biography: value}})}
 							multiline={true}
@@ -75,6 +77,7 @@ export default class InformationsScreen extends React.Component {
 						<Input
 							label={I18n.t('field.user.quote')}
 							inputStyle={{color:THEME.primary}}
+							inputContainerStyle={{borderBottomWidth: 0}}
 							defaultValue={this.state.user.quote}
 							onChangeText={value => this.setState({ user: {...this.state.user, quote: value}})}
 							multiline={true}

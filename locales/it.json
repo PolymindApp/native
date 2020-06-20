@@ -8,19 +8,23 @@
 	"btn": {
 		"add": "Aggiungere",
 		"addColumn": "Aggiungere",
+		"addList": "Aggiungere una lista",
 		"addMore": "Aggiungere più...",
 		"addNote": "Aggiungere nota",
 		"back": "Indietro",
 		"cancel": "Annullare",
 		"continue": "Continuare",
 		"delete": "Eliminare",
+		"fetchMore": "Prendi di più",
 		"newNotes": "Aggiunge note",
 		"newSession": "Iniziare una sessione",
 		"ok": "OK",
 		"options": "Opzioni",
+		"resendActivation": "Rinviare",
+		"resetPassword": "Resettare",
 		"save": "Salvare",
 		"share": "Condividere",
-		"signIn": "Registrarsi",
+		"signIn": "Connettersi",
 		"signOut": "Uscire",
 		"start": "Iniziare",
 		"startSession": "Iniziare sessione",
@@ -30,7 +34,10 @@
 		"data": {
 			"edit": {
 				"didYouMean": "Intendevi:",
-				"possibleTranslation": "Traduzione:"
+				"image": "Immagine",
+				"imageDesc": "Sceglie un'immagine che corrisponda alla sua idea:",
+				"possibleTranslation": "Traduzione:",
+				"tags": "Etichette"
 			}
 		},
 		"settings": {
@@ -42,11 +49,19 @@
 		}
 	},
 	"error": {
+		"badTokenDesc": "Il collegamento utilizzato contiene un gettone non valido o scaduto.",
+		"badTokenTitle": "Gettone errato",
 		"invalidCredentialsDesc": "Verifica le informazioni di accesso e riprova.",
 		"invalidCredentialsTitle": "Credenziali non valide",
 		"noData": "Nessun dato disponibile",
+		"tokenExpiredDesc": "Riprova compilando nuovamente il modulo password dimenticata.",
+		"tokenExpiredTitle": "Gettone scaduto",
+		"unknownDesc": "Qualcosa è andato storto durante la comunicazione con il server.",
+		"unknownTitle": "Errore sconosciuto",
 		"userAlreadyExistDesc": "Forse hai dimenticato di avere già un account?",
 		"userAlreadyExistTitle": "L'utente esiste già",
+		"userInactiveDesc": "Questo account non è stato ancora attivato. Desideri inviare nuovamente un link di attivazione?",
+		"userInactiveTitle": "Utente inattivo",
 		"userNotFoundDesc": "Nessun utente con email {{email}} trovato.",
 		"userNotFoundTitle": "Utente non trovato"
 	},
@@ -64,6 +79,7 @@
 		"settings": {
 			"darkMode": "Modalità scura"
 		},
+		"tagPlaceholder": "Aggiunge una nuova etichetta qui..",
 		"user": {
 			"biography": "Biografia",
 			"quote": "Citazione",
@@ -77,7 +93,8 @@
 		"chooseIcon": "Sceglie una icona:"
 	},
 	"input": {
-		"filter": "Filtro..."
+		"filter": "Filtro...",
+		"searchCloud": "Cerca nel cloud.."
 	},
 	"legal": {
 		"privacy": "Informativa sulla privacy",
@@ -88,6 +105,10 @@
 		"profile": "Profilo",
 		"sessions": "Sessioni"
 	},
+	"notes": {
+		"emptyDesc": "È necessario un elenco di note per iniziare una sessione.",
+		"emptyTitle": "Nessuna lista"
+	},
 	"profile": {
 		"activities": "Attività",
 		"informations": "Informazioni",
@@ -95,10 +116,13 @@
 		"myInfoSection": "I miei informazione",
 		"parameters": "Impostazioni",
 		"role": {
-			"administrator": "Amministratore"
+			"administrator": "Amministratore",
+			"member": "Membro"
 		}
 	},
 	"restricted": {
+		"accountVerifiedSubtitle": "Ora può accedere al suo account Polymind.",
+		"accountVerifiedTitle": "Account verificato",
 		"backToLogin": "Torna alla pagina di accesso",
 		"forgotPassword": "Ho dimenticato la mia password",
 		"forgotPasswordDesc": "Inserisci il tuo indirizzo e-mail di seguito e ti invieremo le istruzioni per reimpostare la password.",
@@ -112,7 +136,12 @@
 		"register": "Iscriviate",
 		"registerEmailSentSubtitle": "Controlla la tua casella di posta per istruzioni",
 		"registerEmailSentTitle": "Account pronto per la convalida!",
-		"registerTitle": "Crea un account"
+		"registerTitle": "Crea un account",
+		"resetPasswordDoneSubtitle": "Ora puoi accedere utilizzando le tue nuove credenziali",
+		"resetPasswordDoneTitle": "Password cambiata",
+		"resetPasswordTitle": "Resettare la password",
+		"verifyEmailSentSubtitle": "Controlla la sua casella di posta per ulteriori istruzioni",
+		"verifyEmailSentTitle": "Gettone di verificazione mandato"
 	},
 	"sections": {
 		"data": "Dati",
@@ -125,7 +154,11 @@
 		"chooseSettings": "Prepara le suoi impostazioni:",
 		"chooseType": "Sceglie il tipo di sessione:",
 		"drawerSelectList": "Sceglie una lista:",
+		"emptyDesc": "Puoi iniziare nuove sessioni di seguito.",
+		"emptyTitle": "Nessuna sessione",
 		"noAnswer": "Nessun campo di risposta",
+		"noDatasetDesc": "Per iniziare le sessioni, è necessario almeno un elenco di note.",
+		"noDatasetTitle": "Nessuna nota",
 		"pronounceAnswerDesc": "Mindy, una voce sintetica, pronuncerà la risposta per te.",
 		"pronounceAnswerTitle": "Pronunciare la risposta",
 		"pronounceQuestionDesc": "Mindy, una voce sintetica, pronuncerà la domanda per te.",

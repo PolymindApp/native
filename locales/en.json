@@ -8,16 +8,20 @@
 	"btn": {
 		"add": "Add",
 		"addColumn": "Add",
+		"addList": "Add a list",
 		"addMore": "Add more...",
 		"addNote": "Add note",
 		"back": "Back",
 		"cancel": "Cancel",
 		"continue": "Continue",
 		"delete": "Delete",
+		"fetchMore": "Fetch more",
 		"newNotes": "Add notes",
 		"newSession": "Start a session",
 		"ok": "OK",
 		"options": "Options",
+		"resendActivation": "Resend",
+		"resetPassword": "Reset",
 		"save": "Save",
 		"share": "Share",
 		"signIn": "Sign In",
@@ -30,7 +34,10 @@
 		"data": {
 			"edit": {
 				"didYouMean": "Did you mean:",
-				"possibleTranslation": "Translation:"
+				"image": "Image",
+				"imageDesc": "Choose an image that matches your idea:",
+				"possibleTranslation": "Translation:",
+				"tags": "Tags"
 			}
 		},
 		"settings": {
@@ -42,11 +49,19 @@
 		}
 	},
 	"error": {
+		"badTokenDesc": "The link used contain an invalid or expired token.",
+		"badTokenTitle": "Bad Token",
 		"invalidCredentialsDesc": "Please verify your login information and try again.",
 		"invalidCredentialsTitle": "Invalid credentials",
 		"noData": "No Data Available",
+		"tokenExpiredDesc": "Please retry by filling the forgot password form again.",
+		"tokenExpiredTitle": "Token Expired",
+		"unknownDesc": "Something went wrong while communicating with the server.",
+		"unknownTitle": "Unknown Error",
 		"userAlreadyExistDesc": "Maybe you forgot that you already had an account?",
 		"userAlreadyExistTitle": "User already exists",
+		"userInactiveDesc": "This account hasn't been activated yet. Do you wish to resend an activation link?",
+		"userInactiveTitle": "Inactive User",
 		"userNotFoundDesc": "No user with email {{email}} found.",
 		"userNotFoundTitle": "User not found"
 	},
@@ -64,6 +79,7 @@
 		"settings": {
 			"darkMode": "Dark mode"
 		},
+		"tagPlaceholder": "Add a new tag here..",
 		"user": {
 			"biography": "Biography",
 			"quote": "Quote",
@@ -77,7 +93,8 @@
 		"chooseIcon": "Choose an icon:"
 	},
 	"input": {
-		"filter": "Filter..."
+		"filter": "Filter...",
+		"searchCloud": "Search on the cloud.."
 	},
 	"legal": {
 		"privacy": "Privacy Policies",
@@ -88,6 +105,10 @@
 		"profile": "Profile",
 		"sessions": "Sessions"
 	},
+	"notes": {
+		"emptyDesc": "You need list of notes to start a session.",
+		"emptyTitle": "No list yet"
+	},
 	"profile": {
 		"activities": "Activities",
 		"informations": "Information",
@@ -95,10 +116,13 @@
 		"myInfoSection": "My Info",
 		"parameters": "Parameters",
 		"role": {
-			"administrator": "Administrator"
+			"administrator": "Administrator",
+			"member": "Member"
 		}
 	},
 	"restricted": {
+		"accountVerifiedSubtitle": "You can now access your Polymind account.",
+		"accountVerifiedTitle": "Account Verified",
 		"backToLogin": "Back to login page",
 		"forgotPassword": "I forgot my password",
 		"forgotPasswordDesc": "Enter your email address below and we will send you instructions to reset your password.",
@@ -112,7 +136,12 @@
 		"register": "Sign Up",
 		"registerEmailSentSubtitle": "Please check your mailbox for instructions",
 		"registerEmailSentTitle": "Account ready to validate!",
-		"registerTitle": "Create an account"
+		"registerTitle": "Create an account",
+		"resetPasswordDoneSubtitle": "You can now login using your new credentials",
+		"resetPasswordDoneTitle": "Password Changed",
+		"resetPasswordTitle": "Reset Password",
+		"verifyEmailSentSubtitle": "Check your mailbox for further instructions",
+		"verifyEmailSentTitle": "Verification Token Sent"
 	},
 	"sections": {
 		"data": "Data",
@@ -125,7 +154,11 @@
 		"chooseSettings": "Prepare your settings:",
 		"chooseType": "Choose session type:",
 		"drawerSelectList": "Choose a list :",
+		"emptyDesc": "You can start new sessions below.",
+		"emptyTitle": "No session yet",
 		"noAnswer": "No answer field",
+		"noDatasetDesc": "To start sessions, you need at least one list of notes.",
+		"noDatasetTitle": "No note yet",
 		"pronounceAnswerDesc": "Mindy, a synthetic voice, will pronounce the answer for you.",
 		"pronounceAnswerTitle": "Pronounce answer",
 		"pronounceQuestionDesc": "Mindy, a synthetic voice, will pronounce the question for you.",

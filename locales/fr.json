@@ -8,16 +8,20 @@
 	"btn": {
 		"add": "Ajouter",
 		"addColumn": "Ajouter",
+		"addList": "Ajouter une liste",
 		"addMore": "Ajoutez plus...",
 		"addNote": "Ajoutez une note",
 		"back": "Retour",
 		"cancel": "Annuler",
 		"continue": "Continuer",
 		"delete": "Effacer",
+		"fetchMore": "Chercher plus",
 		"newNotes": "Ajoutez des notes",
 		"newSession": "Démarrez une session",
 		"ok": "OK",
 		"options": "Options",
+		"resendActivation": "Renvoyer",
+		"resetPassword": "Réinitialiser",
 		"save": "Enregistrer",
 		"share": "Partager",
 		"signIn": "S'inscrire",
@@ -30,7 +34,10 @@
 		"data": {
 			"edit": {
 				"didYouMean": "Vouliez-vous dire :",
-				"possibleTranslation": "Traduction :"
+				"image": "Image",
+				"imageDesc": "Choisissez une image qui correspond à votre idée:",
+				"possibleTranslation": "Traduction :",
+				"tags": "Étiquettes"
 			}
 		},
 		"settings": {
@@ -42,11 +49,19 @@
 		}
 	},
 	"error": {
+		"badTokenDesc": "Le lien utilisé contient un jeton invalide ou expiré.",
+		"badTokenTitle": "Mauvais jeton",
 		"invalidCredentialsDesc": "Veuillez s'il-vous-plaît vérifier votre information de connexion et essayer de nouveau.",
 		"invalidCredentialsTitle": "Informations d'identification invalides",
 		"noData": "Aucune donnée disponible",
+		"tokenExpiredDesc": "Veuillez réessayer en remplissant à nouveau le formulaire de mot de passe oublié.",
+		"tokenExpiredTitle": "Jeton expiré",
+		"unknownDesc": "Une erreur s'est produite lors de la communication avec le serveur.",
+		"unknownTitle": "Erreur inconnue",
 		"userAlreadyExistDesc": "Peut-être avez-vous oublié que vous aviez déjà un compte?",
 		"userAlreadyExistTitle": "Utilisateur déjà existant",
+		"userInactiveDesc": "Ce compte n'a pas encore été activé. Souhaitez-vous renvoyer un lien d'activation?",
+		"userInactiveTitle": "Utilisateur inactif",
 		"userNotFoundDesc": "Aucun utilisateur avec le courriel {{email}} n'a été trouvé.",
 		"userNotFoundTitle": "Utilisateur inexistant"
 	},
@@ -64,6 +79,7 @@
 		"settings": {
 			"darkMode": "Mode sombre"
 		},
+		"tagPlaceholder": "Ajoutez une nouvelle étiquette ici..",
 		"user": {
 			"biography": "Biographie",
 			"quote": "Citation",
@@ -77,7 +93,8 @@
 		"chooseIcon": "Choisissez une icône :"
 	},
 	"input": {
-		"filter": "Filtrer..."
+		"filter": "Filtrer...",
+		"searchCloud": "Chercher sur le nuage.."
 	},
 	"legal": {
 		"privacy": "Politiques de confidentialités",
@@ -88,6 +105,10 @@
 		"profile": "Profil",
 		"sessions": "Sessions"
 	},
+	"notes": {
+		"emptyDesc": "Vous avez besoin d'une liste de notes pour démarrer une session.",
+		"emptyTitle": "Aucune liste"
+	},
 	"profile": {
 		"activities": "Activités",
 		"informations": "Informations",
@@ -95,10 +116,13 @@
 		"myInfoSection": "Mes informations",
 		"parameters": "Paramètres",
 		"role": {
-			"administrator": "Administrateur"
+			"administrator": "Administrateur",
+			"member": "Membre"
 		}
 	},
 	"restricted": {
+		"accountVerifiedSubtitle": "Vous pouvez maintenant accéder votre compte Polymind.",
+		"accountVerifiedTitle": "Compte vérifié",
 		"backToLogin": "Retour à la page de connexion",
 		"forgotPassword": "J'ai oublié mon mot de passe",
 		"forgotPasswordDesc": "Entrez votre adresse courriel ci-dessous et nous vous enverrons les instructions pour réinitialiser votre mot de passe.",
@@ -112,7 +136,12 @@
 		"register": "S'inscrire",
 		"registerEmailSentSubtitle": "S'il-vous-plaît, vérifiez votre boîte courriel pour les démarches à suivre",
 		"registerEmailSentTitle": "Compte prêt à être validé !",
-		"registerTitle": "Créez un compte"
+		"registerTitle": "Créez un compte",
+		"resetPasswordDoneSubtitle": "Vous pouvez maintenant vous connecter en utilisant vos nouvelles informations d'identification",
+		"resetPasswordDoneTitle": "Mot de passe changé",
+		"resetPasswordTitle": "Réinitialiser le mot de passe",
+		"verifyEmailSentSubtitle": "Vérifiez votre boite courriel pour les démarches à suivre",
+		"verifyEmailSentTitle": "Jeton de vérification envoyé"
 	},
 	"sections": {
 		"data": "Données",
@@ -125,7 +154,11 @@
 		"chooseSettings": "Définissez les paramètres :",
 		"chooseType": "Choisissez le type de session :",
 		"drawerSelectList": "Choisissez une liste :",
+		"emptyDesc": "Vous pouvez démarrer de nouvelles sessions ci-dessous.",
+		"emptyTitle": "Aucune session",
 		"noAnswer": "Aucun champ de réponse",
+		"noDatasetDesc": "Pour démarrer une session, vous avez besoin d'un moins une liste de notes.",
+		"noDatasetTitle": "Aucune note",
 		"pronounceAnswerDesc": "Mindy, une voix de synthèse, prononcera la réponse pour vous.",
 		"pronounceAnswerTitle": "Prononcer la réponse",
 		"pronounceQuestionDesc": "Mindy, une voix de synthèse, prononcera la question pour vous.",

@@ -4,12 +4,17 @@ import {Button, Divider, Icon, Text} from "react-native-elements";
 import I18n from '../../locales/i18n';
 import { THEME } from '@polymind/sdk-js';
 
-export default class RegisterScreen extends React.Component {
+export default class ConfirmationScreen extends React.Component {
 
 	render() {
 		const { route, navigation } = this.props;
+
+		navigation.setOptions({
+			headerShown: false,
+		});
+
 		return (
-			<ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps={'handled'}>
+			<View style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps={'handled'}>
 
 				<View style={{flex: 1, justifyContent: 'center', paddingHorizontal: 60}}>
 					<Icon name={route.params?.icon} size={90} color={'white'} />
@@ -24,19 +29,23 @@ export default class RegisterScreen extends React.Component {
 						title={route.params?.footerTitle}
 						type="clear"
 						titleStyle={{color: 'white'}}
-						onPress={() => navigation.navigate(route.params?.footerNavigation)}
+						onPress={() => {
+							if (navigation.canGoBack()) {
+								navigation.popToTop();
+								navigation.push(route.params?.footerNavigation, route.params?.footerNavigationParams);
+							} else {
+								navigation.navigate(route.params?.footerNavigation, route.params?.footerNavigationParams);
+							}
+						}}
 					/>
 				</View>
-			</ScrollView>
+			</View>
 		)
 	}
 }
 
 const styles = StyleSheet.create({
 	container: {
-		flexGrow: 1,
-	},
-	content: {
 		flexGrow: 1,
 		justifyContent: 'center',
 		backgroundColor: THEME.primary,

@@ -2,7 +2,7 @@ import React from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Icon, ListItem, Text } from 'react-native-elements';
-import PolymindSDK, { User, THEME, FileService, File, UserService } from "@polymind/sdk-js";
+import PolymindSDK, { User, THEME, FileService, UserService } from "@polymind/sdk-js";
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import I18n from '../../../locales/i18n';
@@ -10,7 +10,7 @@ import I18n from '../../../locales/i18n';
 const $polymind = new PolymindSDK();
 const sections = [
 	{ title: I18n.t('profile.informations'), icon: 'card-bulleted-outline', name: 'ProfileInformations' },
-	{ title: I18n.t('profile.parameters'), icon: 'settings-outline', name: 'ProfileSettings' },
+	// { title: I18n.t('profile.parameters'), icon: 'settings-outline', name: 'ProfileSettings' },
 ];
 const pages = [
 	{ title: I18n.t('legal.terms'), name: 'ProfilePage', props: { slug: 'terms' } },
@@ -29,11 +29,12 @@ export default class ProfileScreen extends React.Component {
 	};
 
 	load() {
+
 		this.setState({ loading: true });
 		$polymind.me().then(me => {
 			let thumbnail = preview;
 			if (me.avatar && me.avatar.private_hash) {
-				thumbnail = $polymind.getThumbnailByPrivateHash(me.avatar.private_hash, 'avatar')
+				thumbnail = { uri : $polymind.getThumbnailByPrivateHash(me.avatar.private_hash, 'avatar') }
 			}
 			this.setState({ me, thumbnail, loading: false });
 		});
@@ -91,7 +92,7 @@ export default class ProfileScreen extends React.Component {
 				<ListItem
 					leftAvatar={this.state.uploading ? <ActivityIndicator size={'large'} color={THEME.primary} /> : {
 						title: this.getCompleteName().substring(0, 1),
-						source: this.state.thumbnail ? { uri: this.state.thumbnail } : null,
+						source: this.state.thumbnail,
 						showAccessory: true,
 						size: 'large',
 					}}
@@ -106,7 +107,7 @@ export default class ProfileScreen extends React.Component {
 					<Text style={{paddingHorizontal: 10}} h4>
 						{I18n.t('profile.myInfoSection')}
 					</Text>
-					<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10, elevation: 20}}>
+					<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
 						{sections.map((section, sectionIdx) => (
 							<ListItem key={sectionIdx} title={section.title} leftIcon={<Icon name={section.icon} />} chevron delayPressIn={0} onPress={() => navigation.push(section.name, { user: this.state.me, profileContext: this })} topDivider={sectionIdx !== 0} />
 						))}
@@ -117,7 +118,7 @@ export default class ProfileScreen extends React.Component {
 					<Text style={{paddingHorizontal: 10}} h4>
 						{I18n.t('profile.legalSection')}
 					</Text>
-					<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10, elevation: 20}}>
+					<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
 						{pages.map((page, pageIdx) => (
 							<ListItem key={pageIdx} title={page.title} chevron delayPressIn={0} onPress={() => navigation.push(page.name, page.props)} topDivider={pageIdx !== 0} />
 						))}

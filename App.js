@@ -1,4 +1,3 @@
-//"googleClientId": "285103854117-n9pudumhl6bfg3aibr30mgg7f3b5edns.apps.googleusercontent.com"
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -7,7 +6,7 @@ import { SafeAreaView, Platform } from 'react-native';
 import { ThemeProvider} from 'react-native-elements';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import {StatusBar, StyleSheet, View, ActivityIndicator, TouchableWithoutFeedback, Keyboard} from 'react-native';
-import PolymindSDK, { THEME } from '@polymind/sdk-js';
+import PolymindSDK, { THEME, EventBus } from '@polymind/sdk-js';
 import LinkingConfiguration from './navigation/LinkingConfiguration';
 import I18n from './locales/i18n';
 import { AppContext } from './contexts';
@@ -58,9 +57,13 @@ if (Platform.OS !== 'web') {
 	ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
 }
 
+// console.disableYellowBox = true;
+
 const $polymind = new PolymindSDK();
 const isLoadingComplete = true;//useCachedResources();
 export default class App extends React.Component {
+
+	static contextType = AppContext;
 
 	state = {
 		hasVerifiedAuth: false,
@@ -72,6 +75,10 @@ export default class App extends React.Component {
 
 	async componentDidMount() {
 		await I18n.initAsync();
+
+		EventBus.subscribe('LOGOUT', () => {
+			this.context.setSignedIn(false);
+		});
 
 		$polymind.isLoggedIn().then(isSignedIn => {
 			this.setState({ isSignedIn, hasVerifiedAuth: true });
@@ -89,8 +96,8 @@ export default class App extends React.Component {
 				<ThemeProvider theme={theme}>
 					<PaperProvider theme={themePaper}>
 						<AppContext.Provider value={this.state}>
+							<StatusBar barStyle="light-content" backgroundColor={'transparent'} translucent hidden={!this.state.isSignedIn} />
 							<SafeAreaView style={styles.container}>
-								<StatusBar barStyle="light-content" backgroundColor={THEME.primary} translucent hidden={!this.state.isSignedIn} />
 								{!this.state.hasVerifiedAuth ? (
 									<View style={styles.loading}>
 										<ActivityIndicator size="large" color="white" />

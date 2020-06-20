@@ -51,6 +51,7 @@ export default class SessionsScreen extends React.Component {
 
 		return SessionStatsService.getAll('live', startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD')).then(stats => {
 			this.setState({ stats: stats.daily });
+			return this.loadDatasets();
 		});
 	}
 
@@ -74,10 +75,16 @@ export default class SessionsScreen extends React.Component {
 		this.props.navigation.push('SessionsPlayer', { settings })
 	}
 
+	loadDatasets() {
+		return $polymind.getDatasets().then(datasets => {
+			this.setState({ datasets });
+		});
+	}
+
 	openDrawer() {
 		this.setState({ drawerLoading: true, step: 1 });
-		$polymind.getDatasets().then(datasets => {
-			this.setState({ datasets, drawerLoading: false });
+		this.loadDatasets().then(datasets => {
+			this.setState({ drawerLoading: false });
 			this.RBSheet.open();
 		});
 	}
@@ -412,12 +419,20 @@ export default class SessionsScreen extends React.Component {
 						</View>
 					</View>
 				</RBSheet>
-				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'} refreshControl={
+				<ScrollView contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={'handled'} refreshControl={
 					<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh.bind(this)} />
 				}>
-					{years.length === 0 && (
-						<View>
-							<Text>Empty</Text>
+					{this.state.datasets.length === 0 ? (
+						<View style={{flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10}}>
+							<Icon name={'file-question'} size={64} style={{opacity: 0.3}}></Icon>
+							<Text style={{textAlign: 'center'}} h3>{I18n.t('session.noDatasetTitle')}</Text>
+							<Text style={{textAlign: 'center'}} h5>{I18n.t('session.noDatasetDesc')}</Text>
+						</View>
+					) : years.length === 0 && (
+						<View style={{flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10}}>
+							<Icon name={'file-question'} size={64} style={{opacity: 0.3}}></Icon>
+							<Text style={{textAlign: 'center'}} h3>{I18n.t('session.emptyTitle')}</Text>
+							<Text style={{textAlign: 'center'}} h5>{I18n.t('session.emptyDesc')}</Text>
 						</View>
 					)}
 					{years.map((year, yearIdx) => (
@@ -463,12 +478,14 @@ export default class SessionsScreen extends React.Component {
 						</View>
 					))}
 				</ScrollView>
-				<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
-					<Divider style={{marginBottom: 10}} />
-					<Button mode="contained" onPress={() => this.openDrawer()} loading={this.state.drawerLoading} disabled={this.state.drawerLoading} delayPressIn={0}>
-						{I18n.t('btn.start')}
-					</Button>
-				</View>
+				{this.state.datasets.length > 0 && (
+					<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
+						<Divider style={{marginBottom: 10}} />
+						<Button mode="contained" onPress={() => this.openDrawer()} loading={this.state.drawerLoading} disabled={this.state.drawerLoading} delayPressIn={0}>
+							{I18n.t('btn.start')}
+						</Button>
+					</View>
+				)}
 			</View>
 		);
 	};
@@ -476,10 +493,10 @@ export default class SessionsScreen extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 0,
+		flexGrow: 1,
 	},
 	dateItem: {
-		flex: 1,
+		flexGrow: 1,
 		flexDirection: 'row',
 	},
 	dateItemLeft: {

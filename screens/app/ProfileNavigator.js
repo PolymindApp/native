@@ -44,7 +44,7 @@ export default class ProfileNavigator extends React.Component {
 					headerRight: () => (
 						<View style={{marginRight: 10}}>
 							{Platform.select({
-								ios: (<TouchableOpacity onPress={() => this.logout()} >
+								ios: (<TouchableOpacity onPress={() => this.logout()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
 									<Text style={{color: 'white'}}>{I18n.t('btn.signOut')}</Text>
 								</TouchableOpacity>),
 								default: (<Button onPress={() => this.logout()} icon="logout-variant" color={'white'}>

@@ -1,9 +1,9 @@
 import React from 'react'
-import {ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, TouchableHighlight, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import PolymindSDK, { THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService } from '@polymind/sdk-js';
+import PolymindSDK, { THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
-import {Divider, Icon, Input, Text} from "react-native-elements";
+import {Divider, Icon, Input, SearchBar, Text} from "react-native-elements";
 import {Button, IconButton, Menu} from "react-native-paper";
 import ContextualOptions from "../../../components/ContextualOptions";
 
@@ -15,7 +15,6 @@ export default class DataEditScreen extends React.Component {
 
 	state = {
 		fields: [],
-		refInputs: [],
 		optionsMenu: false,
 		autofocus: true,
 		deleting: false,
@@ -23,7 +22,21 @@ export default class DataEditScreen extends React.Component {
 		row: new DatasetRow(),
 		spellCheckFields: [],
 		translationFields: [],
+		fetching: false,
+		fetchingCustom: false,
+		canFetchImages: false,
+		imageOffset: 0,
+		images: [],
+		lastSearchQuery: null,
+		searchQueryContext: '',
+		searchImageQuery: '',
+		tags: [],
+		allTags: ['verb', 'noun'],
+		addTagInput: '',
 	};
+
+	refInputs = [];
+	refTagInput = React.createRef();
 
 	optionItems = [
 		{ name: I18n.t('btn.cancel'), callback: () => {}, cancel: true, android: false },
@@ -118,7 +131,7 @@ export default class DataEditScreen extends React.Component {
 				this.prepare(true);
 			}
 			this.setState({ saving: false, autofocus: addMore });
-			addMore && this.state.refInputs[0].focus();
+			addMore && this.refInputs[0].focus();
 		});
 	}
 
@@ -133,7 +146,7 @@ export default class DataEditScreen extends React.Component {
 			refInputs.push(React.createRef());
 		});
 
-		this.setState({ fields, refInputs, row, autofocus: row.id === null });
+		this.setState({ fields, row, autofocus: row.id === null });
 	}
 
 	componentDidMount() {
@@ -309,6 +322,23 @@ export default class DataEditScreen extends React.Component {
 		});
 	}
 
+	fetchImages(query, locale, customQuery = false) {
+
+		this.setState({ fetching: !customQuery, fetchingCustom: customQuery });
+		return GoogleService.fetchImages(query, locale, {
+			start: this.state.imageOffset + 1,
+			num: 9,
+		})
+			.then(response => response.items.map(item => item.image.thumbnailLink))
+			.then(items => {
+
+				let images = this.state.lastSearchQuery === query ? this.state.images : [];
+				images = images.concat(items);
+
+				this.setState({ images, lastSearchQuery: query, imageOffset: this.state.imageOffset + 9, canFetchImages: images.length < 27 });
+			}).finally(() => this.setState({ fetching: false, fetchingCustom: false }));
+	}
+
 	applyValue(fieldIdx, value, fetchServices = false, fetchServicesDelay = 1000) {
 		const { fields, spellCheckFields, translationFields } = this.state;
 
@@ -333,6 +363,28 @@ export default class DataEditScreen extends React.Component {
 		if (fetchServices) {
 			this.checkServices(fieldIdx, fetchServicesDelay);
 		}
+	}
+
+	pushTag(tag) {
+		const allIdx = this.state.allTags.indexOf(tag);
+		const idx = this.state.tags.indexOf(tag);
+		if (allIdx === -1) {
+			this.state.allTags.push(tag);
+		}
+		if (idx === -1) {
+			this.state.tags.push(tag);
+		}
+		this.setState({ tags: this.state.tags, allTags: this.state.allTags, addTagInput: '' });
+	}
+
+	toggleTag(tag) {
+		const idx = this.state.tags.indexOf(tag);
+		if (idx === -1) {
+			this.state.tags.push(tag);
+		} else {
+			this.state.tags.splice(idx, 1);
+		}
+		this.setState({ tags: this.state.tags });
 	}
 
 	render() {
@@ -372,10 +424,11 @@ export default class DataEditScreen extends React.Component {
 							const spellCheck = this.state.spellCheckFields[fieldIdx];
 							const translation = this.state.translationFields[fieldIdx];
 							return (
-								<View key={dataset.columns[fieldIdx].guid} style={{marginHorizontal: 10, borderRadius: 10, paddingVertical: 10, backgroundColor: 'white', marginBottom: this.state.fields.length - 1 === fieldIdx ? 25 : 10}}>
+								<View key={dataset.columns[fieldIdx].guid} style={{marginHorizontal: 10, borderRadius: 10, paddingVertical: 10, backgroundColor: 'white', marginBottom: 10}}>
 									<Input
-										clearButtonMode={'while-editing'}
+										clearButtonMode={'always'}
 										autoFocus={this.state.autofocus && fieldIdx === 0}
+										inputContainerStyle={{borderBottomWidth: 0}}
 										label={
 											<View style={{flexDirection: 'row', alignItems: 'center'}}>
 												<Icon name={'circle'} size={12} color={THEME.primary} style={{marginRight: 10}} />
@@ -392,7 +445,7 @@ export default class DataEditScreen extends React.Component {
 											this.applyValue(fieldIdx, value, true);
 										}}
 										returnKeyType = {fieldIdx === dataset.columns.length - 1 ? 'done' : "next"}
-										ref={ref => { this.state.refInputs[fieldIdx] = ref }}
+										ref={ref => { this.refInputs[fieldIdx] = ref }}
 										autoCapitalize={'sentences'}
 										spellCheck={true}
 										renderErrorMessage={false}
@@ -405,7 +458,7 @@ export default class DataEditScreen extends React.Component {
 											if (fieldIdx === dataset.columns.length - 1) {
 												this.save(true);
 											} else {
-												this.state.refInputs[fieldIdx + 1].focus();
+												this.refInputs[fieldIdx + 1].focus();
 											}
 										}}
 									/>
@@ -417,6 +470,7 @@ export default class DataEditScreen extends React.Component {
 														{I18n.t('dataset.data.edit.didYouMean')}
 													</Text>
 													<TouchableOpacity
+														hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
 														style={{padding: 5, borderRadius: 5, backgroundColor: '#eee', flexDirection: 'row'}}
 														onPress={() => this.applyValue(fieldIdx, spellCheck.suggestion, true, 0)}
 													>
@@ -430,6 +484,7 @@ export default class DataEditScreen extends React.Component {
 														{I18n.t('dataset.data.edit.possibleTranslation')}
 													</Text>
 													<TouchableOpacity
+														hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
 														style={{padding: 5, borderRadius: 5, backgroundColor: '#eee'}}
 														onPress={() => this.applyValue(fieldIdx, translation)}
 													>
@@ -442,6 +497,74 @@ export default class DataEditScreen extends React.Component {
 								</View>
 							);
 						})}
+
+						<View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, backgroundColor: 'white', marginBottom: 10 }}>
+							<View style={{flexDirection: 'row', alignItems: 'center'}}>
+								<Icon name={'image'} color={THEME.primary} style={{marginRight: 5}} />
+								<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.image')}</Text>
+							</View>
+
+							<Text style={{marginTop: 5, opacity: 0.5}}>
+								{I18n.t('dataset.data.edit.imageDesc')}
+							</Text>
+
+							<Input
+								clearButtonMode={'while-editing'}
+								underlineColorAndroid={'transparent'}
+								inputContainerStyle={{marginHorizontal: -10, borderBottomWidth: 0}}
+								placeholder={I18n.t('input.searchCloud')}
+								inputStyle={{color:THEME.primary}}
+								returnKeyType={'done'}
+								value={this.state.searchImageQuery}
+								renderErrorMessage={false}
+								leftIcon={() => this.state.fetchingCustom ? <ActivityIndicator color={THEME.primary} /> : <Icon name={'image-search'} style={{opacity: 0.333}} />}
+								onChangeText={value => this.setState({ searchImageQuery: value })}
+								onSubmitEditing={event => this.fetchImages(this.state.searchImageQuery, undefined, true)}
+							/>
+
+							{this.state.images.length > 0 && <View style={{marginVertical: 10, flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+								{this.state.images.map((image, imageIdx) => (
+									<Image key={imageIdx} source={{ uri: image }} style={{ width: '33.333%', height: Dimensions.get('window').width / 3 }} />
+								))}
+							</View>}
+
+							{this.state.canFetchImages && <Button mode={'outlined'} onPress={() => this.fetchImages(this.state.lastSearchQuery, dataset.columns[0].lang)} disabled={this.state.fetching} loading={this.state.fetching}>
+								{I18n.t('btn.fetchMore')}
+							</Button>}
+						</View>
+
+						<View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, paddingBottom: 7.5, backgroundColor: 'white', marginBottom: 25 }}>
+
+							<View style={{flexDirection: 'row', alignItems: 'center'}}>
+								<Icon name={'tag-multiple'} color={THEME.primary} style={{marginRight: 5}} />
+								<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.tags')}</Text>
+							</View>
+
+							<View style={{marginTop: 5, marginHorizontal: -2.5, flexDirection: 'row', flexWrap: 'wrap'}}>
+								{this.state.allTags.map((tag, tagIdx) => (
+									<TouchableHighlight style={this.state.tags.indexOf(tag) === -1 ? styles.tag : styles.activeTag} onPress={() => this.toggleTag(tag)}>
+										<Text>{tag}</Text>
+									</TouchableHighlight>
+								))}
+							</View>
+
+							<Input
+								underlineColorAndroid={'transparent'}
+								inputContainerStyle={{marginHorizontal: -10, borderBottomWidth: 0}}
+								placeholder={I18n.t('field.tagPlaceholder')}
+								inputStyle={{color:THEME.primary}}
+								returnKeyType={'done'}
+								value={this.state.addTagInput}
+								renderErrorMessage={false}
+								leftIcon={() => <Icon name={'plus'} />}
+								ref={ref => { this.refTagInput = ref }}
+								onChangeText={value => this.setState({ addTagInput: value })}
+								onSubmitEditing={event => {
+									this.pushTag(event.nativeEvent.text);
+									setTimeout(() => this.refTagInput.focus(), 250);
+								}}
+							/>
+						</View>
 					</ScrollView>
 
 					<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
@@ -467,4 +590,19 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingVertical: 15,
 	},
+	tag: {
+		paddingVertical: 5,
+		paddingHorizontal: 10,
+		margin: 2.5,
+		backgroundColor: '#eee',
+		borderRadius: 5,
+	},
+	activeTag: {
+		paddingVertical: 5,
+		paddingHorizontal: 10,
+		margin: 2.5,
+		backgroundColor: THEME.primary,
+		color: 'white',
+		borderRadius: 5,
+	}
 });

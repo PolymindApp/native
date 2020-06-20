@@ -24,7 +24,7 @@
       "**/*"
     ],
 	"android": {
-	  "package": "com.polymind",
+	  "package": "com.polymind.native",
 	  "versionCode": 1,
 	  "intentFilters": [
 		{
@@ -45,11 +45,18 @@
 	  ]
 	},
     "ios": {
-	  "bundleIdentifier": "com.polymind",
-	  "buildNumber": "0.1.8",
+	  "bundleIdentifier": "com.polymind.native",
+	  "buildNumber": "1.0.0",
       "supportsTablet": true,
 	  "associatedDomains": ["polymind.app"],
+	  "usesAppleSignIn": true,
+	  "config": {
+		"googleSignIn": {
+		  "reservedClientId": "285103854117-n9pudumhl6bfg3aibr30mgg7f3b5edns.apps.googleusercontent.com"
+		}
+	  },
 	  "infoPlist": {
+		"CFBundleAllowMixedLocalizations": true,
 		"UIBackgroundModes": [
 		  "audio"
 		]

@@ -113,6 +113,7 @@ export default class ColumnEditScreen extends React.Component {
 						<Input
 							label={I18n.t('field.columnName')}
 							inputStyle={{color:THEME.primary}}
+							inputContainerStyle={{borderBottomWidth: 0}}
 							defaultValue={this.state.column.name}
 							onChangeText={value => this.setState({ column: {...this.state.column, name: value}})}
 							returnKeyType = {"done"}

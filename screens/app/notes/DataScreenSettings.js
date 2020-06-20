@@ -121,6 +121,7 @@ export default class DataScreenSettings extends React.Component {
 								label={I18n.t('field.name')}
 								placeholder={I18n.t('field.dataPlaceholder')}
 								inputStyle={{color:THEME.primary}}
+								inputContainerStyle={{borderBottomWidth: 0}}
 								defaultValue={dataset.name}
 								onChangeText={value => {dataset.name = value; this.setState({dataset});}}
 								returnKeyType = {"next"}
@@ -128,10 +129,12 @@ export default class DataScreenSettings extends React.Component {
 								// onSubmitEditing={() => refInputs[1].focus()}
 							/>
 							<IconSelector
-								title={I18n.t('field.icon')}
+								title={!dataset.icon ? I18n.t('field.icon') : ''}
 								defaultValue={dataset.icon}
 								rightElement={() => (
-									<Text style={{opacity: 0.3}}>{dataset.icon.substring(4).toUpperCase()}</Text>
+									<Text style={{opacity: 0.3}}>
+										{dataset.icon.substring(4).toUpperCase()}
+									</Text>
 								)}
 								onChange={value => {dataset.icon = value; this.setState({dataset});}}
 							/>

@@ -9,7 +9,7 @@ export default class WelcomeScreen extends React.Component {
 	render() {
 		const { navigation } = this.props;
 		return (
-			<ScrollView style={styles.container} contentContainerStyle={styles.content}>
+			<View style={styles.container} contentContainerStyle={styles.content}>
 
 				{/*IMAGE*/}
 				<View>
@@ -32,17 +32,16 @@ export default class WelcomeScreen extends React.Component {
 						}} onPress={() => navigation.push('Login')} />
 					</View>
 					<View style={{marginTop: 10}}>
-						<Button title={I18n.t("restricted.register")} type="outline" titleStyle={{color: 'white'}} buttonStyle={{
+						<Button title={I18n.t("restricted.register")} type="outline" titleStyle={{color: THEME.third}} buttonStyle={{
 							borderRadius: 6,
 							height: 50,
-							backgroundColor: THEME.third,//'rgba(255, 255, 255, 0.2)',
 							borderColor: THEME.third,
 							borderWidth: 1,
 						}} onPress={() => navigation.push('Register')} />
 					</View>
 				</View>
 
-			</ScrollView>
+			</View>
 		)
 	}
 }

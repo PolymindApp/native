@@ -92,10 +92,10 @@ export default class NotesScreen extends React.Component {
 
 		navigation.setOptions({
 			title: I18n.t('title.notes'),
-			headerRight: () => (
+			headerRight: () => datasets.length > 0 && (
 				<View style={{marginRight: 10}}>
 					{Platform.select({
-						ios: (<TouchableOpacity onPress={() => this.handleAdd()}>
+						ios: (<TouchableOpacity onPress={() => this.handleAdd()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
 							<Text style={{color: 'white'}}>{I18n.t('btn.add')}</Text>
 						</TouchableOpacity>),
 						default: (<Button onPress={() => this.handleAdd()} icon="plus" color={'white'}>{I18n.t('btn.add')}</Button>)
@@ -112,14 +112,26 @@ export default class NotesScreen extends React.Component {
 			);
 		}
 
+		const filteredDatasets = this.filteredDatasets();
+
 		return (
 			<View style={{flex: 1}}>
-				<SearchBar placeholder={I18n.t('input.filter')} cancelButtonTitle={I18n.t('btn.cancel')} cancelButtonProps={{ color: THEME.primary, buttonStyle: { marginTop: -7 } }} onChangeText={this.updateSearch} value={search} platform={Platform.OS === 'ios' ? 'ios' : 'android'} />
-				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'} refreshControl={
+				{datasets.length > 0 && <SearchBar placeholder={I18n.t('input.filter')} cancelButtonTitle={I18n.t('btn.cancel')} cancelButtonProps={{ color: THEME.primary, buttonStyle: { marginTop: -3 } }} onChangeText={this.updateSearch} value={search} platform={Platform.OS === 'ios' ? 'ios' : 'android'} />}
+				<ScrollView style={styles.container} contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={'handled'} refreshControl={
 					<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh.bind(this)} />
 				}>
+					{datasets.length === 0 && (
+						<View style={{flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10}}>
+							<Icon name={'file-question'} size={64} style={{opacity: 0.3}}></Icon>
+							<Text style={{textAlign: 'center'}} h3>{I18n.t('notes.emptyTitle')}</Text>
+							<Text style={{textAlign: 'center'}} h5>{I18n.t('notes.emptyDesc')}</Text>
+							<Button mode="contained" onPress={() => this.handleAdd()} delayPressIn={0} style={{marginTop: 10}}>
+								{I18n.t('btn.addList')}
+							</Button>
+						</View>
+					)}
 					{
-						this.filteredDatasets().map((dataset, datasetIdx) => (
+						filteredDatasets.map((dataset, datasetIdx) => (
 							<ListItem
 								key={dataset.guid}
 								leftIcon={<Icon

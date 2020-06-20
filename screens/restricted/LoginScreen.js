@@ -1,17 +1,12 @@
 import React from 'react';
-import {
-	StyleSheet,
-	View,
-	Alert,
-	Vibration,
-	Keyboard,
-} from "react-native";
+import {StyleSheet, View, Alert, Vibration, Keyboard,} from "react-native";
 import {Button, Input, Text} from "react-native-elements";
-import PolymindSDK, { THEME, Rules } from "@polymind/sdk-js";
+import PolymindSDK, { UserService, THEME, Rules } from "@polymind/sdk-js";
 import I18n from '../../locales/i18n';
 import {AppContext} from "../../contexts";
 import ClassicForm from "../../components/ClassicForm";
 import SocialLogin from "../../components/SocialLogin";
+import {Linking} from "expo";
 
 const $polymind = new PolymindSDK();
 
@@ -19,22 +14,22 @@ export default class LoginScreen extends React.Component {
 
 	static contextType = AppContext;
 
-	state = {
-		email: '',
-		password: '',
-		loading: false,
-		errorMessages: {
-			email: null,
-			password: null,
-		},
-	}
-
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.refInputs = [
 			React.createRef(),
 			React.createRef(),
-		]
+		];
+
+		this.state = {
+			email: props.route?.params?.defaultEmail || '',
+			password: '',
+			loading: false,
+			errorMessages: {
+				email: null,
+				password: null,
+			},
+		}
 	}
 
 	formIsValid() {
@@ -55,19 +50,48 @@ export default class LoginScreen extends React.Component {
 				this.context.setSignedIn(true);
 			})
 			.catch(err => {
-				Vibration.vibrate();
-				Alert.alert(
-					I18n.t('error.invalidCredentialsTitle'),
-					I18n.t('error.invalidCredentialsDesc'),
-					[
-						{
+				console.log(err.code, err);
+
+				let type = 'unknown';
+				let buttons = [
+					{ text: I18n.t('btn.ok'), style: 'cancel' }
+				];
+				switch (parseInt(err.code)) {
+					case 103:
+						type = 'userInactive';
+						buttons = [
+							{ text: I18n.t('btn.cancel'), style: 'cancel' },
+							{ text: I18n.t('btn.resendActivation'), onPress: () => {
+								this.setState({ loading: true });
+								UserService.resendActivation(this.state.email, Linking.makeUrl('/verify-email'))
+									.then(response => {
+										navigation.navigate('VerifyEmailSent');
+									})
+									.catch(err => {
+										console.log(err.code, err);
+									}).finally(() => this.setState({ loading: false }));
+							}}
+						];
+						break;
+					case 100:
+						type = 'invalidCredentials';
+						buttons.push({
 							text: I18n.t('restricted.forgotPassword'),
 							onPress: () => {
-								navigation.navigate('ForgotPassword');
+								navigation.navigate('ForgotPassword', {
+									defaultEmail: this.state.email,
+								});
 							}
-						},
-						{ text: I18n.t('btn.ok') }
-					],
+						});
+						break;
+					case 107: type = 'userNotFound'; break;
+				}
+
+				Vibration.vibrate();
+				Alert.alert(
+					I18n.t('error.' + type + 'Title'),
+					I18n.t('error.' + type + 'Desc', { email: this.state.email }),
+					buttons,
 					{ cancelable: false }
 				);
 			})
@@ -76,6 +100,11 @@ export default class LoginScreen extends React.Component {
 
 	render() {
 		const { navigation } = this.props;
+
+		navigation.setOptions({
+			headerShown: true,
+		});
+
 		return (
 			<ClassicForm icon={'account-circle'} title={I18n.t('restricted.loginTitle')} footer={
 				<View>
@@ -91,7 +120,9 @@ export default class LoginScreen extends React.Component {
 					inputStyle={{color:THEME.primary}}
 					onChangeText={value => this.setState({ email: value })}
 					returnKeyType = {"next"}
+					defaultValue={this.state.email}
 					textContentType='username'
+					autoCompleteType={'email'}
 					keyboardType='email-address'
 					autoCapitalize='none'
 					ref={ref => { this.refInputs[0] = ref }}
@@ -115,7 +146,7 @@ export default class LoginScreen extends React.Component {
 					titleStyle={{
 						marginLeft: 10,
 					}}
-					disabled={!this.formIsValid() || this.state.saving}
+					disabled={!this.formIsValid() || this.state.loading}
 					loading={this.state.loading}
 					onPress={() => this.login()}
 				/>

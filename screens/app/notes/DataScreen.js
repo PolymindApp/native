@@ -44,36 +44,6 @@ export default class DataScreen extends React.Component {
 		}, destructive: true },
 	];
 
-	// _onAdd(dataset, wasNew) {
-	// 	return new Promise((resolve, reject) => {
-	// 		const { navigation } = this.props;
-	// 		this.setState({ dataset, wasValid: dataset.isValid() });
-	// 		return this.props.route.params.onAdd(dataset, wasNew).then(() => {
-	// 			if (wasNew && this.isValid()) {
-	// 				navigation.navigate('DataData', this.getScreenParams());
-	// 			}
-	// 			navigation.setOptions({
-	// 				title: dataset.name
-	// 			});
-	// 			resolve(dataset);
-	// 		});
-	// 	});
-	// }
-	//
-	//
-	// _onRowRemove(row) {
-	// 	const dataset = this.props.route.params.dataset;
-	// 	const clone = new Dataset(Helpers.deepClone(dataset));
-	// 	const idx = clone.rows.findIndex(item => item.id === row.id);
-	// 	clone.rows.splice(idx, 1);
-	// 	const transactions = clone.getTransactions(this.state.originalDataset);
-	// 	return DatasetService.save(transactions).then(response => {
-	// 		this.updateOriginal(clone);
-	// 		this.setState({ dataset: clone });
-	// 		return response;
-	// 	});
-	// }
-
 	load() {
 		const { dataset } = this.props.route.params;
 		if (!dataset.id) {
@@ -111,7 +81,6 @@ export default class DataScreen extends React.Component {
 	render() {
 		const { navigation, route } = this.props;
 		const dataset = this.state.dataset;
-		// const screenParams = this.getScreenParams();
 
 		let initialRouteName = 'DataData';
 
@@ -168,7 +137,11 @@ export default class DataScreen extends React.Component {
 
 		return (
 			<View style={{flex: 1}}>
+
 				<Tab.Navigator initialRouteName={initialRouteName} tabBarOptions={{
+					style: {
+						height: isValid ? undefined : 0
+					},
 					indicatorStyle: {
 						borderBottomWidth: 2,
 						borderColor: THEME.primary,

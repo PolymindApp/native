@@ -7,7 +7,10 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "build:android": "expo build:android -t app-bundle",
+    "build:ios": "expo build:ios -t archive",
+    "publish:ios": "expo upload:ios"
   },
   "jest": {
     "preset": "jest-expo"
@@ -22,12 +25,14 @@
     "@react-navigation/native": "^5.5.1",
     "@react-navigation/stack": "^5.2.16",
     "expo": "~37.0.9",
+    "expo-apple-authentication": "~2.1.0",
     "expo-asset": "~8.1.0",
     "expo-av": "~8.1.0",
     "expo-constants": "~9.0.0",
     "expo-facebook": "~8.1.0",
     "expo-font": "~8.1.0",
     "expo-google-app-auth": "^8.1.0",
+    "expo-google-sign-in": "~8.1.0",
     "expo-image-picker": "~8.1.0",
     "expo-keep-awake": "~8.1.0",
     "expo-linking": "^1.0.1",

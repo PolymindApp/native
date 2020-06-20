@@ -47,9 +47,7 @@ export default class SettingsScreen extends React.Component {
 				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
 					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, backgroundColor: 'white'}}>
 						<ListItem
-							rightElement={<Switch
-								value={this.state.user.settings.theme === 'dark'}
-							/>}
+							checkBox={{ checked: this.state.user.settings.theme === 'dark' }}
 							title={I18n.t('field.settings.darkMode')}
 							delayPressIn={0}
 							onPress={() => {

@@ -5,7 +5,6 @@ import NotesNavigator from "./app/NotesNavigator";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import SessionsNavigator from "./app/SessionsNavigator";
 import ProfileNavigator from "./app/ProfileNavigator";
-import {Keyboard} from "react-native";
 import I18n from '../locales/i18n';
 
 const BottomTab = createBottomTabNavigator();
@@ -19,10 +18,14 @@ export default class AppNavigator extends React.Component {
 
 	render() {
 
+		const { navigation } = this.props;
+
 		return (
 			<BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME} tabBarOptions={{
 				activeTintColor: THEME.primary,
-				// keyboardHidesTabBar: true,
+				style: {
+					borderTopWidth: 0,
+				}
 			}}>
 				<BottomTab.Screen
 					name="Sessions"

@@ -5,19 +5,8 @@ import NotesScreen from "./notes/NotesScreen";
 import I18n from '../../locales/i18n';
 import DataScreen from "./notes/DataScreen";
 import ColumnEditScreen from "./notes/ColumnEditScreen";
-import { THEME, Dataset, DatasetService } from '@polymind/sdk-js';
-import {
-	TouchableOpacity,
-	View,
-	ActionSheetIOS,
-	Alert,
-	TouchableWithoutFeedback,
-	Keyboard,
-	KeyboardAvoidingView
-} from "react-native";
-import {Icon, Text} from "react-native-elements";
+import { THEME } from '@polymind/sdk-js';
 import DataEditScreen from "./notes/DataEditScreen";
-import { IconButton, Menu, Button } from 'react-native-paper';
 
 const Stack = createStackNavigator();
 const INITIAL_ROUTE_NAME = 'Notes';
