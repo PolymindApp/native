@@ -14,39 +14,11 @@ export default class IconSelector extends React.Component {
 		search: '',
 	}
 
-	// build(items) {
-	//
-	// 	const dig = (item, deepnest = 0) => {
-	//
-	// 	};
-	//
-	// 	return {
-	// 		structure,
-	// 		filter(query) {
-	// 			let path;
-	// 			for (let i = 0; i < query.length; i++) {
-	// 				const char = query[i];
-	// 				if (path) {
-	//
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// componentDidMount() {
-	// 	this.dictionary = this.build(ICONS);
-	// }
-
 	formattedIconList() {
 
 		if (this.state.search.trim().length === 0) {
 			return ICONS;
 		}
-
-		// const results = binarySearch(ICONS, this.state.search.trim().toLowerCase());
-		// console.log(results);
-		// return results;
 
 		const list = [];
 		let i = 0;
@@ -124,7 +96,7 @@ export default class IconSelector extends React.Component {
 				</RBSheet>
 				<ListItem
 					{...this.props}
-					leftIcon={() => (
+					rightIcon={() => (
 						<Icon
 							name={this.props.defaultValue.substring(4) || 'checkbox-blank-circle-outline'}
 							color={THEME.primary}

@@ -123,34 +123,12 @@ export default class DataScreenSettings extends React.Component {
 								inputStyle={{color:THEME.primary}}
 								inputContainerStyle={{borderBottomWidth: 0}}
 								defaultValue={dataset.name}
+								renderErrorMessage={false}
 								onChangeText={value => {dataset.name = value; this.setState({dataset});}}
 								returnKeyType = {"next"}
 								ref={ref => { refInputs[0] = ref }}
 								// onSubmitEditing={() => refInputs[1].focus()}
 							/>
-							<IconSelector
-								title={!dataset.icon ? I18n.t('field.icon') : ''}
-								defaultValue={dataset.icon}
-								rightElement={() => (
-									<Text style={{opacity: 0.3}}>
-										{dataset.icon.substring(4).toUpperCase()}
-									</Text>
-								)}
-								onChange={value => {dataset.icon = value; this.setState({dataset});}}
-							/>
-							{/*<Input*/}
-							{/*	label={I18n.t('field.description')}*/}
-							{/*	placeholder={I18n.t('field.dataPlaceholder')}*/}
-							{/*	inputStyle={{color:THEME.primary}}*/}
-							{/*	defaultValue={dataset.description}*/}
-							{/*	onChangeText={value => {dataset.description = value; this.setState({dataset});}}*/}
-							{/*	returnKeyType = {"done"}*/}
-							{/*	ref={ref => { refInputs[2] = ref }}*/}
-							{/*	onSubmitEditing={() => {*/}
-
-							{/*	}}*/}
-							{/*	multiline*/}
-							{/*/>*/}
 						</View>
 
 						<List.Subheader style={{marginTop: 15}}>{I18n.t('dataset.settings.columns')}</List.Subheader>
@@ -159,40 +137,55 @@ export default class DataScreenSettings extends React.Component {
 								<Icon name={'alert'} style={{marginRight: 10}} />
 								<Text style={{flex: 1, flexWrap: 'wrap'}}>{I18n.t('dataset.settings.noColumnWarn')}</Text>
 							</View>
-						) : dataset.columns.map((column, columnIdx) => (
-							<ListItem
-								key={column.guid}
-								title={column.name}
-								onPress={() => navigation.push('NotesColumnEdit', { ...route.params, column, datasetSettingsContext: this })}
-								delayPressIn={0}
-								rightElement={() => (
-									<Text style={{opacity: 0.3}}>{column.lang.toUpperCase()}</Text>
-								)}
-								topDivider={columnIdx === 0}
-								bottomDivider
-								chevron
-							/>
-						))}
-						<View style={{marginHorizontal: 10, marginVertical: 15}}>
-							<Button mode={'outlined'} onPress={() => this.handleAddColumn()}>{I18n.t('btn.addColumn')}</Button>
-						</View>
+						) : (
+							<View style={{marginTop: 10, marginHorizontal: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
+								{dataset.columns.map((column, columnIdx) => (
+									<ListItem
+										key={column.guid}
+										title={column.name}
+										onPress={() => navigation.push('NotesColumnEdit', { ...route.params, column, datasetSettingsContext: this })}
+										delayPressIn={0}
+										rightElement={() => (
+											<Text style={{opacity: 0.3}}>{column.lang.toUpperCase()}</Text>
+										)}
+										topDivider={columnIdx > 0}
+										chevron
+									/>
+								))}
 
-						{/*<List.Subheader style={{marginTop: 15}}>{I18n.t('dataset.settings.others')}</List.Subheader>*/}
-						{/*<ListItem*/}
-						{/*	title={I18n.t('dataset.settings.isPrivate')}*/}
-						{/*	onPress={() => {*/}
-						{/*		dataset.is_private = !dataset.is_private;*/}
-						{/*		this.setState({ dataset });*/}
-						{/*	}}*/}
-						{/*	delayPressIn={0}*/}
-						{/*	rightElement={(*/}
-						{/*		<View pointerEvents="none">*/}
-						{/*			<Checkbox color={THEME.primary} status={dataset.is_private ? 'checked' : 'unchecked'} />*/}
-						{/*		</View>*/}
-						{/*	)}*/}
-						{/*	topDivider*/}
-						{/*	bottomDivider*/}
-						{/*/>*/}
+								<View style={{marginTop: 10}}>
+									<Button mode={'outlined'} onPress={() => this.handleAddColumn()}>{I18n.t('btn.addColumn')}</Button>
+								</View>
+							</View>
+						)}
+
+						<View style={{marginVertical: 10, marginTop: 15}}>
+							<List.Subheader>{I18n.t('dataset.settings.others')}</List.Subheader>
+
+							<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
+								<ListItem
+									title={I18n.t('dataset.settings.includeImage')}
+									checkBox={{ checked: dataset.include_image }}
+									delayPressIn={0}
+									onPress={() => {
+										dataset.include_image = !dataset.include_image;
+										this.setState({ dataset });
+									}}
+								/>
+								<IconSelector
+									defaultValue={dataset.icon}
+									leftElement={() => (
+										<View>
+											<Text>{I18n.t('field.icon')} :</Text>
+											<Text style={{opacity: 0.3}}>
+												{dataset.icon.substring(4).toUpperCase().substring(0, 15)}
+											</Text>
+										</View>
+									)}
+									onChange={value => {dataset.icon = value; this.setState({dataset});}}
+								/>
+							</View>
+						</View>
 					</ScrollView>
 
 					<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>

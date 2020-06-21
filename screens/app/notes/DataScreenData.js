@@ -1,11 +1,13 @@
 import React from 'react';
-import {ActivityIndicator, Dimensions, Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, Dimensions, Image, Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Icon, SearchBar} from "react-native-elements";
 import I18n from "../../../locales/i18n";
 import {ScrollView} from "react-native-gesture-handler";
 import {Row, Table} from "react-native-table-component";
 import {FAB} from "react-native-paper";
-import { THEME } from '@polymind/sdk-js';
+import PolymindSDK, { THEME } from '@polymind/sdk-js';
+
+const $polymind = new PolymindSDK();
 
 export default class DataScreenData extends React.Component {
 
@@ -67,15 +69,17 @@ export default class DataScreenData extends React.Component {
 
 	tableData() {
 		const dataset = this.props.route.params.datasetContext.state.dataset;
-		const statusSize = 30;
+		const imageSize = dataset.include_image ? 40 : 0;
 		const data = {
 			header: [],
 			width: [],
 			rows: [],
 		};
 
-		data.header.push('');
-		data.width.push(statusSize);
+		if (dataset.include_image) {
+			data.header.push('');
+			data.width.push(imageSize);
+		}
 
 		let width = Dimensions.get('window').width;
 		if (dataset.columns.length > 1) {
@@ -89,7 +93,16 @@ export default class DataScreenData extends React.Component {
 
 		this.filteredRows().forEach((row, rowIdx) => {
 			const item = [];
-			item.push(<Icon name={'circle'} size={12} color={THEME.primary} />);
+			if (dataset.include_image) {
+				if (row.image?.private_hash) {
+					const uri = $polymind.getThumbnailByPrivateHash(row.image.private_hash, 'avatar');
+					item.push(<Image source={{ uri }} style={{ width: imageSize, flex: 1 }} />);
+				} else {
+					item.push(<View style={{flex: 1, backgroundColor: '#ccc', justifyContent: 'center'}}>
+						<Icon name={'image'} size={32} color={'white'} style={{opacity: 0.5}} />
+					</View>);
+				}
+			}
 			dataset.columns.forEach((column, columnIdx) => {
 				item.push(row.cells[columnIdx].text);
 			});
@@ -97,10 +110,10 @@ export default class DataScreenData extends React.Component {
 		});
 
 		if (dataset.columns.length > 1) {
-			data.width[1] -= (statusSize / 2) + 1;
-			data.width[2] -= (statusSize / 2) + 1;
+			data.width[1] -= (imageSize / 2) + 1;
+			data.width[2] -= (imageSize / 2) + 1;
 		} else {
-			data.width[1] -= statusSize + 1;
+			data.width[1] -= imageSize + 1;
 		}
 
 		return data;
@@ -140,7 +153,6 @@ export default class DataScreenData extends React.Component {
 										{tableData.rows.map((row, rowIdx) => (
 											<TouchableOpacity
 												key={rowIdx}
-												hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
 												delayPressIn={0}
 												style={[styles.row, rowIdx % 2 && {backgroundColor: 'rgba(27, 141, 138, 0.05)'}]}
 												onPress={() => navigation.push('NotesDataEdit', {...route.params, rowIdx, datasetDataContext: this})}

@@ -1,13 +1,20 @@
 import React from 'react'
-import {ActivityIndicator, TouchableHighlight, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import PolymindSDK, { THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
+import PolymindSDK, { FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
-import {Divider, Icon, Input, SearchBar, Text} from "react-native-elements";
-import {Button, IconButton, Menu} from "react-native-paper";
+import {Divider, Icon, Input, Text} from "react-native-elements";
+import {Button, IconButton} from "react-native-paper";
 import ContextualOptions from "../../../components/ContextualOptions";
+import Constants from "expo-constants";
+import * as ImagePicker from "expo-image-picker";
+import * as Permissions from 'expo-permissions';
+import { Camera } from 'expo-camera';
+import {Linking } from "expo";
+import * as ImageManipulator from "expo-image-manipulator";
 
 const $polymind = new PolymindSDK();
+
 let checkServiceTimeout;
 let lastCheckServiceFieldContent = '';
 
@@ -15,6 +22,8 @@ export default class DataEditScreen extends React.Component {
 
 	state = {
 		fields: [],
+		images: [],
+		tags: [],
 		optionsMenu: false,
 		autofocus: true,
 		deleting: false,
@@ -26,17 +35,23 @@ export default class DataEditScreen extends React.Component {
 		fetchingCustom: false,
 		canFetchImages: false,
 		imageOffset: 0,
-		images: [],
+		imageUri: null,
+		emptyImageResults: false,
 		lastSearchQuery: null,
 		searchQueryContext: '',
 		searchImageQuery: '',
-		tags: [],
-		allTags: ['verb', 'noun'],
+		cameraOpen: false,
+		allTags: [],
 		addTagInput: '',
+		hasCamera: false,
+		mustUploadLocalUri: false,
+		mustUploadRemoteUri: false,
+		selectedImageIdx: null,
 	};
 
 	refInputs = [];
 	refTagInput = React.createRef();
+	refCamera = React.createRef();
 
 	optionItems = [
 		{ name: I18n.t('btn.cancel'), callback: () => {}, cancel: true, android: false },
@@ -79,7 +94,21 @@ export default class DataEditScreen extends React.Component {
 				row.cells.push(new DatasetCell());
 			});
 		}
+
 		return row;
+	}
+
+	getTags() {
+		const tags = [];
+		const { dataset } = this.props.route.params.datasetContext.state;
+		dataset.rows.forEach(row => {
+			row.tags.forEach(tag => {
+				if (tags.indexOf(tag) === -1) {
+					tags.push(tag);
+				}
+			});
+		});
+		return tags;
 	}
 
 	onRowRemove(row) {
@@ -101,42 +130,69 @@ export default class DataEditScreen extends React.Component {
 		const { datasetContext, datasetDataContext } = this.props.route.params;
 		const { dataset, originalDataset } = datasetContext.state;
 		const { rowIdx } = route.params;
-		const row = this.state.row;
+
+		const callback = fileData => {
+
+			const row = this.state.row;
+			dataset.columns.forEach((column, columnIdx) => {
+				row.cells[columnIdx].text = this.state.fields[columnIdx];
+			});
+
+			const clone = new Dataset(Helpers.deepClone(dataset));
+			row.tags = this.state.tags;
+
+			if (fileData) {
+				row.image = fileData.id;
+			}
+
+			if (row.id) {
+				clone.rows[rowIdx] = row;
+			} else {
+				clone.rows.push(row);
+			}
+
+			const transactions = clone.getTransactions(originalDataset);
+			console.log(transactions);
+
+			this.setState({ saving: true });
+			return DatasetService.save(transactions).then(response => {
+
+				dataset.applyTransactionResponse(response);
+
+				if (fileData) {
+					dataset.rows[rowIdx].image = fileData;
+				}
+
+				datasetContext.updateOriginal(dataset);
+				datasetDataContext.setState({dataset});
+
+				const moreState = {};
+				if (addMore) {
+					this.props.route.params.rowIdx++;
+					this.prepare(true);
+				}
+				this.setState({ saving: false, autofocus: addMore, row });
+				addMore && this.refInputs[0].focus();
+			});
+		};
 
 		this.setState({ saving: true, autofocus: addMore });
-		dataset.columns.forEach((column, columnIdx) => {
-			row.cells[columnIdx].text = this.state.fields[columnIdx];
-		});
 
-		const clone = new Dataset(Helpers.deepClone(dataset));
-
-		if (row.id) {
-			clone.rows[rowIdx] = row;
-		} else {
-			clone.rows.push(row);
-		}
-
-		const transactions = clone.getTransactions(originalDataset);
-
-		this.setState({ saving: true });
-		DatasetService.save(transactions).then(response => {
-
-			dataset.applyTransactionResponse(response);
-			datasetContext.updateOriginal(dataset);
-			datasetDataContext.setState({dataset});
-
-			const moreState = {};
-			if (addMore) {
-				this.props.route.params.rowIdx++;
-				this.prepare(true);
+		if (this.state.mustUploadLocalUri) {
+			FileService.uploadLocalUri(this.state.imageUri).then(filesResponse => callback(filesResponse.data));
+		} else if (this.state.mustUploadRemoteUri) {
+			let uri = this.state.imageUri;
+			if (!uri && this.state.selectedImageIdx) {
+				uri = this.state.images[this.state.selectedImageIdx];
 			}
-			this.setState({ saving: false, autofocus: addMore });
-			addMore && this.refInputs[0].focus();
-		});
+			FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data));
+		} else {
+			callback();
+		}
 	}
 
 	prepare(newRow = false) {
-		const { navigation } = this.props;
+		const state = {};
 		const { dataset } = this.props.route.params.datasetContext.state;
 		const fields = [];
 		const refInputs = [];
@@ -146,17 +202,32 @@ export default class DataEditScreen extends React.Component {
 			refInputs.push(React.createRef());
 		});
 
-		this.setState({ fields, row, autofocus: row.id === null });
+		if (row.image?.private_hash) {
+			state.imageUri = $polymind.getThumbnailByPrivateHash(row.image.private_hash, 'avatar');
+		}
+
+		state.allTags = this.getTags();
+		state.tags = [...row.tags];
+		state.mustUploadLocalUri = false;
+		state.mustUploadRemoteUri = false;
+		state.selectedImageIdx = null;
+
+		this.setState({ ...state, fields, row, autofocus: row.id === null });
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const { navigation } = this.props;
 		this._navigationFocus = navigation.addListener('focus', () => {
 			this.prepare();
 		});
-		setTimeout(() => {
-			this.setState({ autofocus: false });
-		});
+
+		const callback = (props) => {
+			setTimeout(() => {
+				this.setState({ ...props, autofocus: false });
+			});
+		};
+
+		callback ({ hasCamera: Platform.OS === 'web' ? await Camera.isAvailableAsync() : true });
 	}
 
 	componentWillUnmount() {
@@ -212,14 +283,23 @@ export default class DataEditScreen extends React.Component {
 				return true;
 			}
 		}
+
+		if (JSON.stringify(row.tags.sort()) !== JSON.stringify(this.state.tags.sort())) {
+			return true;
+		}
+
+		if (this.state.mustUploadRemoteUri || this.state.mustUploadLocalUri) {
+			return true;
+		}
+
 		return false;
 	}
 
 	checkServices(fieldIdx, delay = 1000) {
-
 		clearTimeout(checkServiceTimeout);
 		checkServiceTimeout = setTimeout(() => {
 			const { spellCheckFields } = this.state;
+			const { dataset } = this.props.route.params.datasetContext.state;
 			if (this.state.fields[fieldIdx].toLowerCase() === lastCheckServiceFieldContent || !this.state.fields[fieldIdx] || this.state.fields[fieldIdx].length < 3) {
 				spellCheckFields[fieldIdx] = false;
 				this.setState({ spellCheckFields });
@@ -228,13 +308,12 @@ export default class DataEditScreen extends React.Component {
 			lastCheckServiceFieldContent = this.state.fields[fieldIdx].toLowerCase();
 
 			this.fetchSpellChecking(fieldIdx).then(spellCheck => {
-
 				spellCheckFields[fieldIdx] = spellCheck;
-
 				if (!spellCheck) {
 					this.fetchTranslations(fieldIdx).then(translationFields => {
 						this.setState({ spellCheckFields, translationFields });
 					});
+					this.fetchImages(this.state.fields[fieldIdx], dataset.columns[fieldIdx].lang);
 				} else {
 					this.setState({ spellCheckFields });
 				}
@@ -324,19 +403,103 @@ export default class DataEditScreen extends React.Component {
 
 	fetchImages(query, locale, customQuery = false) {
 
-		this.setState({ fetching: !customQuery, fetchingCustom: customQuery });
+		this.setState({ fetching: !customQuery, fetchingCustom: customQuery, emptyImageResults: false });
 		return GoogleService.fetchImages(query, locale, {
 			start: this.state.imageOffset + 1,
 			num: 9,
 		})
-			.then(response => response.items.map(item => item.image.thumbnailLink))
-			.then(items => {
+			.then(response => {
 
 				let images = this.state.lastSearchQuery === query ? this.state.images : [];
+
+				if (images.length === 0) {
+					this.state.selectedImageIdx = null;
+				}
+
+				const totalResults = parseInt(response.searchInformation.totalResults);
+				if (totalResults === 0) {
+					return this.setState({ emptyImageResults: true, images });
+				}
+
+				const items = response.items.map(item => item.image.thumbnailLink);
 				images = images.concat(items);
 
-				this.setState({ images, lastSearchQuery: query, imageOffset: this.state.imageOffset + 9, canFetchImages: images.length < 27 });
-			}).finally(() => this.setState({ fetching: false, fetchingCustom: false }));
+				this.setState({ selectedImageIdx: this.state.selectedImageIdx, images, lastSearchQuery: query, imageOffset: this.state.imageOffset + 9, canFetchImages: images.length < 27 && totalResults >= 9 });
+			})
+			.finally(() => this.setState({ fetching: false, fetchingCustom: false }));
+	}
+
+	toggleImageSelection(idx) {
+		this.setState({
+			selectedImageIdx: this.state.selectedImageIdx === idx ? null : idx,
+			mustUploadRemoteUri: this.state.selectedImageIdx === idx ? null : true,
+		});
+	}
+
+	async uploadFromGallery() {
+		if (Constants.platform.ios) {
+			const { status } = await Permissions.askAsync(Permissions.CAMERA);
+			if (status !== 'granted') {
+				console.log('Sorry, we need camera roll permissions to make this work!');
+				return;
+			}
+		}
+
+		let result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsEditing: true,
+			aspect: [4, 3],
+			quality: 0.5,
+		});
+
+		if (!result.cancelled) {
+			this.state.imageUri = result.uri;
+			this.state.mustUploadLocalUri = true;
+			this.setState(this.state);
+		}
+	}
+
+	async openCamera() {
+
+		const { status } = await Permissions.askAsync(Permissions.CAMERA);
+		if (status !== 'granted') {
+			Alert.alert(
+				I18n.t('permission.manualCameraActivationTitle'),
+				I18n.t('permission.manualCameraActivationDesc'),
+				[
+					{ text: I18n.t('btn.cancel') },
+					{ text: I18n.t('btn.grant'), onPress: () => Linking.openURL("app-settings:") },
+				],
+				{ cancelable: false }
+			);
+		}
+		this.setState({cameraOpen: status === 'granted'});
+	}
+
+	takePicture() {
+		if (this.refCamera) {
+			this.refCamera.takePictureAsync({
+				onPictureSaved: async photo => {
+
+					let uri = photo.uri;
+					const ratio = photo.width / photo.height;
+					if (photo.width > 640) {
+						const manipulation = await ImageManipulator.manipulateAsync(
+							photo.uri,
+							[{ resize: { width: 640, height: 640 / ratio } }],
+							{ compress: 0.5, format: 'jpeg' }
+						);
+						uri = manipulation.uri;
+					}
+
+
+					this.state.cameraOpen = false;
+					this.state.imageUri = uri;
+					this.state.mustUploadLocalUri = true;
+					this.setState(this.state);
+				}
+			});
+		}
 	}
 
 	applyValue(fieldIdx, value, fetchServices = false, fetchServicesDelay = 1000) {
@@ -366,6 +529,7 @@ export default class DataEditScreen extends React.Component {
 	}
 
 	pushTag(tag) {
+
 		const allIdx = this.state.allTags.indexOf(tag);
 		const idx = this.state.tags.indexOf(tag);
 		if (allIdx === -1) {
@@ -413,6 +577,19 @@ export default class DataEditScreen extends React.Component {
 			) : null
 		});
 
+		if (this.state.cameraOpen) {
+			return (
+				<Camera style={{ flex: 1, alignItems: 'center' }} ref={ref => this.refCamera = ref} type={Camera.Constants.Type.back}>
+					<View style={{flex: 1}}></View>
+					<View style={{flex: 0, marginHorizontal: 10}}>
+						<IconButton icon={'circle-slice-8'} color={THEME.primary} size={64} onPress={() => this.takePicture()} delayPressIn={0} />
+					</View>
+				</Camera>
+			);
+		}
+
+		console.log(this.state.imageUri);
+
 		return (
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -420,6 +597,8 @@ export default class DataEditScreen extends React.Component {
 			>
 				<View style={{flex: 1}}>
 					<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
+
+						{/*FIELDS*/}
 						{this.state.fields.map((field, fieldIdx) => {
 							const spellCheck = this.state.spellCheckFields[fieldIdx];
 							const translation = this.state.translationFields[fieldIdx];
@@ -431,7 +610,6 @@ export default class DataEditScreen extends React.Component {
 										inputContainerStyle={{borderBottomWidth: 0}}
 										label={
 											<View style={{flexDirection: 'row', alignItems: 'center'}}>
-												<Icon name={'circle'} size={12} color={THEME.primary} style={{marginRight: 10}} />
 												<Text style={{flex: 1}}>{dataset.columns[fieldIdx].name}</Text>
 												<Text style={{opacity: 0.3}}>{dataset.columns[fieldIdx].lang.toUpperCase()}</Text>
 											</View>
@@ -498,11 +676,14 @@ export default class DataEditScreen extends React.Component {
 							);
 						})}
 
-						<View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, backgroundColor: 'white', marginBottom: 10 }}>
+						{/*IMAGES*/}
+						{dataset.include_image && <View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, backgroundColor: 'white', marginBottom: 10 }}>
 							<View style={{flexDirection: 'row', alignItems: 'center'}}>
 								<Icon name={'image'} color={THEME.primary} style={{marginRight: 5}} />
 								<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.image')}</Text>
 							</View>
+
+							{this.state.imageUri && <Image source={{ uri: this.state.imageUri }} style={{ marginTop: 5, width: '100%', height: (Dimensions.get('window').width - 40)}} />}
 
 							<Text style={{marginTop: 5, opacity: 0.5}}>
 								{I18n.t('dataset.data.edit.imageDesc')}
@@ -522,17 +703,37 @@ export default class DataEditScreen extends React.Component {
 								onSubmitEditing={event => this.fetchImages(this.state.searchImageQuery, undefined, true)}
 							/>
 
-							{this.state.images.length > 0 && <View style={{marginVertical: 10, flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+							{this.state.emptyImageResults && <View style={{marginTop: 10, padding: 10, backgroundColor: THEME.warning, borderRadius: 5, flexDirection: 'row', alignItems: 'center'}}>
+								<Icon name={'alert'} style={{marginRight: 10}} />
+								<Text style={{flex: 1, flexWrap: 'wrap'}}>{I18n.t('dataset.data.edit.noImageFound')}</Text>
+							</View>}
+
+							{this.state.images.length > 0 && <View style={{marginTop: 10, flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
 								{this.state.images.map((image, imageIdx) => (
-									<Image key={imageIdx} source={{ uri: image }} style={{ width: '33.333%', height: Dimensions.get('window').width / 3 }} />
+									<TouchableOpacity key={imageIdx} style={{ width: '33.333%', height: Dimensions.get('window').width / 3 }} onPress={() => this.toggleImageSelection(imageIdx)}>
+										{this.state.selectedImageIdx === imageIdx && (<View style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center', zIndex: 1, top: 5, right: 5}}>
+											<Icon name={'check-circle'} color={THEME.primary} style={{width: 23, height: 23}} size={24} backgroundColor={'white'} borderRadius={100} />
+										</View>)}
+
+										<Image source={{ uri: image }} style={{ width: '100%', height: Dimensions.get('window').width / 3 }} />
+									</TouchableOpacity>
 								))}
 							</View>}
 
-							{this.state.canFetchImages && <Button mode={'outlined'} onPress={() => this.fetchImages(this.state.lastSearchQuery, dataset.columns[0].lang)} disabled={this.state.fetching} loading={this.state.fetching}>
+							{this.state.canFetchImages && <Button mode={'text'} style={{marginTop: 10}} onPress={() => this.fetchImages(this.state.lastSearchQuery, dataset.columns[0].lang)} disabled={this.state.fetching} loading={this.state.fetching}>
 								{I18n.t('btn.fetchMore')}
 							</Button>}
-						</View>
 
+							<Button mode={'outlined'} icon={'cloud-upload'} style={{marginTop: 10}} onPress={() => this.uploadFromGallery()} disabled={this.state.uploading} loading={this.state.uploading}>
+								{I18n.t('btn.upload')}
+							</Button>
+
+							{this.state.hasCamera && <Button mode={'outlined'} icon={'camera'} style={{marginTop: 5}} onPress={() => this.openCamera()} disabled={this.state.uploading} loading={this.state.uploading}>
+								{I18n.t('btn.takePhoto')}
+							</Button>}
+						</View>}
+
+						{/*TAGS*/}
 						<View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, paddingBottom: 7.5, backgroundColor: 'white', marginBottom: 25 }}>
 
 							<View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -542,9 +743,9 @@ export default class DataEditScreen extends React.Component {
 
 							<View style={{marginTop: 5, marginHorizontal: -2.5, flexDirection: 'row', flexWrap: 'wrap'}}>
 								{this.state.allTags.map((tag, tagIdx) => (
-									<TouchableHighlight style={this.state.tags.indexOf(tag) === -1 ? styles.tag : styles.activeTag} onPress={() => this.toggleTag(tag)}>
-										<Text>{tag}</Text>
-									</TouchableHighlight>
+									<TouchableOpacity key={tagIdx} style={this.state.tags.indexOf(tag) === -1 ? styles.tag : styles.activeTag} onPress={() => this.toggleTag(tag)}>
+										<Text style={(this.state.tags.indexOf(tag) === -1 ? styles.tagText : styles.activeTagText)}>{tag}</Text>
+									</TouchableOpacity>
 								))}
 							</View>
 
@@ -559,10 +760,7 @@ export default class DataEditScreen extends React.Component {
 								leftIcon={() => <Icon name={'plus'} />}
 								ref={ref => { this.refTagInput = ref }}
 								onChangeText={value => this.setState({ addTagInput: value })}
-								onSubmitEditing={event => {
-									this.pushTag(event.nativeEvent.text);
-									setTimeout(() => this.refTagInput.focus(), 250);
-								}}
+								onSubmitEditing={event => this.pushTag(this.state.addTagInput)}
 							/>
 						</View>
 					</ScrollView>
@@ -602,7 +800,12 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 10,
 		margin: 2.5,
 		backgroundColor: THEME.primary,
-		color: 'white',
 		borderRadius: 5,
-	}
+	},
+	tagText: {
+		color: 'black',
+	},
+	activeTagText: {
+		color: 'white'
+	},
 });

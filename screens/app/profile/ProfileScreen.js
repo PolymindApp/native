@@ -6,6 +6,7 @@ import PolymindSDK, { User, THEME, FileService, UserService } from "@polymind/sd
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import I18n from '../../../locales/i18n';
+import {List} from "react-native-paper";
 
 const $polymind = new PolymindSDK();
 const sections = [
@@ -103,22 +104,18 @@ export default class ProfileScreen extends React.Component {
 					onPress={() => this.setAvatar()}
 				/>
 
-				<View style={{marginTop: 20}}>
-					<Text style={{paddingHorizontal: 10}} h4>
-						{I18n.t('profile.myInfoSection')}
-					</Text>
-					<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
+				<View style={{marginTop: 15}}>
+					<List.Subheader>{I18n.t('profile.myInfoSection')}</List.Subheader>
+					<View style={{marginHorizontal: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
 						{sections.map((section, sectionIdx) => (
 							<ListItem key={sectionIdx} title={section.title} leftIcon={<Icon name={section.icon} />} chevron delayPressIn={0} onPress={() => navigation.push(section.name, { user: this.state.me, profileContext: this })} topDivider={sectionIdx !== 0} />
 						))}
 					</View>
 				</View>
 
-				<View style={{marginTop: 20}}>
-					<Text style={{paddingHorizontal: 10}} h4>
-						{I18n.t('profile.legalSection')}
-					</Text>
-					<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
+				<View style={{marginTop: 15}}>
+					<List.Subheader>{I18n.t('profile.legalSection')}</List.Subheader>
+					<View style={{marginHorizontal: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
 						{pages.map((page, pageIdx) => (
 							<ListItem key={pageIdx} title={page.title} chevron delayPressIn={0} onPress={() => navigation.push(page.name, page.props)} topDivider={pageIdx !== 0} />
 						))}

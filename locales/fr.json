@@ -16,6 +16,7 @@
 		"continue": "Continuer",
 		"delete": "Effacer",
 		"fetchMore": "Chercher plus",
+		"grant": "Concéder",
 		"newNotes": "Ajoutez des notes",
 		"newSession": "Démarrez une session",
 		"ok": "OK",
@@ -28,7 +29,9 @@
 		"signOut": "Se déconnecter",
 		"start": "Démarrer",
 		"startSession": "Démarrez une session",
-		"update": "Mettre à jour"
+		"takePhoto": "Prendre une photo",
+		"update": "Mettre à jour",
+		"upload": "Télécharger"
 	},
 	"dataset": {
 		"data": {
@@ -36,6 +39,7 @@
 				"didYouMean": "Vouliez-vous dire :",
 				"image": "Image",
 				"imageDesc": "Choisissez une image qui correspond à votre idée:",
+				"noImageFound": "Aucune image trouvée basé sur vos critères de recherche.",
 				"possibleTranslation": "Traduction :",
 				"tags": "Étiquettes"
 			}
@@ -43,6 +47,7 @@
 		"settings": {
 			"columns": "Colonnes",
 			"general": "Générale",
+			"includeImage": "Inclure une image",
 			"isPrivate": "Privé",
 			"noColumnWarn": "Vous devez au moins ajouter une colonne à vos notes.",
 			"others": "Autres"
@@ -108,6 +113,10 @@
 	"notes": {
 		"emptyDesc": "Vous avez besoin d'une liste de notes pour démarrer une session.",
 		"emptyTitle": "Aucune liste"
+	},
+	"permission": {
+		"manualCameraActivationDesc": "Vous devez accorder l'accès à la caméra manuellement si vous souhaitez l'utiliser dans cette application.",
+		"manualCameraActivationTitle": "Appareil photo non autorisé"
 	},
 	"profile": {
 		"activities": "Activités",

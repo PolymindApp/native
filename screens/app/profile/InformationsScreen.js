@@ -60,6 +60,7 @@ export default class InformationsScreen extends React.Component {
 							defaultValue={this.state.user.screen_name}
 							onChangeText={value => this.setState({ user: {...this.state.user, screen_name: value}})}
 							returnKeyType = {"next"}
+							renderErrorMessage={false}
 							ref={ref => { refInputs[0] = ref }}
 							onSubmitEditing={() => refInputs[1].focus()}
 						/>
@@ -72,6 +73,7 @@ export default class InformationsScreen extends React.Component {
 							multiline={true}
 							numberOfLines={4}
 							returnKeyType = {"next"}
+							renderErrorMessage={false}
 							ref={ref => { refInputs[1] = ref }}
 						/>
 						<Input
@@ -83,6 +85,7 @@ export default class InformationsScreen extends React.Component {
 							multiline={true}
 							numberOfLines={2}
 							returnKeyType = {"done"}
+							renderErrorMessage={false}
 							ref={ref => { refInputs[2] = ref }}
 							onSubmitEditing={Keyboard.dismiss}
 						/>

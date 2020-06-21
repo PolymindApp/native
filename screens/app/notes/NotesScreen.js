@@ -41,17 +41,6 @@ export default class NotesScreen extends React.Component {
 		});
 	}
 
-	// addDataset() {
-	// 	const { navigation, route } = this.props;
-	// 	navigation.navigate('NotesData', {
-	// 		dataset: new Dataset({
-	// 			columns: [new DatasetColumn()]
-	// 		}),
-	// 		onAdd: this._onAdd.bind(this),
-	// 		onRemove: this._onRemove.bind(this),
-	// 	});
-	// }
-
 	onRemove(dataset) {
 		return new Promise((resolve, reject) => {
 			const datasets = this.state.datasets;
@@ -148,9 +137,6 @@ export default class NotesScreen extends React.Component {
 									datasetsContext: this,
 									dataset,
 									datasetIdx,
-									// dataset,
-									// onAdd: this._onAdd.bind(this),
-									// onRemove: this._onRemove.bind(this)
 								})}
 							/>
 						))

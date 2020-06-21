@@ -16,6 +16,7 @@
 		"continue": "Continue",
 		"delete": "Delete",
 		"fetchMore": "Fetch more",
+		"grant": "Grant",
 		"newNotes": "Add notes",
 		"newSession": "Start a session",
 		"ok": "OK",
@@ -28,7 +29,9 @@
 		"signOut": "Sign Out",
 		"start": "Start",
 		"startSession": "Start session",
-		"update": "Update"
+		"takePhoto": "Take photo",
+		"update": "Update",
+		"upload": "Upload"
 	},
 	"dataset": {
 		"data": {
@@ -36,6 +39,7 @@
 				"didYouMean": "Did you mean:",
 				"image": "Image",
 				"imageDesc": "Choose an image that matches your idea:",
+				"noImageFound": "No image found based on your search query.",
 				"possibleTranslation": "Translation:",
 				"tags": "Tags"
 			}
@@ -43,6 +47,7 @@
 		"settings": {
 			"columns": "Columns",
 			"general": "General",
+			"includeImage": "Include image",
 			"isPrivate": "Private",
 			"noColumnWarn": "You must at least add a column to your notes.",
 			"others": "Others"
@@ -108,6 +113,10 @@
 	"notes": {
 		"emptyDesc": "You need list of notes to start a session.",
 		"emptyTitle": "No list yet"
+	},
+	"permission": {
+		"manualCameraActivationDesc": "You have to grant camera access manually if you wish to use it in this application.",
+		"manualCameraActivationTitle": "Camera Not Allowed"
 	},
 	"profile": {
 		"activities": "Activities",
