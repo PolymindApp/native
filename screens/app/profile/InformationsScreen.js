@@ -64,6 +64,8 @@ export default class InformationsScreen extends React.Component {
 							ref={ref => { refInputs[0] = ref }}
 							onSubmitEditing={() => refInputs[1].focus()}
 						/>
+					</View>
+					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
 						<Input
 							label={I18n.t('field.user.biography')}
 							inputStyle={{color:THEME.primary}}
@@ -76,6 +78,8 @@ export default class InformationsScreen extends React.Component {
 							renderErrorMessage={false}
 							ref={ref => { refInputs[1] = ref }}
 						/>
+					</View>
+					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
 						<Input
 							label={I18n.t('field.user.quote')}
 							inputStyle={{color:THEME.primary}}

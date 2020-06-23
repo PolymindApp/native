@@ -17,15 +17,12 @@ export default class AppNavigator extends React.Component {
 	}
 
 	render() {
-
-		const { navigation } = this.props;
-
 		return (
 			<BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME} tabBarOptions={{
 				activeTintColor: THEME.primary,
 				style: {
 					borderTopWidth: 0,
-				}
+				},
 			}}>
 				<BottomTab.Screen
 					name="Sessions"
@@ -35,6 +32,14 @@ export default class AppNavigator extends React.Component {
 						tabBarVisible: !this.state.keyboardVisible,
 						tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="timelapse" />,
 					}}
+					listeners={({ navigation, route }) => ({
+						tabPress: event => {
+							if (route.state && route.state.routes.length > 0 && route.state.routes[route.state.index].name === 'SessionsPlayer') {
+								event.preventDefault();
+								navigation.navigate('SessionsPlayer');
+							}
+						},
+					})}
 				/>
 				<BottomTab.Screen
 					name="Notes"

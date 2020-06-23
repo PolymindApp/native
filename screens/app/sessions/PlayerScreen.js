@@ -1,11 +1,12 @@
 import React from 'react';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import {ActivityIndicator, StyleSheet, StatusBar, TouchableOpacity, View, Share} from 'react-native';
+import {ActivityIndicator, StyleSheet, StatusBar, TouchableOpacity, View, Share, Alert} from 'react-native';
 import PolymindSDK, { THEME, SessionStructureService, ComponentService, Component, UserService } from '@polymind/sdk-js';
 import {Text} from "react-native-elements";
 import I18n from "../../../locales/i18n";
 import { WebView } from 'react-native-webview';
+import { HeaderBackButton } from '@react-navigation/stack';
 
 const $polymind = new PolymindSDK();
 
@@ -19,8 +20,13 @@ export default class StatsScreen extends React.Component {
 		playerUrl: null,
 	};
 
+	webview = null;
+
 	componentDidMount() {
+
+		const { navigation } = this.props;
 		const { settings } = this.props.route.params;
+
 		this.setState({ generating: true });
 		Promise.all([
 			ComponentService.getAll(),
@@ -53,6 +59,30 @@ export default class StatsScreen extends React.Component {
 		});
 
 		activateKeepAwake();
+
+		navigation.setOptions({
+			title: settings.dataset.name,
+			headerLeft: (props) => (
+				<HeaderBackButton
+					{...props}
+					onPress={() => {
+						Alert.alert(I18n.t('alert.backSessionTitle'), I18n.t('alert.backSessionDesc'), [
+							{ text: I18n.t('btn.terminate'), onPress: () => {
+								this.sendMessage('terminate_and_back');
+							}, style: 'destructive' },
+							{ text: I18n.t('btn.cancel'), style: "cancel" }
+						], { cancelable: false });
+					}}
+				/>
+			),
+			headerRight: () => (
+				<View style={{marginRight: 10}}>
+					<TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => this.share()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+						<Text style={{color: 'white'}}>{I18n.t('btn.share')}</Text>
+					</TouchableOpacity>
+				</View>
+			)
+		});
 	}
 
 	componentWillUnmount() {
@@ -118,25 +148,32 @@ export default class StatsScreen extends React.Component {
 		}
 	};
 
-	render() {
+	handleMessage(event) {
 
 		const { navigation } = this.props;
-		const { settings } = this.props.route.params;
+		const { type, data } = JSON.parse(event.nativeEvent.data);
 
-		navigation.setOptions({
-			title: settings.dataset.name,
-			headerRight: () => (
-				<View style={{marginRight: 10}}>
-					<TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => this.share()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
-						<Text style={{color: 'white'}}>{I18n.t('btn.share')}</Text>
-					</TouchableOpacity>
-				</View>
-			)
-		});
+		switch (type) {
+			case 'back':
+				navigation.pop();
+				break;
+		}
+	}
 
+	sendMessage(type, data) {
+		this.webview.injectJavaScript(`(function() {
+			window.postMessage(JSON.stringify({
+				type: '${type}',
+				` + (data ? `data: '${JSON.stringify(data)}',` : '') + `
+			}), location.origin);
+		})()`);
+	}
+
+	render() {
 		return (
 			<View style={{flex: 1}}>
 				<WebView
+					ref={webview => this.webview = webview}
 					originWhitelist={['*']}
 					useWebKit={true}
 					mediaPlaybackRequiresUserAction={false}
@@ -144,14 +181,16 @@ export default class StatsScreen extends React.Component {
 					domStorageEnabled={true}
 					javaScriptEnabled={true}
 					scrollEnabled={false}
+					onMessage={event => this.handleMessage(event)}
 					startInLoadingState={!this.state.generating}
+					style={!this.state.playerUrl ? { flex: 0, height: 0, opacity: 0, backgroundColor: 'black' } : {}}
+					source={this.state.playerUrl ? { uri: this.state.playerUrl } : null }
 					renderLoading={() => (
 						<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
 							<ActivityIndicator size="large" color={THEME.primary} />
 							<Text style={{marginTop: 10, color: THEME.primary}}>{I18n.t('state.generating')}</Text>
 						</View>
 					)}
-					source={this.state.playerUrl ? { uri: this.state.playerUrl } : null }
 				/>
 			</View>
 		);

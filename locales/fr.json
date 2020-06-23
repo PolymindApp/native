@@ -1,5 +1,7 @@
 {
 	"alert": {
+		"backSessionDesc": "Le retour mettra fin à votre session. Voulez-vous continuer?",
+		"backSessionTitle": "Mettre fin à la session?",
 		"deleteDatasetDesc": "Toutes les notes de la liste \"{{name}}\" seront effacées. Désirez-vous procéder?",
 		"deleteDatasetTitle": "Effacer les notes",
 		"signOutDesc": "Votre session sera terminé. Désirez-vous continuer ?",
@@ -30,6 +32,7 @@
 		"start": "Démarrer",
 		"startSession": "Démarrez une session",
 		"takePhoto": "Prendre une photo",
+		"terminate": "Terminer",
 		"update": "Mettre à jour",
 		"upload": "Télécharger"
 	},

@@ -1,5 +1,7 @@
 {
 	"alert": {
+		"backSessionDesc": "Going back will terminate your session. Do you wish to proceed?",
+		"backSessionTitle": "Terminate Session?",
 		"deleteDatasetDesc": "All notes of the \"{{name}}\" list will be deleted. Do you wish to proceed?",
 		"deleteDatasetTitle": "Delete notes",
 		"signOutDesc": "Your session will be terminated. Do you wish to proceed?",
@@ -30,6 +32,7 @@
 		"start": "Start",
 		"startSession": "Start session",
 		"takePhoto": "Take photo",
+		"terminate": "Terminate",
 		"update": "Update",
 		"upload": "Upload"
 	},

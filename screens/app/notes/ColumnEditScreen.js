@@ -121,7 +121,8 @@ export default class ColumnEditScreen extends React.Component {
 							ref={ref => { refInputs[0] = ref }}
 							// onSubmitEditing={() => refInputs[1].focus()}
 						/>
-
+					</View>
+					<View style={{margin: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white'}}>
 
 						<Text style={{padding: 10, fontWeight: 'bold', fontSize: 16, color: '#999'}}>
 							{I18n.t('field.columnLanguage')}

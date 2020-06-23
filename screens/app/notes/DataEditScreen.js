@@ -33,7 +33,7 @@ export default class DataEditScreen extends React.Component {
 		translationFields: [],
 		fetching: false,
 		fetchingCustom: false,
-		canFetchImages: false,
+		canFetchMoreImages: false,
 		imageOffset: 0,
 		imageUri: null,
 		emptyImageResults: false,
@@ -152,7 +152,6 @@ export default class DataEditScreen extends React.Component {
 			}
 
 			const transactions = clone.getTransactions(originalDataset);
-			console.log(transactions);
 
 			this.setState({ saving: true });
 			return DatasetService.save(transactions).then(response => {
@@ -170,6 +169,8 @@ export default class DataEditScreen extends React.Component {
 				if (addMore) {
 					this.props.route.params.rowIdx++;
 					this.prepare(true);
+				} else {
+					this.prepare();
 				}
 				this.setState({ saving: false, autofocus: addMore, row });
 				addMore && this.refInputs[0].focus();
@@ -179,13 +180,17 @@ export default class DataEditScreen extends React.Component {
 		this.setState({ saving: true, autofocus: addMore });
 
 		if (this.state.mustUploadLocalUri) {
-			FileService.uploadLocalUri(this.state.imageUri).then(filesResponse => callback(filesResponse.data));
+			FileService.uploadLocalUri(this.state.imageUri).then(filesResponse => callback(filesResponse.data)).catch(err => {
+				console.log(err);
+			});
 		} else if (this.state.mustUploadRemoteUri) {
 			let uri = this.state.imageUri;
-			if (!uri && this.state.selectedImageIdx) {
+			if (!uri && this.state.selectedImageIdx !== null) {
 				uri = this.state.images[this.state.selectedImageIdx];
 			}
-			FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data));
+			FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
+				console.log(err);
+			});
 		} else {
 			callback();
 		}
@@ -202,15 +207,26 @@ export default class DataEditScreen extends React.Component {
 			refInputs.push(React.createRef());
 		});
 
-		if (row.image?.private_hash) {
-			state.imageUri = $polymind.getThumbnailByPrivateHash(row.image.private_hash, 'avatar');
-		}
-
 		state.allTags = this.getTags();
 		state.tags = [...row.tags];
 		state.mustUploadLocalUri = false;
 		state.mustUploadRemoteUri = false;
 		state.selectedImageIdx = null;
+		state.images = [];
+		state.imageUri = null;
+		state.canFetchMoreImages = false;
+		state.emptyImageResults = false;
+		state.lastSearchQuery = '';
+		state.searchQueryContext = '';
+		state.searchImageQuery = '';
+
+		if (dataset.include_image) {
+			if (row.image?.private_hash) {
+				state.imageUri = $polymind.getThumbnailByPrivateHash(row.image.private_hash, 'avatar');
+			} else if (fields[0].length > 3) {
+				this.fetchImages(fields[0], dataset.columns[0].lang);
+			}
+		}
 
 		this.setState({ ...state, fields, row, autofocus: row.id === null });
 	}
@@ -403,6 +419,18 @@ export default class DataEditScreen extends React.Component {
 
 	fetchImages(query, locale, customQuery = false) {
 
+		// Query only until first separating character..
+		query = query.split(',')[0];
+		query = query.split('/')[0];
+		query = query.split(':')[0];
+		query = query.split('(')[0];
+		query = query.split(';')[0];
+		query = query.split('\\')[0];
+
+		if (query.length > 5) {
+			query = query.replace(/(\b(\w{1,3})\b(\s|$))/g,'');
+		}
+
 		this.setState({ fetching: !customQuery, fetchingCustom: customQuery, emptyImageResults: false });
 		return GoogleService.fetchImages(query, locale, {
 			start: this.state.imageOffset + 1,
@@ -424,8 +452,9 @@ export default class DataEditScreen extends React.Component {
 				const items = response.items.map(item => item.image.thumbnailLink);
 				images = images.concat(items);
 
-				this.setState({ selectedImageIdx: this.state.selectedImageIdx, images, lastSearchQuery: query, imageOffset: this.state.imageOffset + 9, canFetchImages: images.length < 27 && totalResults >= 9 });
+				this.setState({ selectedImageIdx: this.state.selectedImageIdx, images, lastSearchQuery: query, imageOffset: this.state.imageOffset + 9, canFetchMoreImages: images.length < 27 && totalResults >= 9 });
 			})
+			.catch(err => console.log(err))
 			.finally(() => this.setState({ fetching: false, fetchingCustom: false }));
 	}
 
@@ -588,8 +617,6 @@ export default class DataEditScreen extends React.Component {
 			);
 		}
 
-		console.log(this.state.imageUri);
-
 		return (
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -720,7 +747,7 @@ export default class DataEditScreen extends React.Component {
 								))}
 							</View>}
 
-							{this.state.canFetchImages && <Button mode={'text'} style={{marginTop: 10}} onPress={() => this.fetchImages(this.state.lastSearchQuery, dataset.columns[0].lang)} disabled={this.state.fetching} loading={this.state.fetching}>
+							{this.state.canFetchMoreImages && <Button mode={'text'} style={{marginTop: 10}} onPress={() => this.fetchImages(this.state.lastSearchQuery, dataset.columns[0].lang)} disabled={this.state.fetching} loading={this.state.fetching}>
 								{I18n.t('btn.fetchMore')}
 							</Button>}
 
