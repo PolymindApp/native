@@ -21,6 +21,7 @@
 		"grant": "Grant",
 		"newNotes": "Add notes",
 		"newSession": "Start a session",
+		"next": "Next",
 		"ok": "OK",
 		"options": "Options",
 		"resendActivation": "Resend",
@@ -161,19 +162,18 @@
 	},
 	"session": {
 		"answer": "Answer:",
-		"chooseAnswer": "Choose the answer field:",
-		"chooseQuestion": "Choose the question field:",
+		"chooseFields": "Choose the fields you wish to use:",
 		"chooseSettings": "Prepare your settings:",
 		"chooseType": "Choose session type:",
-		"drawerSelectList": "Choose a list :",
+		"drawerSelectList": "Which list do you want to practice?",
 		"emptyDesc": "You can start new sessions below.",
 		"emptyTitle": "No session yet",
 		"noAnswer": "No answer field",
 		"noDatasetDesc": "To start sessions, you need at least one list of notes.",
 		"noDatasetTitle": "No note yet",
-		"pronounceAnswerDesc": "Mindy, a synthetic voice, will pronounce the answer for you.",
+		"pronounceAnswerDesc": "A synthetic voice will pronounce the answer for you.",
 		"pronounceAnswerTitle": "Pronounce answer",
-		"pronounceQuestionDesc": "Mindy, a synthetic voice, will pronounce the question for you.",
+		"pronounceQuestionDesc": "A synthetic voice will pronounce the question for you.",
 		"pronounceQuestionTitle": "Pronounce question",
 		"question": "Question:",
 		"range": "Range of questions",
@@ -182,8 +182,10 @@
 		"speed": "Delay between questions:",
 		"speedSeconds": "{{seconds}} seconds",
 		"types": {
-			"autoDesc": "The notes will be shown automatically at a pace that you can define.",
-			"autoTitle": "Automatic",
+			"autoAssertiveDesc": "The notes will be shown automatically at a pace that you can define. Each note will be flagged \"unsure\" if you don't answer on time.",
+			"autoAssertiveTitle": "Automatic Assertive",
+			"autoPassiveDesc": "The notes will be shown automatically at a pace that you can define. There won't be any consequence if you don't answer on time.",
+			"autoPassiveTitle": "Automatic Passive",
 			"manualDesc": "Review and answer questions manually.",
 			"manualTitle": "Manual"
 		}
@@ -191,6 +193,7 @@
 	"state": {
 		"deleting": "Deleting...",
 		"generating": "Generating...",
+		"loading": "Loading..",
 		"saving": "Saving..."
 	},
 	"title": {

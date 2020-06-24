@@ -25,7 +25,7 @@ export default class ProfileScreen extends React.Component {
 	state = {
 		uploading: false,
 		loading: true,
-		thumbnail: null,
+		thumbnail: preview,
 		me: new User(),
 	};
 

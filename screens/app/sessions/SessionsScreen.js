@@ -25,15 +25,16 @@ export default class SessionsScreen extends React.Component {
 			dataset: new Dataset(),
 			params: new AssemblyParameters({
 				dataset: {
+					answer: false,
 					explanation: false,
 					image: false,
 				},
 				component: {
 					speed: 10,
-					range: 10,
+					range: 25,
 					readQuestion: true,
 					readAnswer: true,
-				}
+				},
 			}),
 		},
 		stats: {},
@@ -41,8 +42,9 @@ export default class SessionsScreen extends React.Component {
 	}
 
 	sessionModes = [
-		{ key: 'manual', title: I18n.t('session.types.manualTitle'), desc: I18n.t('session.types.manualDesc'), icon: 'hand' },
-		{ key: 'linearPassive', title: I18n.t('session.types.autoTitle'), desc: I18n.t('session.types.autoDesc'), icon: 'play-speed' },
+		{ key: 'manual', title: I18n.t('session.types.manualTitle'), desc: I18n.t('session.types.manualDesc'), icon: 'hand', color: THEME.success, },
+		{ key: 'linearPassive', title: I18n.t('session.types.autoPassiveTitle'), desc: I18n.t('session.types.autoPassiveDesc'), icon: 'play-speed', color: THEME.success },
+		{ key: 'linearAssertive', title: I18n.t('session.types.autoAssertiveTitle'), desc: I18n.t('session.types.autoAssertiveDesc'), icon: 'play-speed', color: THEME.warning },
 	]
 
 	load() {
@@ -56,8 +58,25 @@ export default class SessionsScreen extends React.Component {
 	}
 
 	componentDidMount() {
-		this.setState({ loading: true });
-		this.load().finally(() => this.setState({ loading: false }));
+
+		const { navigation } = this.props;
+
+		const callback = () => {
+			this.setState({ loading: true });
+			this.load().finally(() => this.setState({ loading: false }));
+		};
+
+		this._navigationFocus = navigation.addListener('focus', () => {
+			if (this.props.route.params?.refresh) {
+				this.props.route.params.refresh = false;
+				callback()
+			}
+		});
+		callback();
+	}
+
+	componentWillUnmount() {
+		this._navigationFocus();
 	}
 
 	onRefresh() {
@@ -82,10 +101,12 @@ export default class SessionsScreen extends React.Component {
 	}
 
 	openDrawer() {
+		setTimeout(() => {
+			this.RBSheet.open();
+		});
 		this.setState({ drawerLoading: true, step: 1 });
 		this.loadDatasets().then(datasets => {
 			this.setState({ drawerLoading: false });
-			this.RBSheet.open();
 		});
 	}
 
@@ -225,12 +246,12 @@ export default class SessionsScreen extends React.Component {
 											key={modeIdx}
 											leftIcon={<Icon
 												name={mode.icon}
-												color={THEME.primary}
+												color={mode.color}
 												containerStyle={{width: 32}}
 											/>}
 											title={mode.title}
 											subtitle={mode.desc}
-											titleStyle={{color: THEME.primary}}
+											titleStyle={{color: mode.color}}
 											topDivider={modeIdx !== 0}
 											delayPressIn={0}
 											chevron
@@ -254,43 +275,48 @@ export default class SessionsScreen extends React.Component {
 						{this.state.step === 3 && (
 							<View style={{flex: 1}}>
 								<Text style={{marginBottom: 10}} h4>
-									{I18n.t('session.chooseQuestion')}
+									{I18n.t('session.chooseFields')}
 								</Text>
+
 								<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
+									<Text style={{marginTop: 15, marginBottom: 10}} h5>
+										{I18n.t('session.question')}
+									</Text>
+
+									{this.state.newSession.dataset.columns.map((column, columnIdx) => (
+										<ListItem
+											key={column.guid}
+											title={column.name}
+											topDivider={columnIdx !== 0}
+											checkmark={this.state.newSession.params.dataset.question === column.guid}
+											delayPressIn={0}
+											onPress={() => {
+												const newSession = this.state.newSession;
+												newSession.params.dataset.question = newSession.params.dataset.question === column.guid ? '' : column.guid;
+												if (newSession.params.dataset.answer === newSession.params.dataset.question) {
+													newSession.params.dataset.answer = false;
+												}
+												this.setState({ newSession });
+											}}
+										/>
+									))}
+
+									<Text style={{marginTop: 15, marginBottom: 10}} h5>
+										{I18n.t('session.answer')}
+									</Text>
 									{this.state.newSession.dataset.columns.map((column, columnIdx) => (
 										<ListItem
 											key={column.guid}
 											title={column.name}
 											topDivider={columnIdx !== 0}
 											delayPressIn={0}
-											onPress={() => {
-												const newSession = this.state.newSession;
-												newSession.params.dataset.question = newSession.params.dataset.question === column.guid ? '' : column.guid;
-												this.setState({ newSession });
-												this.setStep(4);
-											}}
-										/>
-									))}
-								</ScrollView>
-							</View>
-						)}
-						{this.state.step === 4 && (
-							<View style={{flex: 1}}>
-								<Text style={{marginBottom: 10}} h4>
-									{I18n.t('session.chooseAnswer')}
-								</Text>
-								<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
-									{this.state.newSession.dataset.columns.filter(column => column.guid !== this.state.newSession.params.dataset.question).map((column, columnIdx) => (
-										<ListItem
-											key={column.guid}
-											title={column.name}
-											topDivider={columnIdx !== 0}
-											delayPressIn={0}
+											titleStyle={{ opacity: column.guid === this.state.newSession.params.dataset.question ? 0.3 : 1}}
+											disabled={column.guid === this.state.newSession.params.dataset.question}
+											checkmark={this.state.newSession.params.dataset.answer === column.guid}
 											onPress={() => {
 												const newSession = this.state.newSession;
 												newSession.params.dataset.answer = newSession.params.dataset.answer === column.guid ? '' : column.guid;
 												this.setState({ newSession });
-												this.setStep(5);
 											}}
 										/>
 									))}
@@ -299,18 +325,18 @@ export default class SessionsScreen extends React.Component {
 										title={I18n.t('session.noAnswer')}
 										leftIcon={{name: 'block-helper'}}
 										topDivider
+										checkmark={this.state.newSession.params.dataset.answer === null}
 										delayPressIn={0}
 										onPress={() => {
 											const newSession = this.state.newSession;
 											newSession.params.dataset.answer = null;
 											this.setState({ newSession });
-											this.setStep(5);
 										}}
 									/>
 								</ScrollView>
 							</View>
 						)}
-						{this.state.step === 5 && (
+						{this.state.step === 4 && (
 							<View style={{flex: 1}}>
 								<Text style={{marginBottom: 10}} h4>
 									{I18n.t('session.chooseSettings')}
@@ -322,7 +348,7 @@ export default class SessionsScreen extends React.Component {
 										titleStyle={{color: THEME.primary}}
 										leftIcon={{name: 'voice', color: THEME.primary}}
 										subtitle={I18n.t('session.pronounceQuestionDesc')}
-										checkBox={{ checked: this.state.newSession.params.component.readQuestion }}
+										checkmark={{ checked: this.state.newSession.params.component.readQuestion }}
 										delayPressIn={0}
 										onPress={() => {
 											const newSession = this.state.newSession;
@@ -336,7 +362,7 @@ export default class SessionsScreen extends React.Component {
 										titleStyle={{color: THEME.primary}}
 										leftIcon={{name: 'voice', color: THEME.primary}}
 										subtitle={I18n.t('session.pronounceAnswerDesc')}
-										checkBox={{ checked: this.state.newSession.params.component.readAnswer }}
+										checkmark={{ checked: this.state.newSession.params.component.readAnswer }}
 										delayPressIn={0}
 										topDivider
 										onPress={() => {
@@ -346,30 +372,28 @@ export default class SessionsScreen extends React.Component {
 										}}
 									/>)}
 
-									{this.state.newSession.params.component.mode === 'linearPassive' && (
+									{this.state.newSession.params.component.mode !== 'manual' && (
 										<ListItem
 											key={'speed'}
-											title={I18n.t('session.speed')}
-											titleStyle={{color: THEME.primary}}
+											title={() => <View>
+												<Text style={{color: THEME.primary, fontSize: 16}}>{I18n.t('session.speed')}</Text>
+												<Slider
+													minimumValue={5}
+													maximumValue={120}
+													value={this.state.newSession.params.component.speed}
+													onValueChange={value => {
+														clearTimeout(sliderTimeout);
+														sliderTimeout = setTimeout(() => {
+															const newSession = this.state.newSession;
+															newSession.params.component.speed = Math.ceil(parseInt(value) / 5) * 5;
+															this.setState({ newSession });
+														}, 100);
+													}}
+													minimumTrackTintColor={THEME.primary}
+												/>
+												<Text>{I18n.t('session.speedSeconds', { seconds: this.state.newSession.params.component.speed })}</Text>
+											</View>}
 											leftIcon={{name: 'speedometer', color: THEME.primary}}
-											subtitle={() => (
-												<View>
-													<Slider
-														minimumValue={5}
-														maximumValue={120}
-														onValueChange={value => {
-															clearTimeout(sliderTimeout);
-															sliderTimeout = setTimeout(() => {
-																const newSession = this.state.newSession;
-																newSession.params.component.speed = Math.ceil(parseInt(value) / 5) * 5;
-																this.setState({ newSession });
-															}, 100);
-														}}
-														minimumTrackTintColor={THEME.primary}
-													/>
-													<Text>{I18n.t('session.speedSeconds', { seconds: this.state.newSession.params.component.speed })}</Text>
-												</View>
-											)}
 											delayPressIn={0}
 											topDivider
 										/>
@@ -377,29 +401,27 @@ export default class SessionsScreen extends React.Component {
 
 									<ListItem
 										key={'range'}
-										title={I18n.t('session.range')}
-										titleStyle={{color: THEME.primary}}
+										title={() => <View>
+											<Text style={{color: THEME.primary, fontSize: 16}}>{I18n.t('session.range')}</Text>
+											<Slider
+												minimumValue={0}
+												maximumValue={55}
+												value={this.state.newSession.params.component.range}
+												onValueChange={value => {
+													clearTimeout(sliderTimeout);
+													sliderTimeout = setTimeout(() => {
+														const newSession = this.state.newSession;
+														newSession.params.component.range = Math.ceil(parseInt(value) / 5) * 5;
+														this.setState({ newSession });
+													}, 100);
+												}}
+												minimumTrackTintColor={THEME.primary}
+											/>
+											<Text>{[0, 55].indexOf(this.state.newSession.params.component.range) === -1 ? I18n.t('session.rangeDesc', {
+												range: this.state.newSession.params.component.range
+											}) : I18n.t('session.rangeUnlimited')}</Text>
+										</View>}
 										leftIcon={{name: 'ray-start-end', color: THEME.primary}}
-										subtitle={() => (
-											<View>
-												<Slider
-													minimumValue={0}
-													maximumValue={55}
-													onValueChange={value => {
-														clearTimeout(sliderTimeout);
-														sliderTimeout = setTimeout(() => {
-															const newSession = this.state.newSession;
-															newSession.params.component.range = Math.ceil(parseInt(value) / 5) * 5;
-															this.setState({ newSession });
-														}, 100);
-													}}
-													minimumTrackTintColor={THEME.primary}
-												/>
-												<Text>{[0, 55].indexOf(this.state.newSession.params.component.range) === -1 ? I18n.t('session.rangeDesc', {
-													range: this.state.newSession.params.component.range
-												}) : I18n.t('session.rangeUnlimited')}</Text>
-											</View>
-										)}
 										delayPressIn={0}
 										topDivider
 									/>
@@ -412,9 +434,19 @@ export default class SessionsScreen extends React.Component {
 								<Button style={{flex: 1, marginRight: 5}} icon={'chevron-left'} mode="contained" color={'#eee'} onPress={() => this.setStep(this.state.step - 1)} disabled={this.state.step === 1} delayPressIn={0}>
 									{I18n.t('btn.back')}
 								</Button>
-								<Button style={{flex: 1, marginLeft: 5}} icon={'play'} mode="contained" onPress={() => this.startSession(this.state.newSession)} disabled={this.state.step !== 5} delayPressIn={0}>
-									{I18n.t('btn.start')}
-								</Button>
+								{this.state.step < 4 ? (
+									<Button style={{flex: 1, marginLeft: 5}} icon={'chevron-right'} mode="contained" onPress={() => this.setStep(this.state.step + 1)} disabled={
+										this.state.step !== 3
+										|| !this.state.newSession.params.dataset.question
+										|| this.state.newSession.params.dataset.answer === false
+									} delayPressIn={0}>
+										{I18n.t('btn.next')}
+									</Button>
+								) : (
+									<Button style={{flex: 1, marginLeft: 5}} icon={'play'} mode="contained" onPress={() => this.startSession(this.state.newSession)} disabled={this.state.step !== 4} delayPressIn={0}>
+										{I18n.t('btn.start')}
+									</Button>
+								)}
 							</View>
 						</View>
 					</View>

@@ -2,13 +2,34 @@ import React from 'react';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {ActivityIndicator, StyleSheet, StatusBar, TouchableOpacity, View, Share, Alert} from 'react-native';
-import PolymindSDK, { THEME, SessionStructureService, ComponentService, Component, UserService } from '@polymind/sdk-js';
+import PolymindSDK, { THEME, SessionStructureService, ComponentService, Component, Locale } from '@polymind/sdk-js';
 import {Text} from "react-native-elements";
 import I18n from "../../../locales/i18n";
 import { WebView } from 'react-native-webview';
 import { HeaderBackButton } from '@react-navigation/stack';
+import {Audio} from "expo-av";
+import Offline from '../../../utils/Offline';
+
+let sounds = [];
+let voices = [];
+let lastVoice = null;
+
+// https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/audio.md#arguments-1
+Audio.setAudioModeAsync({
+	staysActiveInBackground: true,
+	playsInSilentModeIOS: true,
+	interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+	interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+	shouldDuckAndroid: true,
+	playThroughEarpieceAndroid: false,
+});
+// const playbackObject = Audio.Sound.createAsync(
+// 	{ uri: 'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Podington_Bear_-_Rubber_Robot.mp3' },
+// 	{ shouldPlay: true }
+// );
 
 const $polymind = new PolymindSDK();
+let terminateBackTimeout;
 
 export default class StatsScreen extends React.Component {
 
@@ -18,6 +39,7 @@ export default class StatsScreen extends React.Component {
 		session: null,
 		iframeLoaded: false,
 		playerUrl: null,
+		loaded: false,
 	};
 
 	webview = null;
@@ -47,7 +69,7 @@ export default class StatsScreen extends React.Component {
 				parameters,
 			})
 				.then(session => {
-					const playerUrl = $polymind.playerUrl + '/d/' + session.hash + '/live?native=1&locale=' + I18n.locale.substring(0, 2);
+					const playerUrl = $polymind.playerUrl + '/d/' + session.hash + '/live?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2);
 					console.log(playerUrl);
 					this.setState({ session, playerUrl, generating: false });
 				});
@@ -59,6 +81,12 @@ export default class StatsScreen extends React.Component {
 		});
 
 		activateKeepAwake();
+		this._navigationFocus = navigation.addListener('focus', () => {
+			activateKeepAwake();
+		});
+		this._navigationBlur = navigation.addListener('blur', () => {
+			deactivateKeepAwake();
+		});
 
 		navigation.setOptions({
 			title: settings.dataset.name,
@@ -68,7 +96,10 @@ export default class StatsScreen extends React.Component {
 					onPress={() => {
 						Alert.alert(I18n.t('alert.backSessionTitle'), I18n.t('alert.backSessionDesc'), [
 							{ text: I18n.t('btn.terminate'), onPress: () => {
+								const { navigation } = this.props;
 								this.sendMessage('terminate_and_back');
+								clearTimeout(terminateBackTimeout);
+								terminateBackTimeout = setTimeout(() => navigation.navigate('Sessions'), !this.state.loaded ? 0 : 5000);
 							}, style: 'destructive' },
 							{ text: I18n.t('btn.cancel'), style: "cancel" }
 						], { cancelable: false });
@@ -91,6 +122,8 @@ export default class StatsScreen extends React.Component {
 		ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
 
 		deactivateKeepAwake();
+		this._navigationFocus();
+		this._navigationBlur();
 	}
 
 	adjustScreenOrientation(orientation) {
@@ -148,14 +181,44 @@ export default class StatsScreen extends React.Component {
 		}
 	};
 
-	handleMessage(event) {
-
+	async handleMessage(event) {
 		const { navigation } = this.props;
 		const { type, data } = JSON.parse(event.nativeEvent.data);
 
 		switch (type) {
+			case 'read':
+				// const readCallback = () => {
+				// 	const locale = Locale.abbrToLocale(data.settings.lang);
+				// 	voices[locale][data.text].replayAsync();
+				// 	lastVoice = voices[locale][data.text];
+				// };
+				// if (lastVoice !== null) {
+				// 	lastVoice.pauseAsync().then(readCallback);
+				// } else {
+				// 	readCallback();
+				// }
+
+				break;
+			case 'play_sound':
+				const playbackObject = await Audio.Sound.createAsync(
+					{ uri: sounds[data] },
+					{ shouldPlay: true }
+				);
+				break;
+			case 'all_voices':
+				voices = await Offline.cacheVoices(data);
+				console.log('voices', voices, 123);
+				break;
+			case 'all_sounds':
+				sounds = await Offline.cacheSounds(data);
+				console.log('sounds', sounds);
+				break;
+			case 'ready':
+				this.setState({ loaded: true });
+				break;
 			case 'back':
-				navigation.pop();
+				clearTimeout(terminateBackTimeout);
+				navigation.navigate('Sessions', { refresh: true });
 				break;
 		}
 	}
@@ -172,6 +235,10 @@ export default class StatsScreen extends React.Component {
 	render() {
 		return (
 			<View style={{flex: 1}}>
+				{!this.state.loaded && <View style={{flex: 1000, alignItems: 'center', justifyContent: 'center'}}>
+					<ActivityIndicator size={'large'} color={THEME.primary} />
+					<Text style={{marginTop: 10, color: THEME.primary}}>{I18n.t('state.loading')}</Text>
+				</View>}
 				<WebView
 					ref={webview => this.webview = webview}
 					originWhitelist={['*']}
@@ -183,14 +250,8 @@ export default class StatsScreen extends React.Component {
 					scrollEnabled={false}
 					onMessage={event => this.handleMessage(event)}
 					startInLoadingState={!this.state.generating}
-					style={!this.state.playerUrl ? { flex: 0, height: 0, opacity: 0, backgroundColor: 'black' } : {}}
+					style={!this.state.loaded ? { flex: 0, height: 0, opacity: 0, backgroundColor: 'black' } : {}}
 					source={this.state.playerUrl ? { uri: this.state.playerUrl } : null }
-					renderLoading={() => (
-						<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-							<ActivityIndicator size="large" color={THEME.primary} />
-							<Text style={{marginTop: 10, color: THEME.primary}}>{I18n.t('state.generating')}</Text>
-						</View>
-					)}
 				/>
 			</View>
 		);

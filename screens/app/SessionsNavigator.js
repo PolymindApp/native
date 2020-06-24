@@ -20,13 +20,14 @@ export default function SessionsNavigator({ navigation, route }) {
 				elevation: 0,
 				shadowOpacity: 0
 			},
+			gestureEnabled: false,
 			headerTruncatedBackTitle: I18n.t('btn.back'),
 			cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
 		}}>
 			<Stack.Screen name="Sessions" component={SessionsScreen} />
 			<Stack.Screen name="SessionsStats" component={StatsScreen} />
 			<Stack.Screen name="SessionsPlayer" component={PlayerScreen} options={{
-				cardStyle: { backgroundColor: 'black' }
+				cardStyle: { backgroundColor: 'black' },
 			}} />
 		</Stack.Navigator>
 	);

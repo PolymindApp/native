@@ -12,21 +12,6 @@ import I18n from './locales/i18n';
 import { AppContext } from './contexts';
 import AppNavigator from './screens/AppNavigator';
 import RestrictedNavigator from "./screens/RestrictedNavigator";
-import {Audio} from "expo-av";
-
-// https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/audio.md#arguments-1
-Audio.setAudioModeAsync({
-	staysActiveInBackground: true,
-	playsInSilentModeIOS: true,
-	interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
-	interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
-	shouldDuckAndroid: true,
-	playThroughEarpieceAndroid: false,
-});
-// const playbackObject = Audio.Sound.createAsync(
-// 	{ uri: 'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Podington_Bear_-_Rubber_Robot.mp3' },
-// 	{ shouldPlay: true }
-// );
 
 const Stack = createStackNavigator();
 
