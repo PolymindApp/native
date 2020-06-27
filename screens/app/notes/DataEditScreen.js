@@ -175,7 +175,10 @@ export default class DataEditScreen extends React.Component {
 						text: this.state.fields[columnIdx],
 					});
 					DatasetService.fetchVoices(voicePayload).then(voices => {
-						Offline.cacheVoices(voices);
+						Offline.cacheVoices(voices.success);
+						if (voices.errors.length > 0) {
+							console.error(voices.errors);
+						}
 					});
 				});
 
