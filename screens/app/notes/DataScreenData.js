@@ -33,7 +33,7 @@ export default class DataScreenData extends React.Component {
 			const found = false;
 			for (let i = 0; i < row.cells.length; i++) {
 				const cell = row.cells[i];
-				if ((cell.text || '').trim().toLowerCase().indexOf(this.state.search) !== -1) {
+				if ((cell.text || '').trim().toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1) {
 					return true;
 				}
 			}

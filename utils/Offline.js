@@ -14,7 +14,7 @@ export default class Offline {
 				await downloadResumable.downloadAsync();
 			}
 			voice.file_uri = fileUri;
-			results[voice.locale + '_' + voice.text] = voice;
+			results[voice.locale + '_' + voice.text] = fileUri;
 		}
 		return results;
 	}
@@ -30,7 +30,6 @@ export default class Offline {
 			const fileUri = FileSystem.cacheDirectory + fileName;
 
 			const { exists } = await FileSystem.getInfoAsync(fileUri);
-			console.log(fileUri, exists);
 			if (!exists) {
 				const downloadResumable = FileSystem.createDownloadResumable(url, fileUri);
 				await downloadResumable.downloadAsync();

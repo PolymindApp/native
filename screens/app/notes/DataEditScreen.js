@@ -1,7 +1,7 @@
 import React from 'react'
 import {ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import PolymindSDK, { FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
+import PolymindSDK, { Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
 import {Divider, Icon, Input, Text} from "react-native-elements";
 import {Button, IconButton} from "react-native-paper";
@@ -12,6 +12,7 @@ import * as Permissions from 'expo-permissions';
 import { Camera } from 'expo-camera';
 import {Linking } from "expo";
 import * as ImageManipulator from "expo-image-manipulator";
+import Offline from "../../../utils/Offline";
 
 const $polymind = new PolymindSDK();
 
@@ -165,6 +166,19 @@ export default class DataEditScreen extends React.Component {
 				datasetContext.updateOriginal(dataset);
 				datasetDataContext.setState({dataset});
 
+				// Generate and cache voices..
+				const voicePayload = [];
+				dataset.columns.forEach((column, columnIdx) => {
+					const locale = Locale.abbrToLocale(column.lang);
+					voicePayload.push({
+						locale,
+						text: this.state.fields[columnIdx],
+					});
+					DatasetService.fetchVoices(voicePayload).then(voices => {
+						Offline.cacheVoices(voices);
+					});
+				});
+
 				const moreState = {};
 				if (addMore) {
 					this.props.route.params.rowIdx++;
@@ -219,6 +233,8 @@ export default class DataEditScreen extends React.Component {
 		state.lastSearchQuery = '';
 		state.searchQueryContext = '';
 		state.searchImageQuery = '';
+		state.spellCheckFields = [];
+		state.translationFields = [];
 
 		if (dataset.include_image) {
 			if (row.image?.private_hash) {

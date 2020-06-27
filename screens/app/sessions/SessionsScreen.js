@@ -256,16 +256,20 @@ export default class SessionsScreen extends React.Component {
 											delayPressIn={0}
 											chevron
 											onPress={() => {
+
 												const newSession = this.state.newSession;
 												newSession.params.component.mode = mode.key;
-												this.setState({ newSession });
 
-												const columns = this.state.newSession.dataset.columns;
-												if (columns.length === 1) {
-													newSession.question = columns[0].guid;
-												} else {
-													this.setStep(3);
+												const params = this.state.newSession.params.dataset;
+												if (newSession.dataset.columns.length === 1) {
+													params.question = newSession.dataset.columns[0].guid;
+												} else if (newSession.dataset.columns.length === 2) {
+													params.question = newSession.dataset.columns[0].guid;
+													params.answer = newSession.dataset.columns[1].guid;
 												}
+
+												this.setState({ newSession });
+												this.setStep(newSession.dataset.columns.length <= 2 ? 4 : 3);
 											}}
 										/>
 									))}

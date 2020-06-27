@@ -14,6 +14,11 @@ let sounds = [];
 let voices = [];
 let lastVoice = null;
 
+const meditationSongs = [
+	'https://polymind.s3.ca-central-1.amazonaws.com/player/mental-energizer.mp3'
+];
+let playbackMeditation;
+
 // https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/audio.md#arguments-1
 Audio.setAudioModeAsync({
 	staysActiveInBackground: true,
@@ -23,10 +28,6 @@ Audio.setAudioModeAsync({
 	shouldDuckAndroid: true,
 	playThroughEarpieceAndroid: false,
 });
-// const playbackObject = Audio.Sound.createAsync(
-// 	{ uri: 'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Podington_Bear_-_Rubber_Robot.mp3' },
-// 	{ shouldPlay: true }
-// );
 
 const $polymind = new PolymindSDK();
 let terminateBackTimeout;
@@ -99,7 +100,10 @@ export default class StatsScreen extends React.Component {
 								const { navigation } = this.props;
 								this.sendMessage('terminate_and_back');
 								clearTimeout(terminateBackTimeout);
-								terminateBackTimeout = setTimeout(() => navigation.navigate('Sessions'), !this.state.loaded ? 0 : 5000);
+								terminateBackTimeout = setTimeout(() => {
+									navigation.navigate('Sessions');
+									this.stopSounds();
+								}, !this.state.loaded ? 0 : 5000);
 							}, style: 'destructive' },
 							{ text: I18n.t('btn.cancel'), style: "cancel" }
 						], { cancelable: false });
@@ -187,16 +191,23 @@ export default class StatsScreen extends React.Component {
 
 		switch (type) {
 			case 'read':
-				// const readCallback = () => {
-				// 	const locale = Locale.abbrToLocale(data.settings.lang);
-				// 	voices[locale][data.text].replayAsync();
-				// 	lastVoice = voices[locale][data.text];
-				// };
-				// if (lastVoice !== null) {
-				// 	lastVoice.pauseAsync().then(readCallback);
-				// } else {
-				// 	readCallback();
-				// }
+				const readCallback = async () => {
+					const locale = Locale.abbrToLocale(data.settings.lang);
+					const key = locale + '_' + data.text.toLowerCase().replace(/\s{2,}/g, ' ');
+					if (voices[key]) {
+						const playbackObject = await Audio.Sound.createAsync(
+							{ uri: voices[key] },
+							{ shouldPlay: true }
+						);
+
+						lastVoice = playbackObject;
+					}
+				};
+				if (lastVoice !== null && lastVoice.pauseAsync) {
+					lastVoice.pauseAsync().then(readCallback);
+				} else {
+					await readCallback();
+				}
 
 				break;
 			case 'play_sound':
@@ -205,13 +216,31 @@ export default class StatsScreen extends React.Component {
 					{ shouldPlay: true }
 				);
 				break;
+			case 'meditating':
+
+				if (playbackMeditation) {
+					await playbackMeditation.pauseAsync();
+				}
+
+				if (data) {
+					if (!playbackMeditation) {
+						const { sound: soundObject, status } = await Audio.Sound.createAsync(
+							{ uri: meditationSongs[0] },
+							{ shouldPlay: true, volume: 0.5, isLooping: true }
+						);
+						playbackMeditation = soundObject;
+					} else {
+						await playbackMeditation.playAsync();
+					}
+				}
+
+				this.sendMessage('meditating', data);
+				break;
 			case 'all_voices':
 				voices = await Offline.cacheVoices(data);
-				console.log('voices', voices, 123);
 				break;
 			case 'all_sounds':
 				sounds = await Offline.cacheSounds(data);
-				console.log('sounds', sounds);
 				break;
 			case 'ready':
 				this.setState({ loaded: true });
@@ -219,7 +248,14 @@ export default class StatsScreen extends React.Component {
 			case 'back':
 				clearTimeout(terminateBackTimeout);
 				navigation.navigate('Sessions', { refresh: true });
+				this.stopSounds();
 				break;
+		}
+	}
+
+	stopSounds() {
+		if (playbackMeditation) {
+			playbackMeditation.stopAsync();
 		}
 	}
 
