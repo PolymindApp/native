@@ -70,7 +70,7 @@ export default class StatsScreen extends React.Component {
 				parameters,
 			})
 				.then(session => {
-					const playerUrl = $polymind.playerUrl + '/d/' + session.hash + '/live?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2);
+					const playerUrl = $polymind.playerUrl + '/d/' + session.hash + '/live?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2) + '&autoplay=1';
 					console.log(playerUrl);
 					this.setState({ session, playerUrl, generating: false });
 				});
@@ -192,17 +192,38 @@ export default class StatsScreen extends React.Component {
 		switch (type) {
 			case 'read':
 				const readCallback = async () => {
-					const locale = Locale.abbrToLocale(data.settings.lang);
-					const key = locale + '_' + data.text.toLowerCase().replace(/\s{2,}/g, ' ');
-					if (voices[key]) {
-						const playbackObject = await Audio.Sound.createAsync(
-							{ uri: voices[key] },
-							{ shouldPlay: true }
-						);
 
-						lastVoice = playbackObject;
+					const locale = Locale.abbrToLocale(data.settings.lang);
+					const text = data.text.toLowerCase().replace(/\s{2,}/g, ' ');
+					const key = locale + '_' + text;
+
+					if (voices[key]) {
+						try {
+							const playbackObject = await Audio.Sound.createAsync(
+								{ uri: voices[key].file_uri },
+								{ shouldPlay: true }
+							);
+							lastVoice = playbackObject;
+						} catch (e) {
+							switch (e.code) {
+								case 'ABI37_0_0EXAV': // Corrupted memory.. try to recreate and read from remote URL meanwhile..
+									const playbackObject = await Audio.Sound.createAsync(
+										{ uri: voices[key].file_url },
+										{ shouldPlay: true }
+									);
+									voices[key] = await Offline.cacheVoice(voices[key], true);
+									lastVoice = playbackObject;
+									console.log('read from remote url', voices[key]);
+									break;
+								default:
+									console.error(e.code);
+									break;
+							}
+						}
+
 					}
 				};
+
 				if (lastVoice !== null && lastVoice.pauseAsync) {
 					lastVoice.pauseAsync().then(readCallback);
 				} else {
