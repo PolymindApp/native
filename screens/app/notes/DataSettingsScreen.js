@@ -13,7 +13,7 @@ const refInputs = [
 	React.createRef(),
 ];
 
-export default class DataScreenSettings extends React.Component {
+export default class DataSettingsScreen extends React.Component {
 
 	state = {
 		saving: false,
@@ -165,7 +165,7 @@ export default class DataScreenSettings extends React.Component {
 							<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
 								<ListItem
 									title={I18n.t('dataset.settings.includeImage')}
-									checkBox={{ checked: dataset.include_image }}
+									checkmark={{ checked: dataset.include_image === 1 }}
 									delayPressIn={0}
 									onPress={() => {
 										dataset.include_image = !dataset.include_image;

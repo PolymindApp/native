@@ -134,6 +134,8 @@ export default class DataEditScreen extends React.Component {
 
 		const callback = fileData => {
 
+			this.fixHumanInput();
+
 			const row = this.state.row;
 			dataset.columns.forEach((column, columnIdx) => {
 				row.cells[columnIdx].text = this.state.fields[columnIdx];
@@ -153,7 +155,6 @@ export default class DataEditScreen extends React.Component {
 			}
 
 			const transactions = clone.getTransactions(originalDataset);
-
 			this.setState({ saving: true });
 			return DatasetService.save(transactions).then(response => {
 
@@ -174,12 +175,12 @@ export default class DataEditScreen extends React.Component {
 						locale,
 						text: this.state.fields[columnIdx],
 					});
-					DatasetService.fetchVoices(voicePayload).then(voices => {
-						Offline.cacheVoices(voices.success);
-						if (voices.errors.length > 0) {
-							console.error(voices.errors);
-						}
-					});
+				});
+				DatasetService.fetchVoices(voicePayload).then(voices => {
+					Offline.cacheVoices(voices.success);
+					if (voices.errors.length > 0) {
+						console.error(voices.errors);
+					}
 				});
 
 				const moreState = {};
@@ -189,15 +190,14 @@ export default class DataEditScreen extends React.Component {
 				} else {
 					this.prepare();
 				}
-				this.setState({ saving: false, autofocus: addMore, row });
 				addMore && this.refInputs[0].focus();
-			});
+			}).finally(() => this.setState({ saving: false, autofocus: addMore }));
 		};
 
 		this.setState({ saving: true, autofocus: addMore });
 
 		if (this.state.mustUploadLocalUri) {
-			FileService.uploadLocalUri(this.state.imageUri).then(filesResponse => callback(filesResponse.data)).catch(err => {
+			return FileService.uploadLocalUri(this.state.imageUri).then(filesResponse => callback(filesResponse.data)).catch(err => {
 				console.log(err);
 			});
 		} else if (this.state.mustUploadRemoteUri) {
@@ -205,11 +205,11 @@ export default class DataEditScreen extends React.Component {
 			if (!uri && this.state.selectedImageIdx !== null) {
 				uri = this.state.images[this.state.selectedImageIdx];
 			}
-			FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
+			return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
 				console.log(err);
 			});
 		} else {
-			callback();
+			return callback();
 		}
 	}
 
@@ -348,7 +348,10 @@ export default class DataEditScreen extends React.Component {
 					this.fetchTranslations(fieldIdx).then(translationFields => {
 						this.setState({ spellCheckFields, translationFields });
 					});
-					this.fetchImages(this.state.fields[fieldIdx], dataset.columns[fieldIdx].lang);
+
+					if (!this.state.imageUri) {
+						this.fetchImages(this.state.fields[fieldIdx], dataset.columns[fieldIdx].lang);
+					}
 				} else {
 					this.setState({ spellCheckFields });
 				}
@@ -574,6 +577,18 @@ export default class DataEditScreen extends React.Component {
 		if (fetchServices) {
 			this.checkServices(fieldIdx, fetchServicesDelay);
 		}
+	}
+
+	fixHumanInput() {
+
+		// Remove double spaces and capitalize first character
+		this.state.fields.forEach((field, fieldIdx) => {
+			field = field.substring(0, 1).toUpperCase() + field.substring(1);
+			field = field.replace(/\s{2,}/g, ' ');
+			this.state.fields[fieldIdx] = field.trim();
+		});
+
+		this.setState({ fields: this.state.fields });
 	}
 
 	pushTag(tag) {

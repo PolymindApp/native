@@ -64,10 +64,10 @@ export default class ProfileScreen extends React.Component {
 		if (!result.cancelled) {
 			this.setState({ uploading: true });
 			FileService.uploadLocalUri(result.uri).then(filesResponse => {
-				UserService.update(this.state.me.id, {
+				return UserService.update(this.state.me.id, {
 					avatar: filesResponse.data.id
-				}).finally(response => this.setState({ thumbnail: result.uri, uploading: false, }));
-			});
+				});
+			}).finally(response => this.setState({ thumbnail: { uri: result.uri }, uploading: false, }))
 		}
 	}
 

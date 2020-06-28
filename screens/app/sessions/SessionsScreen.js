@@ -31,7 +31,7 @@ export default class SessionsScreen extends React.Component {
 				},
 				component: {
 					speed: 10,
-					range: 25,
+					range: 0,
 					readQuestion: true,
 					readAnswer: true,
 				},
@@ -383,7 +383,7 @@ export default class SessionsScreen extends React.Component {
 												<Text style={{color: THEME.primary, fontSize: 16}}>{I18n.t('session.speed')}</Text>
 												<Slider
 													minimumValue={5}
-													maximumValue={120}
+													maximumValue={60}
 													value={this.state.newSession.params.component.speed}
 													onValueChange={value => {
 														clearTimeout(sliderTimeout);

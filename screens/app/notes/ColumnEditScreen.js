@@ -98,7 +98,7 @@ export default class ColumnEditScreen extends React.Component {
 
 		navigation.setOptions({
 			title: column.id ? column.name : I18n.t('title.newColumn'),
-			headerRight: column.id ? () => (
+			headerRight: dataset.columns.length > 1 ? () => (
 				<View style={{marginRight: 10}}>
 					<ContextualOptions items={this.optionItems} />
 				</View>
@@ -117,6 +117,7 @@ export default class ColumnEditScreen extends React.Component {
 							defaultValue={this.state.column.name}
 							onChangeText={value => this.setState({ column: {...this.state.column, name: value}})}
 							returnKeyType = {"done"}
+							renderErrorMessage={false}
 							autoFocus={this.state.autofocus}
 							ref={ref => { refInputs[0] = ref }}
 							// onSubmitEditing={() => refInputs[1].focus()}

@@ -9,7 +9,7 @@ import PolymindSDK, { THEME } from '@polymind/sdk-js';
 
 const $polymind = new PolymindSDK();
 
-export default class DataScreenData extends React.Component {
+export default class DataDataScreen extends React.Component {
 
 	constructor(props) {
 		super(props);

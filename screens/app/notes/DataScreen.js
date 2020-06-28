@@ -5,8 +5,8 @@ import I18n from '../../../locales/i18n';
 import {Text} from "react-native-elements";
 import ContextualOptions from "../../../components/ContextualOptions";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import DataScreenData from "./DataScreenData";
-import DataScreenSettings from "./DataScreenSettings";
+import DataDataScreen from "./DataDataScreen";
+import DataSettingsScreen from "./DataSettingsScreen";
 
 const Tab = createMaterialTopTabNavigator();
 const $polymind = new PolymindSDK();
@@ -147,10 +147,10 @@ export default class DataScreen extends React.Component {
 						borderColor: THEME.primary,
 					}
 				}}>
-					<Tab.Screen name="DataData" component={DataScreenData} initialParams={{...route.params, dataset: this.state.dataset, originalDataset: this.state.originalDataset, datasetContext: this}} ref={ref => this.refData = ref} options={{
+					<Tab.Screen name="DataData" component={DataDataScreen} initialParams={{...route.params, dataset: this.state.dataset, originalDataset: this.state.originalDataset, datasetContext: this}} ref={ref => this.refData = ref} options={{
 						tabBarLabel: I18n.t('sections.data') + ' (' + dataset.rows.length + ')',
 					}} listeners={{ tabPress: event => !isValid ? event.preventDefault() : null}}/>
-					<Tab.Screen name="DataSettings" component={DataScreenSettings} initialParams={{...route.params, dataset: this.state.dataset, originalDataset: this.state.originalDataset, datasetContext: this}} options={{
+					<Tab.Screen name="DataSettings" component={DataSettingsScreen} initialParams={{...route.params, dataset: this.state.dataset, originalDataset: this.state.originalDataset, datasetContext: this}} options={{
 						tabBarLabel: I18n.t('sections.settings'),
 					}} />
 				</Tab.Navigator>
