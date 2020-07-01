@@ -9,10 +9,12 @@ import { WebView } from 'react-native-webview';
 import { HeaderBackButton } from '@react-navigation/stack';
 import {Audio} from "expo-av";
 import Offline from '../../../utils/Offline';
+import Sound from '../../../utils/Sound';
 
-let sounds = [];
-let voices = [];
-let lastVoice = null;
+const memory = {
+	sounds: {},
+	voices: [],
+};
 
 const meditationSongs = [
 	'https://polymind.s3.ca-central-1.amazonaws.com/player/mental-energizer.mp3'
@@ -191,51 +193,15 @@ export default class StatsScreen extends React.Component {
 
 		switch (type) {
 			case 'read':
-				const readCallback = async () => {
-
-					const locale = Locale.abbrToLocale(data.settings.lang);
-					const text = data.text.toLowerCase().replace(/\s{2,}/g, ' ');
-					const key = locale + '_' + text;
-
-					if (voices[key]) {
-						try {
-							const playbackObject = await Audio.Sound.createAsync(
-								{ uri: voices[key].file_uri },
-								{ shouldPlay: true }
-							);
-							lastVoice = playbackObject;
-						} catch (e) {
-							switch (e.code) {
-								case 'ABI37_0_0EXAV': // Corrupted memory.. try to recreate and read from remote URL meanwhile..
-									const playbackObject = await Audio.Sound.createAsync(
-										{ uri: voices[key].file_url },
-										{ shouldPlay: true }
-									);
-									voices[key] = await Offline.cacheVoice(voices[key], true);
-									lastVoice = playbackObject;
-									console.log('read from remote url', voices[key]);
-									break;
-								default:
-									console.error(e.code);
-									break;
-							}
-						}
-
-					}
-				};
-
-				if (lastVoice !== null && lastVoice.pauseAsync) {
-					lastVoice.pauseAsync().then(readCallback);
-				} else {
-					await readCallback();
+				const locale = Locale.abbrToLocale(data.settings.lang);
+				const text = data.text.toLowerCase().replace(/\s{2,}/g, ' ');
+				const voice = memory.voices.find(voice => voice.locale === locale && voice.text === text);
+				if (voice) {
+					Sound.play(voice.file_name, voice.file_url, 'voice');
 				}
-
 				break;
 			case 'play_sound':
-				const playbackObject = await Audio.Sound.createAsync(
-					{ uri: sounds[data] },
-					{ shouldPlay: true }
-				);
+				Sound.play(data + '.mp3', memory.sounds[data], 'sound');
 				break;
 			case 'meditating':
 
@@ -258,10 +224,19 @@ export default class StatsScreen extends React.Component {
 				this.sendMessage('meditating', data);
 				break;
 			case 'all_voices':
-				voices = await Offline.cacheVoices(data);
+				memory.voices = data;
+				await Offline.cacheFiles(data.map(item => ({
+					name: item.file_name,
+					url: item.file_url,
+				})));
 				break;
 			case 'all_sounds':
-				sounds = await Offline.cacheSounds(data);
+				memory.sounds = data;
+				const keys = Object.keys(data);
+				await Offline.cacheFiles(keys.map((key, keyIdx) => ({
+					name: keys[keyIdx] + '.mp3', // Needs extension otherwise ends up corrupted..
+					url: data[key],
+				})));
 				break;
 			case 'ready':
 				this.setState({ loaded: true });

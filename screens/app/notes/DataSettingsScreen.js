@@ -25,7 +25,7 @@ export default class DataSettingsScreen extends React.Component {
 		this.props.navigation.push('NotesColumnEdit', { ...this.props.route.params, column, datasetSettingsContext: this});
 	}
 
-	onColumnSave(column) {
+	onColumnSave(column, guidAlreadyExists) {
 		const dataset = this.props.route.params.datasetContext.state.dataset;
 		return new Promise((resolve, reject) => {
 			const callback = (column, wasNew) => {
@@ -46,7 +46,7 @@ export default class DataSettingsScreen extends React.Component {
 					return callback(model, !column.id);
 				});
 			} else {
-				callback(column, true);
+				callback(column, !guidAlreadyExists);
 			}
 		});
 	}

@@ -2,54 +2,38 @@ import * as FileSystem from 'expo-file-system';
 
 export default class Offline {
 
-	static async cacheVoices(voices, force = false) {
-		let results = {};
-		for (let i = 0; i < voices.length; i++) {
-			const voice = await this.cacheVoice(voices[i], force);
-			results[voice.locale + '_' + voice.text] = voice;
+	static async cacheFiles(items = [], force = false) {
+		const results = [];
+		for (let i = 0; i < items.length; i++) {
+			const item = items[i];
+			const uri = await Offline.cacheFile(item.name, item.url, force);
+			results.push(uri);
 		}
 		return results;
 	}
 
-	static async cacheVoice(voice, force = false) {
+	static async cacheFile(name, url, force = false) {
 
-		const fileUri = FileSystem.cacheDirectory + voice.file_name;
+		const uri = FileSystem.cacheDirectory + name;
 
 		if (force) {
-			await FileSystem.deleteAsync(fileUri);
-			console.log('deleted from memory', fileUri);
+			await FileSystem.deleteAsync(uri);
 		}
 
-		const { exists } = await FileSystem.getInfoAsync(fileUri);
+		const { exists } = await FileSystem.getInfoAsync(uri);
 
-		if (!exists) {
-			const downloadResumable = FileSystem.createDownloadResumable(voice.file_url, fileUri);
+		if (!exists || force) {
+			const downloadResumable = FileSystem.createDownloadResumable(url, uri);
 			await downloadResumable.downloadAsync();
-			console.log('downloaded', voice.file_url, fileUri);
+			console.log('downloaded', name, url, uri);
 		}
 
-		voice.file_uri = fileUri;
-
-		return voice;
+		return uri;
 	}
 
-	static async cacheSounds(sounds, force = false) {
-		let results = {};
-		const keys = Object.keys(sounds);
-		for (let i = 0; i < keys.length; i++) {
-			const name = keys[i];
-			const url = sounds[name];
-			const parts = url.split('/');
-			const fileName = parts[parts.length - 1];
-			const fileUri = FileSystem.cacheDirectory + fileName;
-
-			const { exists } = await FileSystem.getInfoAsync(fileUri);
-			if (!exists || force) {
-				const downloadResumable = FileSystem.createDownloadResumable(url, fileUri);
-				await downloadResumable.downloadAsync();
-			}
-			results[name] = fileUri
-		}
-		return results;
+	static async hasFile(name) {
+		const uri = FileSystem.cacheDirectory + name;
+		const { exists } = await FileSystem.getInfoAsync(uri);
+		return { uri, exists }
 	}
 }

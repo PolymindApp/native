@@ -52,12 +52,16 @@ export default class ColumnEditScreen extends React.Component {
 		};
 	}
 
+	isGuidAlreadyExists(guid) {
+		return this.props.route.params.datasetContext.state.dataset.columns.find(column => column.guid === guid) !== undefined;
+	}
+
 	save() {
 		const { navigation, route } = this.props;
 		this.setState({ saving: true });
 		Object.assign(route.params.column, this.state.column);
 
-		route.params.datasetSettingsContext.onColumnSave(route.params.column).then(model => {
+		route.params.datasetSettingsContext.onColumnSave(route.params.column, this.isGuidAlreadyExists(route.params.column.guid)).then(model => {
 			navigation.pop();
 		});
 	}
@@ -150,7 +154,7 @@ export default class ColumnEditScreen extends React.Component {
 				<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
 					<Divider style={{marginBottom: 10}} />
 					<Button mode="contained" onPress={() => this.save()} disabled={!column.isValid() || !this.hasDifferences() || this.state.saving} loading={this.state.saving}>
-						{!column.id || !dataset.id
+						{!this.isGuidAlreadyExists(column.guid)
 							? I18n.t('btn.add')
 							: I18n.t('btn.update')}
 					</Button>

@@ -29,7 +29,7 @@ export default class DataDataScreen extends React.Component {
 
 	filteredRows() {
 		const dataset = this.props.route.params.datasetContext.state.dataset;
-		return dataset.rows.filter(row => {
+		const rows = dataset.rows.filter(row => {
 			const found = false;
 			for (let i = 0; i < row.cells.length; i++) {
 				const cell = row.cells[i];
@@ -39,6 +39,9 @@ export default class DataDataScreen extends React.Component {
 			}
 			return found;
 		});
+
+		return rows;
+		// return rows.sort((a,b) => (a.created_on > b.created_on) ? 1 : ((b.created_on > a.created_on) ? -1 : 0));
 	}
 
 	getRowParams(index) {

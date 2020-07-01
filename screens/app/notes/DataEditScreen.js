@@ -154,6 +154,7 @@ export default class DataEditScreen extends React.Component {
 				clone.rows.push(row);
 			}
 
+			let imageUri = this.state.imageUri;
 			const transactions = clone.getTransactions(originalDataset);
 			this.setState({ saving: true });
 			return DatasetService.save(transactions).then(response => {
@@ -162,6 +163,10 @@ export default class DataEditScreen extends React.Component {
 
 				if (fileData) {
 					dataset.rows[rowIdx].image = fileData;
+
+					if (dataset.rows[rowIdx].image?.private_hash) {
+						imageUri = $polymind.getThumbnailByPrivateHash(dataset.rows[rowIdx].image.private_hash, 'avatar');
+					}
 				}
 
 				datasetContext.updateOriginal(dataset);
@@ -177,7 +182,10 @@ export default class DataEditScreen extends React.Component {
 					});
 				});
 				DatasetService.fetchVoices(voicePayload).then(voices => {
-					Offline.cacheVoices(voices.success);
+					Offline.cacheFiles(voices.success.map(item => ({
+						name: item.file_name,
+						url: item.file_url,
+					})));
 					if (voices.errors.length > 0) {
 						console.error(voices.errors);
 					}
@@ -191,7 +199,7 @@ export default class DataEditScreen extends React.Component {
 					this.prepare();
 				}
 				addMore && this.refInputs[0].focus();
-			}).finally(() => this.setState({ saving: false, autofocus: addMore }));
+			}).finally(() => this.setState({ saving: false, autofocus: addMore, imageUri }));
 		};
 
 		this.setState({ saving: true, autofocus: addMore });
@@ -202,7 +210,7 @@ export default class DataEditScreen extends React.Component {
 			});
 		} else if (this.state.mustUploadRemoteUri) {
 			let uri = this.state.imageUri;
-			if (!uri && this.state.selectedImageIdx !== null) {
+			if (this.state.selectedImageIdx !== null) {
 				uri = this.state.images[this.state.selectedImageIdx];
 			}
 			return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
@@ -419,19 +427,26 @@ export default class DataEditScreen extends React.Component {
 			const text = this.state.fields[fieldIdx].trim();
 			const dataset = this.props.route.params.datasetContext.state.dataset;
 			const fromLocale = dataset.columns[fieldIdx].lang;
+			const promises = [];
 
 			let toLocales = []
 			for (let i = 0; i < this.state.fields.length; i++) {
 				if (i !== fieldIdx) {
-					toLocales.push(dataset.columns[i].lang);
+					console.log(text, fromLocale, dataset.columns[i].lang);
+					promises.push(GoogleService.translate(text, fromLocale, dataset.columns[i].lang));
+				} else {
+					promises.push(null);
 				}
 			}
 
-			return TranslateService.translate(text, fromLocale, toLocales).then(propositions => {
-				propositions.forEach(proposition => {
-					const idx = dataset.columns.findIndex(column => column.lang === proposition.to);
-					if (proposition.text.toLowerCase() !== this.state.fields[idx].toLowerCase()) {
-						translationFields[idx] = proposition.text;
+			return Promise.all(promises).then(responses => {
+				responses.forEach((response, responseIdx) => {
+					if (response === null) {
+						return;
+					}
+					const proposition = response[0].translatedText
+					if (proposition.toLowerCase() !== this.state.fields[responseIdx].toLowerCase()) {
+						translationFields[responseIdx] = proposition;
 					}
 				});
 				return resolve(translationFields);
