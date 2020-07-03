@@ -14,7 +14,7 @@ export default class WelcomeScreen extends React.Component {
 				{/*LOGO*/}
 				<View style={{flex: 0.25, justifyContent: 'center', alignItems: 'center', paddingTop: 15}}>
 					<View style={styles.logoContainer}>
-						<Image source={require('../../assets/images/polymind-dark.png')} style={{ width: 60, height: 100 }} />
+						<Image source={require('../../assets/images/polymind-dark.png')} style={{ width: 60, height: 70 }} />
 						<Text style={styles.logoText}>Polymind</Text>
 					</View>
 				</View>
