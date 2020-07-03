@@ -45,6 +45,8 @@
 				"imageDesc": "Elija una imagen que coincida con su idea:",
 				"noImageFound": "No se ha encontrado ninguna imagen según sus criterios de búsqueda.",
 				"possibleTranslation": "Traducción:",
+				"removeImageDesc": "¿Este seguro de que desea eliminar la imagen de esta nota?",
+				"removeImageTitle": "Borrar imagen",
 				"tags": "Etiquetas"
 			}
 		},
@@ -182,9 +184,9 @@
 		"speed": "Retraso entre preguntas:",
 		"speedSeconds": "{{seconds}} segundos",
 		"types": {
-			"autoAssertiveDesc": "Las notas se mostrarán automáticamente a un ritmo que puede definir. Cada nota se marcará como \"insegura\" si no responde a tiempo.",
+			"autoAssertiveDesc": "Las notas se muestran y pronuncian automáticamente, pero usted está obligado a responder.",
 			"autoAssertiveTitle": "Automático asertivo",
-			"autoPassiveDesc": "Las notas se mostrarán automáticamente a un ritmo que puede definir. No habrá ninguna consecuencia si no responde a tiempo.",
+			"autoPassiveDesc": "Las notas se muestran y se pronuncian automáticamente.",
 			"autoPassiveTitle": "Automático pasivo",
 			"manualDesc": "Revise y responde preguntas manualmente.",
 			"manualTitle": "Manual"

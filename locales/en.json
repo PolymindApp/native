@@ -45,6 +45,8 @@
 				"imageDesc": "Choose an image that matches your idea:",
 				"noImageFound": "No image found based on your search query.",
 				"possibleTranslation": "Translation:",
+				"removeImageDesc": "Are you sure you wish to remove the image from this note?",
+				"removeImageTitle": "Remove Image",
 				"tags": "Tags"
 			}
 		},
@@ -182,9 +184,9 @@
 		"speed": "Delay between questions:",
 		"speedSeconds": "{{seconds}} seconds",
 		"types": {
-			"autoAssertiveDesc": "The notes will be shown automatically at a pace that you can define. Each note will be flagged \"unsure\" if you don't answer on time.",
+			"autoAssertiveDesc": "Notes are showed and pronounced automatically, but you are obliged to answer.",
 			"autoAssertiveTitle": "Automatic Assertive",
-			"autoPassiveDesc": "The notes will be shown automatically at a pace that you can define. There won't be any consequence if you don't answer on time.",
+			"autoPassiveDesc": "Notes are showed and pronounced automatically.",
 			"autoPassiveTitle": "Automatic Passive",
 			"manualDesc": "Review and answer questions manually.",
 			"manualTitle": "Manual"

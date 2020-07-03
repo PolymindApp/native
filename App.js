@@ -2,10 +2,9 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
-import { SafeAreaView, Platform } from 'react-native';
 import { ThemeProvider} from 'react-native-elements';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
-import {StatusBar, StyleSheet, View, ActivityIndicator, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import {SafeAreaView, Platform, StatusBar, StyleSheet, View, ActivityIndicator, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import PolymindSDK, { THEME, EventBus } from '@polymind/sdk-js';
 import LinkingConfiguration from './navigation/LinkingConfiguration';
 import I18n from './locales/i18n';
@@ -82,17 +81,20 @@ export default class App extends React.Component {
 					<PaperProvider theme={themePaper}>
 						<AppContext.Provider value={this.state}>
 							<StatusBar barStyle="light-content" backgroundColor={'transparent'} translucent hidden={!this.state.isSignedIn} />
-							<SafeAreaView style={styles.container}>
-								{!this.state.hasVerifiedAuth ? (
-									<View style={styles.loading}>
-										<ActivityIndicator size="large" color="white" />
-									</View>
-								) : (
-									<NavigationContainer linking={LinkingConfiguration}>
-										{this.state.isSignedIn ? (<AppNavigator />) : (<RestrictedNavigator />)}
-									</NavigationContainer>
-								)}
-							</SafeAreaView>
+
+							{!this.state.hasVerifiedAuth ? (
+								<View style={styles.loading}>
+									<ActivityIndicator size="large" color="white" />
+								</View>
+							) : (
+								<NavigationContainer linking={LinkingConfiguration}>
+									{this.state.isSignedIn ? (
+										<SafeAreaView style={styles.container}>
+											<AppNavigator />
+										</SafeAreaView>
+										) : (<RestrictedNavigator />)}
+								</NavigationContainer>
+							)}
 						</AppContext.Provider>
 					</PaperProvider>
 				</ThemeProvider>

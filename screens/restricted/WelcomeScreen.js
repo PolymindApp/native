@@ -9,33 +9,35 @@ export default class WelcomeScreen extends React.Component {
 	render() {
 		const { navigation } = this.props;
 		return (
-			<View style={styles.container} contentContainerStyle={styles.content}>
-
-				{/*IMAGE*/}
-				<View>
-					<Image source={require('../../assets/images/welcome.jpg')} style={{width: Dimensions.get('window').width + 200, marginLeft: -100, height: Dimensions.get('window').height * 0.5 + 200, borderBottomLeftRadius: 250, borderBottomRightRadius: 250, opacity: 0.25, paddingTop: 200, marginTop: -200}} />
-				</View>
+			<View style={styles.container}>
 
 				{/*LOGO*/}
-				<View style={{...styles.view, flex: 0.4, justifyContent: 'center', alignItems: 'center', marginVertical: 15}}>
+				<View style={{flex: 0.25, justifyContent: 'center', alignItems: 'center', paddingTop: 15}}>
 					<View style={styles.logoContainer}>
-						<Image source={require('../../assets/images/polymind-light.png')} style={{ width: 60, height: 100 }} />
+						<Image source={require('../../assets/images/polymind-dark.png')} style={{ width: 60, height: 100 }} />
 						<Text style={styles.logoText}>Polymind</Text>
 					</View>
 				</View>
 
-				<View style={{flex: 0.6, marginHorizontal: 30 }}>
+				{/*IMAGE*/}
+				<View style={{flex: 0.5, marginVertical: 30}}>
+					<Image source={require('../../assets/images/welcome.png')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height * 0.4}} />
+				</View>
+
+				<View style={{flex: 0.25, backgroundColor: THEME.primary, justifyContent: 'center', padding: 30 }}>
 					<View>
-						<Button title={I18n.t("restricted.login")} type="solid" buttonStyle={{
+						<Button title={I18n.t("restricted.login")} type="solid" titleStyle={{ color: THEME.primary }} buttonStyle={{
 							borderRadius: 6,
 							height: 50,
+							backgroundColor: 'white',
 						}} onPress={() => navigation.push('Login')} />
 					</View>
 					<View style={{marginTop: 10}}>
-						<Button title={I18n.t("restricted.register")} type="outline" titleStyle={{color: THEME.third}} buttonStyle={{
+						<Button title={I18n.t("restricted.register")} type="outline" titleStyle={{ color: 'white' }} buttonStyle={{
 							borderRadius: 6,
+							// backgroundColor: THEME.secondary,
+							borderColor: 'white',
 							height: 50,
-							borderColor: THEME.third,
 							borderWidth: 1,
 						}} onPress={() => navigation.push('Register')} />
 					</View>
@@ -49,24 +51,17 @@ export default class WelcomeScreen extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#0c3238',//THEME.primaryDarker
-	},
-	content: {
-		flex: 1,
-		justifyContent: 'center',
+		backgroundColor: '#f5f1f0',
 	},
 	logoContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
 	logoText: {
-		color: 'white',
+		color: '#1B8E8A',
 		marginLeft: 15,
-		fontWeight: 'normal',
+		fontWeight: '200',
 		fontSize: 40,
-	},
-	view: {
-		marginHorizontal: 60,
 	},
 	centeredText: {
 		textAlign: 'center',

@@ -53,10 +53,11 @@
 	  "usesAppleSignIn": true,
 	  "config": {
 		"googleSignIn": {
-		  "reservedClientId": "285103854117-n9pudumhl6bfg3aibr30mgg7f3b5edns.apps.googleusercontent.com"
+		  "reservedClientId": "com.googleusercontent.apps.285103854117-p5c9kagi2ld9dct6en9qqo1iqo93vok4"
 		}
 	  },
 	  "infoPlist": {
+		"ITSAppUsesNonExemptEncryption": false,
 		"CFBundleAllowMixedLocalizations": true,
 		"UIBackgroundModes": [
 		  "audio"

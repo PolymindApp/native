@@ -58,11 +58,13 @@ export default class NotesScreen extends React.Component {
 	}
 
 	filteredDatasets() {
-		return this.state.datasets.filter(dataset => {
+		const datasets = this.state.datasets.filter(dataset => {
 			if (dataset.name.trim().toLowerCase().indexOf(this.state.search.trim().toLowerCase()) !== -1) {
 				return true;
 			}
 		});
+
+		return datasets.sort((a,b) => (a.created_on > b.created_on) ? 1 : ((b.created_on > a.created_on) ? -1 : 0)).reverse();
 	}
 
 	onRefresh() {

@@ -1,5 +1,5 @@
 import React from 'react'
-import {ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Alert, ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import PolymindSDK, { Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
@@ -146,6 +146,8 @@ export default class DataEditScreen extends React.Component {
 
 			if (fileData) {
 				row.image = fileData.id;
+			} else if (this.state.imageUri === null) {
+				row.image = null;
 			}
 
 			if (row.id) {
@@ -163,10 +165,6 @@ export default class DataEditScreen extends React.Component {
 
 				if (fileData) {
 					dataset.rows[rowIdx].image = fileData;
-
-					if (dataset.rows[rowIdx].image?.private_hash) {
-						imageUri = $polymind.getThumbnailByPrivateHash(dataset.rows[rowIdx].image.private_hash, 'avatar');
-					}
 				}
 
 				datasetContext.updateOriginal(dataset);
@@ -176,10 +174,12 @@ export default class DataEditScreen extends React.Component {
 				const voicePayload = [];
 				dataset.columns.forEach((column, columnIdx) => {
 					const locale = Locale.abbrToLocale(column.lang);
-					voicePayload.push({
-						locale,
-						text: this.state.fields[columnIdx],
-					});
+					if (this.state.fields[columnIdx]) {
+						voicePayload.push({
+							locale,
+							text: this.state.fields[columnIdx],
+						});
+					}
 				});
 				DatasetService.fetchVoices(voicePayload).then(voices => {
 					Offline.cacheFiles(voices.success.map(item => ({
@@ -197,6 +197,10 @@ export default class DataEditScreen extends React.Component {
 					this.prepare(true);
 				} else {
 					this.prepare();
+
+					if (dataset.rows[rowIdx].image?.private_hash) {
+						imageUri = $polymind.getThumbnailByPrivateHash(dataset.rows[rowIdx].image.private_hash, 'avatar');
+					}
 				}
 				addMore && this.refInputs[0].focus();
 			}).finally(() => this.setState({ saving: false, autofocus: addMore, imageUri }));
@@ -256,6 +260,24 @@ export default class DataEditScreen extends React.Component {
 		}
 
 		this.setState({ ...state, fields, row, autofocus: row.id === null });
+	}
+
+	removeImage(force = false) {
+		if (!force) {
+			Alert.alert(
+				I18n.t('dataset.data.edit.removeImageTitle'),
+				I18n.t('dataset.data.edit.removeImageDesc'),
+				[
+					{ text: I18n.t('btn.cancel') },
+					{ text: I18n.t('btn.delete'), onPress: () => this.removeImage(true), style: 'destructive' },
+				],
+				{ cancelable: false }
+			);
+
+		} else {
+			const row = this.getRow();
+			this.setState({ imageUri: null });
+		}
 	}
 
 	async componentDidMount() {
@@ -331,7 +353,7 @@ export default class DataEditScreen extends React.Component {
 			return true;
 		}
 
-		if (this.state.mustUploadRemoteUri || this.state.mustUploadLocalUri) {
+		if (this.state.mustUploadRemoteUri || this.state.mustUploadLocalUri || (row.image !== null && this.state.imageUri === null)) {
 			return true;
 		}
 
@@ -373,7 +395,7 @@ export default class DataEditScreen extends React.Component {
 		const locale = dataset.columns[fieldIdx].lang;
 
 		return new Promise((resolve, reject) => {
-			return SpellCheckService.check(text, locale).then(tokens => {
+			return SpellCheckService.check(text, Locale.abbrToLocale(locale)).then(tokens => {
 
 				if (!tokens) {
 					resolve(false);
@@ -432,7 +454,6 @@ export default class DataEditScreen extends React.Component {
 			let toLocales = []
 			for (let i = 0; i < this.state.fields.length; i++) {
 				if (i !== fieldIdx) {
-					console.log(text, fromLocale, dataset.columns[i].lang);
 					promises.push(GoogleService.translate(text, fromLocale, dataset.columns[i].lang));
 				} else {
 					promises.push(null);
@@ -710,7 +731,7 @@ export default class DataEditScreen extends React.Component {
 										// }
 										onSubmitEditing={() => {
 											if (fieldIdx === dataset.columns.length - 1) {
-												this.save(true);
+												// this.save(true);
 											} else {
 												this.refInputs[fieldIdx + 1].focus();
 											}
@@ -759,11 +780,14 @@ export default class DataEditScreen extends React.Component {
 								<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.image')}</Text>
 							</View>
 
-							{this.state.imageUri && <Image source={{ uri: this.state.imageUri }} style={{ marginTop: 5, width: '100%', height: (Dimensions.get('window').width - 40)}} />}
+							{this.state.imageUri &&
+								<View style={{ marginTop: 5 }}>
+									<TouchableOpacity style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center', zIndex: 1, top: 10, right: 10}} onPress={() => this.removeImage()}>
+										<Icon name={'close'} color={THEME.error} style={{width: 23, height: 23}} size={24} backgroundColor={'white'} borderRadius={100} />
+									</TouchableOpacity>
 
-							<Text style={{marginTop: 5, opacity: 0.5}}>
-								{I18n.t('dataset.data.edit.imageDesc')}
-							</Text>
+									<Image source={{ uri: this.state.imageUri }} style={{width: '100%', height: (Dimensions.get('window').width - 40)}} />
+								</View>}
 
 							<Input
 								clearButtonMode={'while-editing'}
@@ -784,6 +808,9 @@ export default class DataEditScreen extends React.Component {
 								<Text style={{flex: 1, flexWrap: 'wrap'}}>{I18n.t('dataset.data.edit.noImageFound')}</Text>
 							</View>}
 
+							{this.state.images.length > 0 && <Text style={{marginTop: 5, opacity: 0.5}}>
+								{I18n.t('dataset.data.edit.imageDesc')}
+							</Text>}
 							{this.state.images.length > 0 && <View style={{marginTop: 10, flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
 								{this.state.images.map((image, imageIdx) => (
 									<TouchableOpacity key={imageIdx} style={{ width: '33.333%', height: Dimensions.get('window').width / 3 }} onPress={() => this.toggleImageSelection(imageIdx)}>
