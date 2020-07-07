@@ -3,11 +3,12 @@ import {Audio} from "expo-av";
 
 export default class Sound {
 
-	static async play(name, url, group = 'default') {
+	static async play(name, url, group = 'default', status = {}) {
 		return Offline.hasFile(name).then(async ({exists, uri}) => {
+			console.log(exists, uri, url);
 			return await Audio.Sound.createAsync(
 				{ uri: exists ? uri : url },
-				{ shouldPlay: true }
+				{ shouldPlay: true, ...status }
 			).then((res) => {
 				res.sound.setOnPlaybackStatusUpdate((status)=>{
 					if (!status.didJustFinish) {
@@ -26,7 +27,7 @@ export default class Sound {
 						Offline.cacheFile(name, url, true);
 						break;
 					default:
-						console.error(error.code);
+						console.log(error);
 						break;
 				}
 			});

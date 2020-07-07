@@ -49,11 +49,10 @@ export default class SocialLogin extends React.Component {
 		try {
 			if (provider === 'google') {
 				const { type, accessToken, user, test, idToken } = await Google.logInAsync({
-					// iosStandaloneAppClientId: '285103854117-dtao7us31rfubnrdo0bkt2ifqlp4pud8.apps.googleusercontent.com',
-					// androidStandaloneAppClientId: '',
-					// androidClientId: "285103854117-n9pudumhl6bfg3aibr30mgg7f3b5edns.apps.googleusercontent.com",
-					// iosClientId: '285103854117-p5c9kagi2ld9dct6en9qqo1iqo93vok4.apps.googleusercontent.com',//Constants.manifest.googleClientId,
+					iosStandaloneAppClientId: '285103854117-dtao7us31rfubnrdo0bkt2ifqlp4pud8.apps.googleusercontent.com',
 					iosClientId: '285103854117-p5c9kagi2ld9dct6en9qqo1iqo93vok4.apps.googleusercontent.com',
+					androidStandaloneAppClientId: '285103854117-n9pudumhl6bfg3aibr30mgg7f3b5edns.apps.googleusercontent.com',
+					androidClientId: "285103854117-cpt6mn8hnpkhf840nadpll0qq43v3acf.apps.googleusercontent.com",
 				});
 				if (type === 'success') {
 					signInCallback(provider, idToken, undefined, user.photoUrl);

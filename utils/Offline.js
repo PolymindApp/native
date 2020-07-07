@@ -25,7 +25,6 @@ export default class Offline {
 		if (!exists || force) {
 			const downloadResumable = FileSystem.createDownloadResumable(url, uri);
 			await downloadResumable.downloadAsync();
-			console.log('downloaded', name, url, uri);
 		}
 
 		return uri;

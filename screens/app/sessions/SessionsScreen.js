@@ -45,7 +45,7 @@ export default class SessionsScreen extends React.Component {
 		{ key: 'manual', title: I18n.t('session.types.manualTitle'), desc: I18n.t('session.types.manualDesc'), icon: 'hand', color: THEME.success, },
 		{ key: 'linearPassive', title: I18n.t('session.types.autoPassiveTitle'), desc: I18n.t('session.types.autoPassiveDesc'), icon: 'play-speed', color: THEME.success },
 		{ key: 'linearAssertive', title: I18n.t('session.types.autoAssertiveTitle'), desc: I18n.t('session.types.autoAssertiveDesc'), icon: 'play-speed', color: THEME.warning },
-	]
+	];
 
 	load() {
 		const startDate = moment().subtract(1, 'month');
@@ -67,8 +67,8 @@ export default class SessionsScreen extends React.Component {
 		};
 
 		this._navigationFocus = navigation.addListener('focus', () => {
-			if (this.props.route.params?.refresh) {
-				this.props.route.params.refresh = false;
+			if (global.mustRefreshSession) {
+				global.mustRefreshSession = false;
 				callback()
 			}
 		});
@@ -124,6 +124,7 @@ export default class SessionsScreen extends React.Component {
 
 			for (let [sessionId, item] of Object.entries(daily.session)) {
 				const item = daily.session[sessionId];
+				item.id = sessionId;
 				item.timestamp = moment.utc(item.start_date).local().unix();
 				item.startTime = moment.utc(item.start_date).local().format('HH:mm');
 				item.endTime = moment.utc(item.end_date).local().format('HH:mm');
@@ -508,22 +509,22 @@ export default class SessionsScreen extends React.Component {
 											</View>
 											<View style={styles.dateItemRight}>
 												{date.items.map((session, sessionIdx) => (
-													// <TouchableOpacity onPress={() => {navigation.push('SessionsStats', { session })}} key={sessionIdx}>
-													<Card containerStyle={{marginBottom: sessionIdx < date.items.length - 1 ? -10 : 0}} key={sessionIdx}>
-														<View style={{marginBottom: 5}}>
-															<Text style={{fontWeight: 'bold'}}>{session.title}</Text>
-														</View>
-														<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-															<Text>{Time.duration(session.totalTime, false)}</Text>
-															<Text style={styles.fromTo}>{session.startTime + ' - ' + session.endTime}</Text>
-														</View>
-														<View style={{flex: 1, flexDirection: 'row', marginHorizontal: -15, marginBottom: -15, marginTop: 15}}>
-															<View style={{backgroundColor: THEME.success, height: 3, flex: session.statusPercentages.easy}} />
-															<View style={{backgroundColor: THEME.warning, height: 3, flex: session.statusPercentages.unsure}} />
-															<View style={{backgroundColor: THEME.error, height: 3, flex: session.statusPercentages.hard}} />
-														</View>
-													</Card>
-													// </TouchableOpacity>
+													<TouchableOpacity onPress={() => {navigation.push('SessionsStats', { session })}} key={sessionIdx}>
+														<Card containerStyle={{marginBottom: sessionIdx < date.items.length - 1 ? -10 : 0}} key={sessionIdx}>
+															<View style={{marginBottom: 5}}>
+																<Text style={{fontWeight: 'bold'}}>{session.title}</Text>
+															</View>
+															<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+																<Text>{Time.duration(session.totalTime, false)}</Text>
+																<Text style={styles.fromTo}>{session.startTime + ' - ' + session.endTime}</Text>
+															</View>
+															<View style={{flex: 1, flexDirection: 'row', marginHorizontal: -15, marginBottom: -15, marginTop: 15}}>
+																<View style={{backgroundColor: THEME.success, height: 3, flex: session.statusPercentages.easy}} />
+																<View style={{backgroundColor: THEME.warning, height: 3, flex: session.statusPercentages.unsure}} />
+																<View style={{backgroundColor: THEME.error, height: 3, flex: session.statusPercentages.hard}} />
+															</View>
+														</Card>
+													</TouchableOpacity>
 												))}
 											</View>
 										</View>))}

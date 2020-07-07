@@ -47,6 +47,7 @@ export default class NotesScreen extends React.Component {
 			const idx = datasets.findIndex(item => item.id === dataset.id);
 			datasets.splice(idx, 1);
 			this.setState({ datasets });
+			global.mustRefreshSession = true;
 			resolve();
 		});
 	}

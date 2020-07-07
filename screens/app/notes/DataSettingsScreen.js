@@ -87,6 +87,7 @@ export default class DataSettingsScreen extends React.Component {
 			route.params.datasetContext.setState({dataset, wasValid: dataset.isValid()});
 			if (wasNew) {
 				datasetsContext.state.datasets.push(dataset);
+				global.mustRefreshSession = true;
 			} else {
 				const idx = datasetsContext.state.datasets.findIndex(item => item.id === dataset.id);
 				datasetsContext.state.datasets[idx] = dataset;

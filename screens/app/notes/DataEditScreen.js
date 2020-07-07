@@ -182,10 +182,15 @@ export default class DataEditScreen extends React.Component {
 					}
 				});
 				DatasetService.fetchVoices(voicePayload).then(voices => {
-					Offline.cacheFiles(voices.success.map(item => ({
-						name: item.file_name,
-						url: item.file_url,
-					})));
+					// TODO: Not a good idea to cache file right after fetch voices since its status might still be pending..
+					// TEMPORARY: wait 10 seconds..
+					setTimeout(() => {
+						Offline.cacheFiles(voices.success.map(item => ({
+							name: item.file_name,
+							url: item.file_url,
+						})));
+					}, 10 * 1000)
+
 					if (voices.errors.length > 0) {
 						console.error(voices.errors);
 					}

@@ -133,7 +133,8 @@
 		"role": {
 			"administrator": "Administrateur",
 			"member": "Membre"
-		}
+		},
+		"socialSection": "Suivez nous :"
 	},
 	"restricted": {
 		"accountVerifiedSubtitle": "Vous pouvez maintenant accéder votre compte Polymind.",

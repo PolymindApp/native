@@ -197,7 +197,9 @@ export default class StatsScreen extends React.Component {
 				const text = data.text.toLowerCase().replace(/\s{2,}/g, ' ');
 				const voice = memory.voices.find(voice => voice.locale === locale && voice.text === text);
 				if (voice) {
-					Sound.play(voice.file_name, voice.file_url, 'voice');
+					Sound.play(voice.file_name, voice.file_url, 'voice', {
+						volume: 1
+					});
 				}
 				break;
 			case 'play_sound':

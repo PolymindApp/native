@@ -5,7 +5,7 @@ import * as React from 'react';
 import { ThemeProvider} from 'react-native-elements';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import {SafeAreaView, Platform, StatusBar, StyleSheet, View, ActivityIndicator, TouchableWithoutFeedback, Keyboard} from 'react-native';
-import PolymindSDK, { THEME, EventBus } from '@polymind/sdk-js';
+import PolymindSDK, { THEME, EventBus, CloudWatchService } from '@polymind/sdk-js';
 import LinkingConfiguration from './navigation/LinkingConfiguration';
 import I18n from './locales/i18n';
 import { AppContext } from './contexts';

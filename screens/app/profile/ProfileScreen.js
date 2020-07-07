@@ -1,7 +1,7 @@
 import React from 'react';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, View, Linking } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Icon, ListItem, Text } from 'react-native-elements';
+import { Icon, ListItem, SocialIcon } from 'react-native-elements';
 import PolymindSDK, { User, THEME, FileService, UserService } from "@polymind/sdk-js";
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
@@ -119,6 +119,15 @@ export default class ProfileScreen extends React.Component {
 						{pages.map((page, pageIdx) => (
 							<ListItem key={pageIdx} title={page.title} chevron delayPressIn={0} onPress={() => navigation.push(page.name, page.props)} topDivider={pageIdx !== 0} />
 						))}
+					</View>
+				</View>
+
+				<View style={{marginTop: 15, marginBottom: 30}}>
+					<List.Subheader>{I18n.t('profile.socialSection')}</List.Subheader>
+					<View style={{flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
+						<SocialIcon title='Facebook' type='facebook' delayPressIn={0} onPress={() => Linking.openURL('https://www.facebook.com/polymindapp')}/>
+						<SocialIcon title='Twitter' type='twitter' delayPressIn={0} onPress={() => Linking.openURL('https://twitter.com/polyminapp')}/>
+						<SocialIcon title='LinkedIn' type='linkedin' delayPressIn={0} onPress={() => Linking.openURL('https://www.linkedin.com/company/polymindapp')}/>
 					</View>
 				</View>
 			</ScrollView>
