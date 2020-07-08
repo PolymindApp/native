@@ -24,6 +24,7 @@ export default class DataEditScreen extends React.Component {
 	state = {
 		fields: [],
 		images: [],
+		largeImages: [],
 		tags: [],
 		optionsMenu: false,
 		autofocus: true,
@@ -220,7 +221,7 @@ export default class DataEditScreen extends React.Component {
 		} else if (this.state.mustUploadRemoteUri) {
 			let uri = this.state.imageUri;
 			if (this.state.selectedImageIdx !== null) {
-				uri = this.state.images[this.state.selectedImageIdx];
+				uri = this.state.largeImages[this.state.selectedImageIdx];
 			}
 			return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
 				console.log(err);
@@ -502,6 +503,7 @@ export default class DataEditScreen extends React.Component {
 			.then(response => {
 
 				let images = this.state.lastSearchQuery === query ? this.state.images : [];
+				let largeImages = this.state.lastSearchQuery === query ? this.state.largeImages : [];
 
 				if (images.length === 0) {
 					this.state.selectedImageIdx = null;
@@ -512,10 +514,13 @@ export default class DataEditScreen extends React.Component {
 					return this.setState({ emptyImageResults: true, images });
 				}
 
+				const largeItems = response.items.map(item => item.link);
+				largeImages = largeImages.concat(largeItems);
+
 				const items = response.items.map(item => item.image.thumbnailLink);
 				images = images.concat(items);
 
-				this.setState({ selectedImageIdx: this.state.selectedImageIdx, images, lastSearchQuery: query, imageOffset: this.state.imageOffset + 9, canFetchMoreImages: images.length < 27 && totalResults >= 9 });
+				this.setState({ largeImages, selectedImageIdx: this.state.selectedImageIdx, images, lastSearchQuery: query, imageOffset: this.state.imageOffset + 9, canFetchMoreImages: images.length < 27 && totalResults >= 9 });
 			})
 			.catch(err => console.log(err))
 			.finally(() => this.setState({ fetching: false, fetchingCustom: false }));

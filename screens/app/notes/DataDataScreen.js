@@ -40,9 +40,11 @@ export default class DataDataScreen extends React.Component {
 			return found;
 		});
 
-		const orderedRows = rows.sort((a, b) => (a.created_on > b.created_on) ? 1 : ((b.created_on > a.created_on) ? -1 : 0)).reverse();
+		return rows;
 
-		return orderedRows;
+		// const orderedRows = rows.sort((a, b) => (a.created_on > b.created_on) ? 1 : ((b.created_on > a.created_on) ? -1 : 0)).reverse();
+		//
+		// return orderedRows;
 	}
 
 	getRowParams(index) {

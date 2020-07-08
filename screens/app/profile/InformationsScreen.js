@@ -73,7 +73,6 @@ export default class InformationsScreen extends React.Component {
 							defaultValue={this.state.user.biography}
 							onChangeText={value => this.setState({ user: {...this.state.user, biography: value}})}
 							multiline={true}
-							numberOfLines={4}
 							returnKeyType = {"next"}
 							renderErrorMessage={false}
 							ref={ref => { refInputs[1] = ref }}

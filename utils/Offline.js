@@ -2,6 +2,17 @@ import * as FileSystem from 'expo-file-system';
 
 export default class Offline {
 
+	static async getContent(name) {
+		return Offline.hasFile(name).then(({uri, exists}) => {
+			if (!exists) {
+				return false;
+			}
+			return FileSystem.readAsStringAsync(uri, {
+				encoding: FileSystem.EncodingType.Base64,
+			});
+		}).catch(err => console.log(err));
+	}
+
 	static async cacheFiles(items = [], force = false) {
 		const results = [];
 		for (let i = 0; i < items.length; i++) {

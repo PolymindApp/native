@@ -43,6 +43,7 @@ export default class DataSettingsScreen extends React.Component {
 
 			if (dataset.id) {
 				DatasetColumnService.save(column).then(model => {
+					global.mustRefreshSession = true;
 					return callback(model, !column.id);
 				});
 			} else {
@@ -61,7 +62,10 @@ export default class DataSettingsScreen extends React.Component {
 				this.setState({dataset});
 				resolve();
 			}
-			column.id ? DatasetColumnService.remove(column.id).then(() => callback()) : callback();
+			column.id ? DatasetColumnService.remove(column.id).then(() => {
+				global.mustRefreshSession = true;
+				callback();
+			}) : callback();
 		});
 	}
 

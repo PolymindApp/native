@@ -1,8 +1,8 @@
 import React from 'react';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import {ActivityIndicator, StyleSheet, StatusBar, TouchableOpacity, View, Share, Alert} from 'react-native';
-import PolymindSDK, { THEME, SessionStructureService, ComponentService, Component, Locale } from '@polymind/sdk-js';
+import {AppState, ActivityIndicator, StyleSheet, StatusBar, TouchableOpacity, View, Share, Alert} from 'react-native';
+import PolymindSDK, { File, THEME, SessionStructureService, ComponentService, Component, Locale } from '@polymind/sdk-js';
 import {Text} from "react-native-elements";
 import I18n from "../../../locales/i18n";
 import { WebView } from 'react-native-webview';
@@ -14,12 +14,15 @@ import Sound from '../../../utils/Sound';
 const memory = {
 	sounds: {},
 	voices: [],
+	mergedVoices: '',
 };
-
 const meditationSongs = [
 	'https://polymind.s3.ca-central-1.amazonaws.com/player/mental-energizer.mp3'
 ];
+let playbackVoice;
 let playbackMeditation;
+let keepMergedVoicesAudioSessionAliveInterval;
+let mergedVoiceSound;
 
 // https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/audio.md#arguments-1
 Audio.setAudioModeAsync({
@@ -37,6 +40,7 @@ let terminateBackTimeout;
 export default class StatsScreen extends React.Component {
 
 	state = {
+		appState: AppState.currentState,
 		generating: false,
 		structure: null,
 		session: null,
@@ -120,6 +124,8 @@ export default class StatsScreen extends React.Component {
 				</View>
 			)
 		});
+
+		AppState.addEventListener('change', this.handleAppStateChange);
 	}
 
 	componentWillUnmount() {
@@ -130,6 +136,21 @@ export default class StatsScreen extends React.Component {
 		deactivateKeepAwake();
 		this._navigationFocus();
 		this._navigationBlur();
+
+		AppState.removeEventListener('change', this.handleAppStateChange);
+	}
+
+	handleAppStateChange = nextAppState => {
+
+		if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+			console.log('Foreground');
+			// this.toggleKeepMergedVoicesAudioSessionAlive(true);
+		} else if (nextAppState !== 'active') {
+			console.log('Background');
+			// this.toggleKeepMergedVoicesAudioSessionAlive(false);
+		}
+
+		this.setState({ appState: nextAppState });
 	}
 
 	adjustScreenOrientation(orientation) {
@@ -192,12 +213,21 @@ export default class StatsScreen extends React.Component {
 		const { type, data } = JSON.parse(event.nativeEvent.data);
 
 		switch (type) {
+			case 'index':
+				console.log('index', data);
+				break;
 			case 'read':
 				const locale = Locale.abbrToLocale(data.settings.lang);
 				const text = data.text.toLowerCase().replace(/\s{2,}/g, ' ');
 				const voice = memory.voices.find(voice => voice.locale === locale && voice.text === text);
+
+				if (playbackVoice && !playbackVoice.completed) {
+					await playbackVoice.sound.stopAsync();
+					await playbackVoice.sound.unloadAsync();
+				}
+
 				if (voice) {
-					Sound.play(voice.file_name, voice.file_url, 'voice', {
+					playbackVoice = await Sound.play(voice.file_name, voice.file_url, 'voice', {
 						volume: 1
 					});
 				}
@@ -231,6 +261,7 @@ export default class StatsScreen extends React.Component {
 					name: item.file_name,
 					url: item.file_url,
 				})));
+				await this.mergeVoices();
 				break;
 			case 'all_sounds':
 				memory.sounds = data;
@@ -266,6 +297,50 @@ export default class StatsScreen extends React.Component {
 		})()`);
 	}
 
+	// TODO: voice longer than speed? (surely will break stuff..)
+	async mergeVoices() {
+
+		const { params } = this.props.route.params.settings;
+
+		let content = Sound.generateBase64Silence(2000);
+		const keys = Object.keys(memory.voices);
+		for (let i = 0; i < memory.voices.length; i++) {
+			const voice = memory.voices[i];
+			content += await Offline.getContent(voice.file_name);
+
+			const audio = await Sound.getAudio(voice.file_name);
+			const duration = audio.playback.durationMillis;
+			await audio.sound.unloadAsync();
+
+			let timeLeft = (params.component.speed * 1000) - duration;
+			if (timeLeft > 0) {
+				const silence = Sound.generateBase64Silence(timeLeft);
+				content += silence;
+			}
+		}
+
+		memory.mergedVoices = content;
+		const sound = await Sound.fromBase64('merged', memory.mergedVoices, {
+			// shouldPlay: true,
+			isLooping: true,
+		});
+		mergedVoiceSound = sound;
+		// this.toggleKeepMergedVoicesAudioSessionAlive(true);
+	}
+
+	toggleKeepMergedVoicesAudioSessionAlive(bool) {
+		if (!bool) {
+			clearInterval(keepMergedVoicesAudioSessionAliveInterval);
+		} else {
+			const callback = () => {
+				console.log('setPositionAsync', 0);
+				mergedVoiceSound.setPositionAsync(0);
+			};
+			callback();
+			keepMergedVoicesAudioSessionAliveInterval = setInterval(callback, 1000);
+		}
+	}
+
 	render() {
 		return (
 			<View style={{flex: 1}}>
@@ -291,7 +366,3 @@ export default class StatsScreen extends React.Component {
 		);
 	};
 }
-
-const styles = StyleSheet.create({
-
-});
