@@ -19,6 +19,7 @@
 		"delete": "Delete",
 		"fetchMore": "Fetch more",
 		"grant": "Grant",
+		"loadMore": "Load more",
 		"newNotes": "Add notes",
 		"newSession": "Start a session",
 		"next": "Next",

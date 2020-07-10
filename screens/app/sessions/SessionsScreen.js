@@ -14,12 +14,17 @@ import 'moment/locale/it';
 const $polymind = new PolymindSDK();
 let sliderTimeout;
 
+let startDate = moment().startOf('day').subtract(1, 'month');
+let endDate = moment().endOf('day');
+
 export default class SessionsScreen extends React.Component {
 
 	state = {
 		refreshing: false,
 		loading: true,
+		loadingMore: false,
 		drawerLoading: false,
+		mayHaveMore: true,
 		datasets: [],
 		newSession: {
 			dataset: new Dataset(),
@@ -30,8 +35,9 @@ export default class SessionsScreen extends React.Component {
 					image: false,
 				},
 				component: {
-					speed: 10,
-					range: 0,
+					mode: 'linearAssertive',
+					speed: 5,
+					range: 20,
 					readQuestion: true,
 					readAnswer: true,
 				},
@@ -47,13 +53,22 @@ export default class SessionsScreen extends React.Component {
 		{ key: 'linearAssertive', title: I18n.t('session.types.autoAssertiveTitle'), desc: I18n.t('session.types.autoAssertiveDesc'), icon: 'play-speed', color: THEME.warning },
 	];
 
-	load() {
-		const startDate = moment().subtract(1, 'month');
-		const endDate = moment().add(2, 'day');
+	handleLoadMore() {
+		this.setState({ loadingMore: true });
+		this.load(true).finally(() => this.setState({ loadingMore: false }));
+	}
 
+	load(loadMore = false) {
 		return SessionStatsService.getAll('live', startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD')).then(stats => {
-			this.setState({ stats: stats.daily });
-			return this.loadDatasets();
+			const items = Object.keys(stats.daily);
+			const mayHaveMore = items.length > 0;
+			startDate = moment(startDate).subtract(1, 'month');
+			endDate = moment(startDate);
+
+			let newStats = loadMore ? this.state.stats : {};
+			Object.assign(newStats, stats.daily);
+
+			this.setState({ mayHaveMore, stats: newStats, offset: (this.state.offset + this.state.limit) });
 		});
 	}
 
@@ -63,11 +78,15 @@ export default class SessionsScreen extends React.Component {
 
 		const callback = () => {
 			this.setState({ loading: true });
-			this.load().finally(() => this.setState({ loading: false }));
+			this.load().then(() => this.loadDatasets()).finally(() => {
+				this.setState({ loading: false });
+			});
 		};
 
 		this._navigationFocus = navigation.addListener('focus', () => {
 			if (global.mustRefreshSession) {
+				startDate = moment().startOf('day').subtract(1, 'month');
+				endDate = moment().endOf('day');
 				global.mustRefreshSession = false;
 				callback()
 			}
@@ -80,8 +99,15 @@ export default class SessionsScreen extends React.Component {
 	}
 
 	onRefresh() {
+
+		startDate = moment().startOf('day').subtract(1, 'month');
+		endDate = moment().endOf('day');
+
 		this.setState({ refreshing: true });
-		this.load().then(() => this.setState({ refreshing: false }));
+		this.load().then(() => {
+			this.setState({ refreshing: false });
+			return this.loadDatasets();
+		});
 	}
 
 	startSession(settings) {
@@ -212,12 +238,13 @@ export default class SessionsScreen extends React.Component {
 		}
 
 		const years = this.formattedSessions();
+		const height = Math.max(Dimensions.get('window').height, Dimensions.get('window').width);
 
 		return (
 			<View style={{flex: 1}}>
 				<RBSheet
 					ref={ref => this.RBSheet = ref}
-					height={Dimensions.get('window').height / 1.2}
+					height={height / 1.2}
 					animationType={'fade'}
 					closeOnDragDown={true}
 					customStyles={{
@@ -248,8 +275,19 @@ export default class SessionsScreen extends React.Component {
 											onPress={() => {
 												const newSession = this.state.newSession;
 												newSession.dataset = dataset;
-												this.setState({ newSession });
-												this.setStep(2);
+
+												// this.setState({ newSession });
+												// this.setStep(2);
+
+												const columns = this.state.newSession.dataset.columns;
+												newSession.params.dataset.question = columns[0].guid;
+												if (columns.length > 1) {
+													newSession.params.dataset.answer = columns[1].guid;
+												} else {
+													newSession.params.component.mode = 'linearPassive';
+												}
+
+												this.startSession(this.state.newSession);
 											}}
 											chevron
 										/>
@@ -454,23 +492,23 @@ export default class SessionsScreen extends React.Component {
 								</ScrollView>
 							</View>
 						)}
-						<View style={{ height: 45 }}>
-							<Divider style={{marginBottom: 10}} />
-							<View style={{flexDirection: 'row'}}>
-								<Button style={{flex: 1, marginRight: 5}} icon={'chevron-left'} mode="contained" color={'#eee'} onPress={() => this.stepBack()} disabled={this.state.step === 1} delayPressIn={0}>
-									{I18n.t('btn.back')}
-								</Button>
-								{this.state.step < 4 ? (
-									<Button style={{flex: 1, marginLeft: 5}} icon={'chevron-right'} mode="contained" onPress={() => this.stepNext()} disabled={this.canStepNext()} delayPressIn={0}>
-										{I18n.t('btn.next')}
-									</Button>
-								) : (
-									<Button style={{flex: 1, marginLeft: 5}} icon={'play'} mode="contained" onPress={() => this.startSession(this.state.newSession)} disabled={this.canStepBack()} delayPressIn={0}>
-										{I18n.t('btn.start')}
-									</Button>
-								)}
-							</View>
-						</View>
+						{/*<View style={{ height: 45 }}>*/}
+						{/*	<Divider style={{marginBottom: 10}} />*/}
+						{/*	<View style={{flexDirection: 'row'}}>*/}
+						{/*		<Button style={{flex: 1, marginRight: 5}} icon={'chevron-left'} mode="contained" color={'#eee'} onPress={() => this.stepBack()} disabled={this.state.step === 1} delayPressIn={0}>*/}
+						{/*			{I18n.t('btn.back')}*/}
+						{/*		</Button>*/}
+						{/*		{this.state.step < 4 ? (*/}
+						{/*			<Button style={{flex: 1, marginLeft: 5}} icon={'chevron-right'} mode="contained" onPress={() => this.stepNext()} disabled={this.canStepNext()} delayPressIn={0}>*/}
+						{/*				{I18n.t('btn.next')}*/}
+						{/*			</Button>*/}
+						{/*		) : (*/}
+						{/*			<Button style={{flex: 1, marginLeft: 5}} icon={'play'} mode="contained" onPress={() => this.startSession(this.state.newSession)} disabled={this.canStepBack()} delayPressIn={0}>*/}
+						{/*				{I18n.t('btn.start')}*/}
+						{/*			</Button>*/}
+						{/*		)}*/}
+						{/*	</View>*/}
+						{/*</View>*/}
 					</View>
 				</RBSheet>
 				<ScrollView contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={'handled'} refreshControl={
@@ -508,8 +546,8 @@ export default class SessionsScreen extends React.Component {
 												</View>
 											</View>
 											<View style={styles.dateItemRight}>
+													{/*<TouchableOpacity onPress={() => {navigation.push('SessionsStats', { session })}} key={sessionIdx}>*/}
 												{date.items.map((session, sessionIdx) => (
-													<TouchableOpacity onPress={() => {navigation.push('SessionsStats', { session })}} key={sessionIdx}>
 														<Card containerStyle={{marginBottom: sessionIdx < date.items.length - 1 ? -10 : 0}} key={sessionIdx}>
 															<View style={{marginBottom: 5}}>
 																<Text style={{fontWeight: 'bold'}}>{session.title}</Text>
@@ -524,14 +562,21 @@ export default class SessionsScreen extends React.Component {
 																<View style={{backgroundColor: THEME.error, height: 3, flex: session.statusPercentages.hard}} />
 															</View>
 														</Card>
-													</TouchableOpacity>
 												))}
+													{/*</TouchableOpacity>*/}
 											</View>
 										</View>))}
 								</View>))}
 						</View>
 					))}
+
+					{this.state.mayHaveMore && <View style={{padding: 10}}>
+						<Button mode="outline" onPress={() => this.handleLoadMore()} loading={this.state.loadingMore} disabled={this.state.loadingMore} delayPressIn={0}>
+							{I18n.t('btn.loadMore')}
+						</Button>
+					</View>}
 				</ScrollView>
+
 				{this.state.datasets.length > 0 && (
 					<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
 						<Divider style={{marginBottom: 10}} />

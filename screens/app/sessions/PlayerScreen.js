@@ -90,9 +90,11 @@ export default class StatsScreen extends React.Component {
 		activateKeepAwake();
 		this._navigationFocus = navigation.addListener('focus', () => {
 			activateKeepAwake();
+			this.sendMessage('native_play');
 		});
 		this._navigationBlur = navigation.addListener('blur', () => {
 			deactivateKeepAwake();
+			this.sendMessage('native_pause');
 		});
 
 		navigation.setOptions({
@@ -103,12 +105,10 @@ export default class StatsScreen extends React.Component {
 					onPress={() => {
 						Alert.alert(I18n.t('alert.backSessionTitle'), I18n.t('alert.backSessionDesc'), [
 							{ text: I18n.t('btn.terminate'), onPress: () => {
-								const { navigation } = this.props;
 								this.sendMessage('terminate_and_back');
 								clearTimeout(terminateBackTimeout);
 								terminateBackTimeout = setTimeout(() => {
-									navigation.navigate('Sessions');
-									this.stopSounds();
+									this.goBack();
 								}, !this.state.loaded ? 0 : 5000);
 							}, style: 'destructive' },
 							{ text: I18n.t('btn.cancel'), style: "cancel" }
@@ -276,13 +276,20 @@ export default class StatsScreen extends React.Component {
 				break;
 			case 'back':
 				clearTimeout(terminateBackTimeout);
-				navigation.navigate('Sessions', { refresh: true });
-				this.stopSounds();
+				this.goBack();
 				break;
 		}
 	}
 
-	stopSounds() {
+	goBack() {
+
+		const { navigation } = this.props;
+
+		global.mustRefreshSession = true;
+		navigation.navigate('Sessions');
+
+		this.adjustScreenOrientation(ScreenOrientation.Orientation.PORTRAIT_UP);
+
 		if (playbackMeditation) {
 			playbackMeditation.stopAsync();
 		}

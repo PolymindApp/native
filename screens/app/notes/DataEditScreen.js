@@ -223,8 +223,11 @@ export default class DataEditScreen extends React.Component {
 			if (this.state.selectedImageIdx !== null) {
 				uri = this.state.largeImages[this.state.selectedImageIdx];
 			}
+			console.log(uri);
 			return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
-				console.log(err);
+				uri = this.state.images[this.state.selectedImageIdx];
+				console.log('network fallback', uri);
+				return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data));
 			});
 		} else {
 			return callback();
@@ -405,6 +408,7 @@ export default class DataEditScreen extends React.Component {
 
 				if (!tokens) {
 					resolve(false);
+					return;
 				}
 
 				let offset = 0;
@@ -509,6 +513,9 @@ export default class DataEditScreen extends React.Component {
 					this.state.selectedImageIdx = null;
 				}
 
+				if (!response.searchInformation) {
+					console.log(response, query, locale);
+				}
 				const totalResults = parseInt(response.searchInformation.totalResults);
 				if (totalResults === 0) {
 					return this.setState({ emptyImageResults: true, images });
