@@ -2,6 +2,8 @@
 	"alert": {
 		"backSessionDesc": "Le retour mettra fin à votre session. Voulez-vous continuer?",
 		"backSessionTitle": "Mettre fin à la session?",
+		"clearCacheDesc": "Si vous rencontrez un problème, tel que l'application se bloquant de manière aléatoire lors du lancement de la session, vous pouvez essayer de vider votre cache.",
+		"clearCacheTitle": "Vider le cache",
 		"deleteDatasetDesc": "Toutes les notes de la liste \"{{name}}\" seront effacées. Désirez-vous procéder?",
 		"deleteDatasetTitle": "Effacer les notes",
 		"signOutDesc": "Votre session sera terminé. Désirez-vous continuer ?",

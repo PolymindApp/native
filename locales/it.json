@@ -2,6 +2,8 @@
 	"alert": {
 		"backSessionDesc": "Il ritorno terminerà la sessione. Vuoi procedere?",
 		"backSessionTitle": "Terminare la sessione?",
+		"clearCacheDesc": "Se riscontri problemi, come l'app che si arresta in modo casuale durante l'avvio della sessione, puoi provare a svuotare la cache.",
+		"clearCacheTitle": "Cancellare cache",
 		"deleteDatasetDesc": "Tutte le note dell'elenco \"{{name}}\" verranno eliminate. Vuoi procedere?",
 		"deleteDatasetTitle": "Elimina note",
 		"signOutDesc": "La sessione verrà chiusa. Vuoi procedere?",

@@ -2,6 +2,8 @@
 	"alert": {
 		"backSessionDesc": "Going back will terminate your session. Do you wish to proceed?",
 		"backSessionTitle": "Terminate Session?",
+		"clearCacheDesc": "If you are experiencing issue, such as the app randomly crashing while initiating session, you can try clearing your cache.",
+		"clearCacheTitle": "Clear cache",
 		"deleteDatasetDesc": "All notes of the \"{{name}}\" list will be deleted. Do you wish to proceed?",
 		"deleteDatasetTitle": "Delete notes",
 		"signOutDesc": "Your session will be terminated. Do you wish to proceed?",
