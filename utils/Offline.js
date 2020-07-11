@@ -13,6 +13,17 @@ export default class Offline {
 		}).catch(err => console.log(err));
 	}
 
+	static async clearCache() {
+		await FileSystem.readDirectoryAsync(FileSystem.cacheDirectory).then(async names => {
+			for (let i = 0; i < names.length; i++) {
+				const name = names[i];
+				const uri = FileSystem.cacheDirectory + name;
+				await FileSystem.deleteAsync(uri);
+				console.log('cleared', uri);
+			}
+		});
+	}
+
 	static async cacheFiles(items = [], force = false) {
 		const results = [];
 		for (let i = 0; i < items.length; i++) {

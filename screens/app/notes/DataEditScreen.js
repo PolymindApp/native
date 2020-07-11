@@ -186,7 +186,7 @@ export default class DataEditScreen extends React.Component {
 				DatasetService.fetchVoices(voicePayload).then(voices => {
 
 					if (voices.errors.length > 0) {
-						console.error(voices.errors);
+						console.log('voice errors', voices.errors);
 					}
 
 					Promise.all(

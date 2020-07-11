@@ -236,7 +236,7 @@ export default class StatsScreen extends React.Component {
 			case 'meditating':
 
 				if (playbackMeditation) {
-					await playbackMeditation.pauseAsync();
+					await playbackMeditation.pauseAsync().catch(err => console.log(err, meditationSongs[0]));
 				}
 
 				if (data) {
@@ -244,10 +244,10 @@ export default class StatsScreen extends React.Component {
 						const { sound: soundObject, status } = await Audio.Sound.createAsync(
 							{ uri: meditationSongs[0] },
 							{ shouldPlay: true, volume: 0.5, isLooping: true }
-						);
+						).catch(err => console.log(err, meditationSongs[0]));
 						playbackMeditation = soundObject;
 					} else {
-						await playbackMeditation.playAsync();
+						await playbackMeditation.playAsync().catch(err => console.log(err, meditationSongs[0]));
 					}
 				}
 

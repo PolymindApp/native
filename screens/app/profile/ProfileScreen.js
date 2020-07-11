@@ -1,12 +1,13 @@
 import React from 'react';
-import {ActivityIndicator, StyleSheet, View, Linking } from 'react-native';
+import {ActivityIndicator, StyleSheet, View, Linking, Alert} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Icon, ListItem, SocialIcon } from 'react-native-elements';
 import PolymindSDK, { User, THEME, FileService, UserService } from "@polymind/sdk-js";
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import I18n from '../../../locales/i18n';
-import {List} from "react-native-paper";
+import Offline from '../../../utils/Offline';
+import {Button, List} from "react-native-paper";
 
 const $polymind = new PolymindSDK();
 const sections = [
@@ -24,6 +25,7 @@ export default class ProfileScreen extends React.Component {
 
 	state = {
 		uploading: false,
+		clearingCache: false,
 		loading: true,
 		thumbnail: preview,
 		me: new User(),
@@ -43,6 +45,21 @@ export default class ProfileScreen extends React.Component {
 
 	getCompleteName() {
 		return this.state.me.screen_name || (this.state.me.first_name + ' ' + this.state.me.last_name).trim() || this.state.me.email || '';
+	}
+
+	async clearCache(force = false) {
+		if (force) {
+			this.setState({ clearingCache: true });
+			await Offline.clearCache();
+			this.setState({ clearingCache: false });
+		} else {
+			Alert.alert(I18n.t('alert.clearCacheTitle'), I18n.t('alert.clearCacheDesc'), [
+				{ text: I18n.t('btn.clearCache'), onPress: () => {
+					this.clearCache(true);
+				} },
+				{ text: I18n.t('btn.cancel'), style: "cancel" }
+			], { cancelable: false });
+		}
 	}
 
 	async setAvatar() {
@@ -130,6 +147,10 @@ export default class ProfileScreen extends React.Component {
 						<SocialIcon title='LinkedIn' type='linkedin' delayPressIn={0} onPress={() => Linking.openURL('https://www.linkedin.com/company/polymindapp')}/>
 					</View>
 				</View>
+
+				<Button mode={'outlined'} color={THEME.error} style={{ borderColor: THEME.error }} icon={'delete'} style={{margin: 10}} onPress={() => this.clearCache()} disabled={this.state.clearingCache} loading={this.state.clearingCache}>
+					{I18n.t('btn.clearCache')}
+				</Button>
 			</ScrollView>
 		);
 	}

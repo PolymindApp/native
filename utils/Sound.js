@@ -49,8 +49,8 @@ export default class Sound {
 	 * @returns Promise
 	 */
 	static async play(name, url, group = 'default', status = {}) {
-		try {
-			return Offline.hasFile(name).then(async ({exists, uri}) => {
+		return Offline.hasFile(name).then(async ({exists, uri}) => {
+			try {
 				return await Audio.Sound.createAsync(
 					{ uri: exists ? uri : url },
 					{ shouldPlay: true, ...status },
@@ -72,7 +72,7 @@ export default class Sound {
 								return Audio.Sound.createAsync(
 									{ uri: url },
 									{ shouldPlay: true },
-								);
+								).catch(err => console.log(err, url));
 							}).catch(err => console.log(err, url));
 							break;
 						default:
@@ -80,10 +80,12 @@ export default class Sound {
 							break;
 					}
 				});
-			});
-		} catch(e) {
-			return new Promise.resolve();
-		}
+			} catch(e) {
+				return new Promise((resolve, reject) => {
+					reject(e);
+				});
+			}
+		});
 	}
 
 	/**

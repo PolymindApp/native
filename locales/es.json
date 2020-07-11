@@ -17,6 +17,7 @@
 		"addNote": "Añadir una nota",
 		"back": "Volver",
 		"cancel": "Anular",
+		"clearCache": "Limpiar cache",
 		"continue": "Continuar",
 		"delete": "Eliminar",
 		"fetchMore": "Buscar más",
