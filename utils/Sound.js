@@ -37,38 +37,53 @@ export default class Sound {
 		};
 	}
 
+	/**
+	 * Play a media file
+	 * Warning: Can be source of many issues depending of media format.
+	 *
+	 * @param name
+	 * @param url
+	 * @param group
+	 * @param status
+	 *
+	 * @returns Promise
+	 */
 	static async play(name, url, group = 'default', status = {}) {
-		return Offline.hasFile(name).then(async ({exists, uri}) => {
-			return await Audio.Sound.createAsync(
-				{ uri: exists ? uri : url },
-				{ shouldPlay: true, ...status }
-			).then((res) => {
-				res.completed = false;
-				res.sound.setOnPlaybackStatusUpdate((status) => {
-					if (!status.didJustFinish) {
-						return;
+		try {
+			return Offline.hasFile(name).then(async ({exists, uri}) => {
+				return await Audio.Sound.createAsync(
+					{ uri: exists ? uri : url },
+					{ shouldPlay: true, ...status },
+				).then((res) => {
+					res.completed = false;
+					res.sound.setOnPlaybackStatusUpdate((status) => {
+						if (!status.didJustFinish) {
+							return;
+						}
+						res.sound.unloadAsync().then(() => {
+							res.completed = true;
+						}).catch((err) => console.log('unload.error', err));
+					});
+					return res;
+				}).catch((error) => {
+					switch (error.code) {
+						case 'ABI37_0_0EXAV': // Corrupted memory.. try to recreate and read from remote URL meanwhile..
+							return Offline.cacheFile(name, url, true).then(uri => {
+								return Audio.Sound.createAsync(
+									{ uri: url },
+									{ shouldPlay: true },
+								);
+							}).catch(err => console.log(err, url));
+							break;
+						default:
+							console.log(error);
+							break;
 					}
-					res.sound.unloadAsync().then(() => {
-						res.completed = true;
-					}).catch((err) => console.log('unload.error', err));
 				});
-				return res;
-			}).catch((error) => {
-				console.log('sound play error', error);
-				switch (error.code) {
-					case 'ABI37_0_0EXAV': // Corrupted memory.. try to recreate and read from remote URL meanwhile..
-						Audio.Sound.createAsync(
-							{ uri: url },
-							{ shouldPlay: true }
-						);
-						Offline.cacheFile(name, url, true);
-						break;
-					default:
-						console.log(error);
-						break;
-				}
 			});
-		});
+		} catch(e) {
+			return new Promise.resolve();
+		}
 	}
 
 	/**

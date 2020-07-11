@@ -17,15 +17,35 @@ export default class Offline {
 		const results = [];
 		for (let i = 0; i < items.length; i++) {
 			const item = items[i];
-			const uri = await Offline.cacheFile(item.name, item.url, force);
-			results.push(uri);
+			await Offline.cacheFile(item.name, item.url, force)
+				.then(uri => results.push(uri))
+				.catch(err => console.log(err));
 		}
 		return results;
 	}
 
+	static async cacheBase64(name, base64, force = false) {
+
+		let uri = FileSystem.cacheDirectory + name;
+
+		if (force) {
+			await FileSystem.deleteAsync(uri);
+		}
+
+		const { exists } = await FileSystem.getInfoAsync(uri);
+
+		if (!exists || force) {
+			await FileSystem.writeAsStringAsync(uri, base64, {
+				encoding: FileSystem.EncodingType.Base64,
+			});
+		}
+
+		return uri;
+	}
+
 	static async cacheFile(name, url, force = false) {
 
-		const uri = FileSystem.cacheDirectory + name;
+		let uri = FileSystem.cacheDirectory + name;
 
 		if (force) {
 			await FileSystem.deleteAsync(uri);
@@ -35,7 +55,13 @@ export default class Offline {
 
 		if (!exists || force) {
 			const downloadResumable = FileSystem.createDownloadResumable(url, uri);
-			await downloadResumable.downloadAsync();
+			const downloadResult = await downloadResumable.downloadAsync();
+
+			if (downloadResult.status !== 200) {
+				await FileSystem.deleteAsync(uri);
+				console.log(downloadResult);
+				throw new Error('error while downloading file');
+			}
 		}
 
 		return uri;

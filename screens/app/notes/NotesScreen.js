@@ -1,5 +1,5 @@
 import React from 'react'
-import {ActivityIndicator, Platform, RefreshControl, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Image, Platform, RefreshControl, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {SearchBar, ListItem, Icon, Text} from "react-native-elements";
 import {Button} from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';

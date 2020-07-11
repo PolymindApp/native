@@ -5,7 +5,9 @@
 		"deleteDatasetDesc": "Todas las notas de la lista \"{{name}}\" se eliminarán. ¿Quiere seguir adelantes?",
 		"deleteDatasetTitle": "Eliminar notas",
 		"signOutDesc": "Su sesión será terminada. ¿Quiere seguir adelante?",
-		"signOutTitle": "Desconectarse"
+		"signOutTitle": "Desconectarse",
+		"uploadFromUrlErrorDesc": "No se puede recuperar la imagen del servidor remoto. Puede intentarlo nuevamente o elegir otra imagen.",
+		"uploadFromUrlErrorTitle": "Error de conexión"
 	},
 	"btn": {
 		"add": "Añadir",
@@ -35,6 +37,7 @@
 		"startSession": "Iniciar sesión",
 		"takePhoto": "Tomar foto",
 		"terminate": "Terminar",
+		"tryAgain": "Intentar de nuevo",
 		"update": "Actualizar",
 		"upload": "Subir"
 	},

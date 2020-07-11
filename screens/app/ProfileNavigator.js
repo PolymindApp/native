@@ -4,7 +4,7 @@ import ProfileScreen from "./profile/ProfileScreen";
 import InformationsScreen from "./profile/InformationsScreen";
 import { THEME } from '@polymind/sdk-js';
 import I18n from '../../locales/i18n';
-import {Platform, Text, TouchableOpacity, View, Alert} from "react-native";
+import {Platform, Text, TouchableOpacity, View, Alert, Image} from "react-native";
 import {Button} from "react-native-paper";
 import {AppContext} from "../../contexts";
 import PolymindSDK from "@polymind/sdk-js";

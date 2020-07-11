@@ -5,7 +5,9 @@
 		"deleteDatasetDesc": "All notes of the \"{{name}}\" list will be deleted. Do you wish to proceed?",
 		"deleteDatasetTitle": "Delete notes",
 		"signOutDesc": "Your session will be terminated. Do you wish to proceed?",
-		"signOutTitle": "Sign Out"
+		"signOutTitle": "Sign Out",
+		"uploadFromUrlErrorDesc": "Unable to fetch the image from the remote server. You may try again or choose another image.",
+		"uploadFromUrlErrorTitle": "Connection Error"
 	},
 	"btn": {
 		"add": "Add",
@@ -35,6 +37,7 @@
 		"startSession": "Start session",
 		"takePhoto": "Take photo",
 		"terminate": "Terminate",
+		"tryAgain": "Try again",
 		"update": "Update",
 		"upload": "Upload"
 	},

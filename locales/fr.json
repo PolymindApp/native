@@ -5,7 +5,9 @@
 		"deleteDatasetDesc": "Toutes les notes de la liste \"{{name}}\" seront effacées. Désirez-vous procéder?",
 		"deleteDatasetTitle": "Effacer les notes",
 		"signOutDesc": "Votre session sera terminé. Désirez-vous continuer ?",
-		"signOutTitle": "Se déconnecter"
+		"signOutTitle": "Se déconnecter",
+		"uploadFromUrlErrorDesc": "Impossible de récupérer l'image à partir du serveur distant. Vous pouvez réessayer ou choisir une autre image.",
+		"uploadFromUrlErrorTitle": "Erreur de connexion"
 	},
 	"btn": {
 		"add": "Ajouter",
@@ -35,6 +37,7 @@
 		"startSession": "Démarrez une session",
 		"takePhoto": "Prendre une photo",
 		"terminate": "Terminer",
+		"tryAgain": "Réessayer",
 		"update": "Mettre à jour",
 		"upload": "Télécharger"
 	},

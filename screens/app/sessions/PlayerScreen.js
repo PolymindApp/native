@@ -222,18 +222,16 @@ export default class StatsScreen extends React.Component {
 				const voice = memory.voices.find(voice => voice.locale === locale && voice.text === text);
 
 				if (playbackVoice && !playbackVoice.completed) {
-					await playbackVoice.sound.stopAsync();
-					await playbackVoice.sound.unloadAsync();
+					await playbackVoice.sound.stopAsync().catch(err => console.log(err));
+					await playbackVoice.sound.unloadAsync().catch(err => console.log(err));
 				}
 
 				if (voice) {
-					playbackVoice = await Sound.play(voice.file_name, voice.file_url, 'voice', {
-						volume: 1
-					});
+					playbackVoice = await Sound.play(voice.file_name, voice.file_url, 'voice');
 				}
 				break;
 			case 'play_sound':
-				Sound.play(data + '.mp3', memory.sounds[data], 'sound');
+				await Sound.play(data + '.mp3', memory.sounds[data], 'sound');
 				break;
 			case 'meditating':
 

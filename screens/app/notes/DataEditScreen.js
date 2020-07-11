@@ -1,7 +1,7 @@
 import React from 'react'
 import {Alert, ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import PolymindSDK, { Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
+import PolymindSDK, { TextToSpeechService, File, Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
 import {Divider, Icon, Input, Text} from "react-native-elements";
 import {Button, IconButton} from "react-native-paper";
@@ -13,6 +13,7 @@ import { Camera } from 'expo-camera';
 import {Linking } from "expo";
 import * as ImageManipulator from "expo-image-manipulator";
 import Offline from "../../../utils/Offline";
+import Sound from "../../../utils/Sound";
 
 const $polymind = new PolymindSDK();
 
@@ -183,19 +184,20 @@ export default class DataEditScreen extends React.Component {
 					}
 				});
 				DatasetService.fetchVoices(voicePayload).then(voices => {
-					// TODO: Not a good idea to cache file right after fetch voices since its status might still be pending..
-					// TEMPORARY: wait 10 seconds..
-					setTimeout(() => {
-						Offline.cacheFiles(voices.success.map(item => ({
-							name: item.file_name,
-							url: item.file_url,
-						})));
-					}, 10 * 1000)
 
 					if (voices.errors.length > 0) {
 						console.error(voices.errors);
 					}
-				});
+
+					Promise.all(
+						voices.success.map(voice => TextToSpeechService.getDataStream(voice.text, voice.locale))
+					).then(responses => {
+						responses.forEach((data, idx) => {
+							const base64 = File.btoa(data);
+							Offline.cacheBase64(base64);
+						});
+					});
+				}).catch(err => console.log(err));
 
 				const moreState = {};
 				if (addMore) {
@@ -223,11 +225,14 @@ export default class DataEditScreen extends React.Component {
 			if (this.state.selectedImageIdx !== null) {
 				uri = this.state.largeImages[this.state.selectedImageIdx];
 			}
-			console.log(uri);
 			return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
-				uri = this.state.images[this.state.selectedImageIdx];
-				console.log('network fallback', uri);
-				return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data));
+
+				Alert.alert(I18n.t('alert.uploadFromUrlErrorTitle'), I18n.t('alert.uploadFromUrlErrorDesc'), [
+					{ text: I18n.t('btn.tryAgain'), onPress: () => {
+						this.save(addMore);
+					} },
+					{ text: I18n.t('btn.cancel'), style: "cancel" }
+				], { cancelable: false });
 			});
 		} else {
 			return callback();
@@ -513,9 +518,6 @@ export default class DataEditScreen extends React.Component {
 					this.state.selectedImageIdx = null;
 				}
 
-				if (!response.searchInformation) {
-					console.log(response, query, locale);
-				}
 				const totalResults = parseInt(response.searchInformation.totalResults);
 				if (totalResults === 0) {
 					return this.setState({ emptyImageResults: true, images });
@@ -625,6 +627,7 @@ export default class DataEditScreen extends React.Component {
 		}
 
 		fields[fieldIdx] = value.substring(0, 1).toUpperCase() + value.substring(1);
+		// fields[fieldIdx] = fields[fieldIdx].replace(/[\(\)]/, "");
 		this.setState({ fields, spellCheckFields, translationFields });
 
 		if (fetchServices) {
@@ -807,7 +810,7 @@ export default class DataEditScreen extends React.Component {
 								</View>}
 
 							<Input
-								clearButtonMode={'while-editing'}
+								clearButtonMode={'always'}
 								underlineColorAndroid={'transparent'}
 								inputContainerStyle={{marginHorizontal: -10, borderBottomWidth: 0}}
 								placeholder={I18n.t('input.searchCloud')}
