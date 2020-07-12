@@ -164,7 +164,7 @@ export default class SessionsScreen extends React.Component {
 				item.timestamp = moment.utc(item.start_date).local().unix();
 				item.startTime = moment.utc(item.start_date).local().format('HH:mm');
 				item.endTime = moment.utc(item.end_date).local().format('HH:mm');
-				item.duration = moment.duration(item.duration).asSeconds();
+				item.durationInSeconds = moment.duration(item.duration).asSeconds();
 
 				const totalStatus = (item.totalTags.hard || 0) + (item.totalTags.unsure || 0) + (item.totalTags.easy || 0);
 				item.statusPercentages = {
@@ -312,7 +312,7 @@ export default class SessionsScreen extends React.Component {
 																<Text style={{fontWeight: 'bold'}}>{session.title}</Text>
 															</View>
 															<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-																<Text>{Time.duration(session.duration, false)}</Text>
+																<Text>{Time.duration(session.durationInSeconds, false)}</Text>
 																<Text style={styles.fromTo}>{session.startTime + ' - ' + session.endTime}</Text>
 															</View>
 															<View style={{flex: 1, flexDirection: 'row', marginHorizontal: -15, marginBottom: -15, marginTop: 15}}>

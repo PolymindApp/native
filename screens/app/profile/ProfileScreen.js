@@ -84,7 +84,9 @@ export default class ProfileScreen extends React.Component {
 				return UserService.update(this.state.me.id, {
 					avatar: filesResponse.data.id
 				});
-			}).finally(response => this.setState({ thumbnail: { uri: result.uri }, uploading: false, }))
+			})
+				.catch(err => console.log(err))
+				.finally(response => this.setState({ thumbnail: { uri: result.uri }, uploading: false, }))
 		}
 	}
 
