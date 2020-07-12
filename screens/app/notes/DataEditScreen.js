@@ -219,6 +219,7 @@ export default class DataEditScreen extends React.Component {
 		if (this.state.mustUploadLocalUri) {
 			return FileService.uploadLocalUri(this.state.imageUri).then(filesResponse => callback(filesResponse.data)).catch(err => {
 				console.log(err);
+				this.setState({ saving: false });
 			});
 		} else if (this.state.mustUploadRemoteUri) {
 			let uri = this.state.imageUri;
@@ -227,12 +228,27 @@ export default class DataEditScreen extends React.Component {
 			}
 			return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
 
-				Alert.alert(I18n.t('alert.uploadFromUrlErrorTitle'), I18n.t('alert.uploadFromUrlErrorDesc'), [
-					{ text: I18n.t('btn.tryAgain'), onPress: () => {
-						this.save(addMore);
-					} },
-					{ text: I18n.t('btn.cancel'), style: "cancel" }
-				], { cancelable: false });
+				// Remote server might not be responding.. try to fetch Google's thumbnail instead..
+				let uri = this.state.imageUri;
+				if (this.state.selectedImageIdx !== null) {
+					uri = this.state.images[this.state.selectedImageIdx];
+				}
+
+				console.log('issue downloading image..', uri, err);
+				return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
+
+					console.log('issue downloading google thumbnail..', uri, err);
+
+					// Bad luck.. inform the user.. let him choose if he wants to try again or not..
+					Alert.alert(I18n.t('alert.uploadFromUrlErrorTitle'), I18n.t('alert.uploadFromUrlErrorDesc'), [
+						{ text: I18n.t('btn.tryAgain'), onPress: () => {
+							this.save(addMore);
+						} },
+						{ text: I18n.t('btn.cancel'), style: "cancel" }
+					], { cancelable: false });
+
+					this.setState({ saving: false });
+				});
 			});
 		} else {
 			return callback();
@@ -529,7 +545,9 @@ export default class DataEditScreen extends React.Component {
 				const items = response.items.map(item => item.image.thumbnailLink);
 				images = images.concat(items);
 
-				this.setState({ largeImages, selectedImageIdx: this.state.selectedImageIdx, images, lastSearchQuery: query, imageOffset: this.state.imageOffset + 9, canFetchMoreImages: images.length < 27 && totalResults >= 9 });
+				const imageOffset = this.state.imageOffset + 9;
+
+				this.setState({ largeImages, selectedImageIdx: this.state.selectedImageIdx, images, lastSearchQuery: query, imageOffset, canFetchMoreImages: imageOffset < 27 && totalResults >= 9 });
 			})
 			.catch(err => console.log(err))
 			.finally(() => this.setState({ fetching: false, fetchingCustom: false }));

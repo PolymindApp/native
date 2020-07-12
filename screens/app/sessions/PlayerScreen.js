@@ -259,7 +259,7 @@ export default class StatsScreen extends React.Component {
 					name: item.file_name,
 					url: item.file_url,
 				})));
-				await this.mergeVoices();
+				// await this.mergeVoices();
 				break;
 			case 'all_sounds':
 				memory.sounds = data;
@@ -303,6 +303,7 @@ export default class StatsScreen extends React.Component {
 	}
 
 	// TODO: voice longer than speed? (surely will break stuff..)
+	// TODO: might make the app crash once builded..
 	async mergeVoices() {
 
 		const { params } = this.props.route.params.settings;
