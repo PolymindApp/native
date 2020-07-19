@@ -6,6 +6,7 @@
 		"clearCacheTitle": "Vider le cache",
 		"deleteDatasetDesc": "Toutes les notes de la liste \"{{name}}\" seront effacées. Désirez-vous procéder?",
 		"deleteDatasetTitle": "Effacer les notes",
+		"listenTitle": "Écouter",
 		"signOutDesc": "Votre session sera terminé. Désirez-vous continuer ?",
 		"signOutTitle": "Se déconnecter",
 		"uploadFromUrlErrorDesc": "Impossible de récupérer l'image à partir du serveur distant. Vous pouvez réessayer ou choisir une autre image.",
@@ -22,6 +23,7 @@
 		"clearCache": "Vider le cache",
 		"continue": "Continuer",
 		"delete": "Effacer",
+		"edit": "Modifier",
 		"fetchMore": "Chercher plus",
 		"grant": "Concéder",
 		"loadMore": "Charger plus",
@@ -30,12 +32,14 @@
 		"next": "Suivant",
 		"ok": "OK",
 		"options": "Options",
+		"ready": "Prêt",
 		"resendActivation": "Renvoyer",
 		"resetPassword": "Réinitialiser",
 		"save": "Enregistrer",
 		"share": "Partager",
 		"signIn": "S'inscrire",
 		"signOut": "Se déconnecter",
+		"skip": "Passer",
 		"start": "Démarrer",
 		"startSession": "Démarrez une session",
 		"takePhoto": "Prendre une photo",
@@ -114,18 +118,47 @@
 		"filter": "Filtrer...",
 		"searchCloud": "Chercher sur le nuage.."
 	},
+	"language": {
+		"cmn": "Chinois",
+		"cy": "Gallois",
+		"da": "Danois",
+		"de": "Allemand",
+		"en": "Anglais",
+		"es": "Espagnol",
+		"fr": "Français",
+		"hi": "Hindi",
+		"is": "Islandais",
+		"it": "Italien",
+		"ja": "Japonais",
+		"ko": "Coréen",
+		"nb": "Norvégien",
+		"nl": "Néerlandais",
+		"pl": "Polonais",
+		"pt": "Portugais",
+		"ro": "Roumain",
+		"ru": "Russe",
+		"sv": "Suédois",
+		"tr": "Turc"
+	},
 	"legal": {
 		"privacy": "Politiques de confidentialités",
 		"terms": "Termes et conditions"
 	},
 	"navigation": {
+		"cards": "Cartes",
+		"dictionary": "Dictionnaire",
 		"notes": "Notes",
 		"profile": "Profil",
 		"sessions": "Sessions"
 	},
 	"notes": {
 		"emptyDesc": "Vous avez besoin d'une liste de notes pour démarrer une session.",
-		"emptyTitle": "Aucune liste"
+		"emptyTitle": "Aucune liste",
+		"totalRows": {
+			"one": "Une carte",
+			"other": "{{count}} cartes",
+			"zero": "Pas encore de données"
+		}
 	},
 	"permission": {
 		"manualCameraActivationDesc": "Vous devez accorder l'accès à la caméra manuellement si vous souhaitez l'utiliser dans cette application.",
@@ -202,11 +235,15 @@
 	},
 	"state": {
 		"deleting": "Effacement...",
+		"downloading": "Téléchargement..",
 		"generating": "Génération...",
 		"loading": "Chargement..",
-		"saving": "Enregistrement..."
+		"saving": "Enregistrement...",
+		"uploading": "Téléchargement.."
 	},
 	"title": {
+		"dictionary": "Dictionnaire",
+		"help": "Aide",
 		"loading": "Chargement...",
 		"newColumn": "Nouvelle colonne",
 		"newList": "Nouvelle liste",
@@ -218,5 +255,13 @@
 		"profileInformations": "Informations",
 		"profileSettings": "Configurations",
 		"sessions": "Sessions"
+	},
+	"welcome": {
+		"listenDesc": "Ensuite, démarrez une session et laissez la voix de Polymind vous guider à travers votre processus d'apprentissage.",
+		"listenTitle": "Écouter",
+		"noteDesc": "Saisissez d'abord les questions et réponses dont vous souhaitez vous souvenir.",
+		"noteTitle": "Noter",
+		"rememberDesc": "Enfin, profitez de la liberté d'attention! Faites la vaisselle, méditez ou même allez au gymnase!",
+		"rememberTitle": "Rappelez-vous"
 	}
 }

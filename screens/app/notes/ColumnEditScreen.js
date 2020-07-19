@@ -14,6 +14,12 @@ const refInputs = [
 	React.createRef(),
 ];
 
+const supportedLanguageCodes = ['en', 'fr', 'es', 'it', 'cmn', 'cy', 'da', 'de', 'is', 'ja', 'hi', 'ko', 'nb', 'nl', 'pl', 'pt', 'ro', 'ru', 'sv', 'tr',];
+const supportedLanguages = supportedLanguageCodes.map(code => ({
+	text: I18n.t('language.' + code),
+	value: code,
+})).sort((a,b) => (a.text > b.text) ? 1 : ((b.text > a.text) ? -1 : 0));
+
 export default class ColumnEditScreen extends React.Component {
 
 	optionItems = [
@@ -139,10 +145,9 @@ export default class ColumnEditScreen extends React.Component {
 							onValueChange={value => this.setState({ column: {...this.state.column, lang: value}})}
 							ref={ref => { refInputs[1] = ref }}
 						>
-							<Picker.Item label="English" value="en" />
-							<Picker.Item label="Français" value="fr" />
-							<Picker.Item label="Español" value="es" />
-							<Picker.Item label="Italian" value="it" />
+							{supportedLanguages.map(item => (
+								<Picker.Item key={item.value} label={item.text} value={item.value} />
+							))}
 						</Picker>
 						<Text style={{padding: 10}}>
 							{I18n.t('field.columnLanguageDesc')}

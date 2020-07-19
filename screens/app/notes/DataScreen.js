@@ -52,7 +52,8 @@ export default class DataScreen extends React.Component {
 			return new Promise((resolve, reject) => resolve(dataset));
 		}
 
-		return $polymind.getDataset(dataset.id).then(dataset => {
+		return $polymind.getDatasetRows(dataset.id).then(response => {
+			dataset.rows = response;
 			const originalDataset = Helpers.deepClone(dataset);
 			this.setState({ dataset, originalDataset, loaded: true, wasValid: dataset.isValid(), selectedIndex: dataset.isValid() ? 0 : 1 });
 		});
@@ -137,7 +138,6 @@ export default class DataScreen extends React.Component {
 
 		return (
 			<View style={{flex: 1}}>
-
 				<Tab.Navigator initialRouteName={initialRouteName} tabBarOptions={{
 					style: {
 						height: isValid ? undefined : 0

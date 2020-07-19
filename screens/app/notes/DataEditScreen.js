@@ -1,7 +1,7 @@
 import React from 'react'
-import {Alert, ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Alert, ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View, Modal} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import PolymindSDK, { TextToSpeechService, File, Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
+import PolymindSDK, { Thumbnail, TextToSpeechService, File, Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
 import {Divider, Icon, Input, Text} from "react-native-elements";
 import {Button, IconButton} from "react-native-paper";
@@ -30,6 +30,8 @@ export default class DataEditScreen extends React.Component {
 		optionsMenu: false,
 		autofocus: true,
 		deleting: false,
+		uploading: false,
+		downloading: false,
 		saving: false,
 		row: new DatasetRow(),
 		spellCheckFields: [],
@@ -121,6 +123,10 @@ export default class DataEditScreen extends React.Component {
 		const idx = dataset.rows.findIndex(item => item.id === row.id);
 		dataset.rows.splice(idx, 1);
 
+		if (row.id) {
+			dataset.total_rows--;
+		}
+
 		return DatasetRowService.remove(row.id).then(response => {
 			datasetContext.updateOriginal(dataset);
 			datasetDataContext.setState({ dataset });
@@ -163,7 +169,12 @@ export default class DataEditScreen extends React.Component {
 			this.setState({ saving: true });
 			return DatasetService.save(transactions).then(response => {
 
+				if (global.currentPlayerDatasetId === dataset.id) {
+					global.playerMustRefreshDataset = true;
+				}
+
 				dataset.applyTransactionResponse(response);
+				dataset.total_rows++;
 
 				if (fileData) {
 					dataset.rows[rowIdx].image = fileData;
@@ -206,26 +217,28 @@ export default class DataEditScreen extends React.Component {
 				} else {
 					this.prepare();
 
-					if (dataset.rows[rowIdx].image?.private_hash) {
-						imageUri = $polymind.getThumbnailByPrivateHash(dataset.rows[rowIdx].image.private_hash, 'avatar');
+					if (dataset.rows[rowIdx].image?.filename_disk) {
+						imageUri = Thumbnail.getOriginal(dataset.rows[rowIdx].image.filename_disk);
 					}
 				}
 				addMore && this.refInputs[0].focus();
-			}).finally(() => this.setState({ saving: false, autofocus: addMore, imageUri }));
+			}).finally(() => this.setState({ saving: false, downloading: false, uploading: false, autofocus: addMore, imageUri }));
 		};
 
-		this.setState({ saving: true, autofocus: addMore });
+
 
 		if (this.state.mustUploadLocalUri) {
+			this.setState({ saving: true, uploading: true, autofocus: addMore });
 			return FileService.uploadLocalUri(this.state.imageUri).then(filesResponse => callback(filesResponse.data)).catch(err => {
 				console.log(err);
-				this.setState({ saving: false });
+				this.setState({ saving: false, uploading: false, });
 			});
 		} else if (this.state.mustUploadRemoteUri) {
 			let uri = this.state.imageUri;
 			if (this.state.selectedImageIdx !== null) {
 				uri = this.state.largeImages[this.state.selectedImageIdx];
 			}
+			this.setState({ saving: true, downloading: true, autofocus: addMore });
 			return FileService.uploadFromUrl(uri).then(filesResponse => callback(filesResponse.data)).catch(err => {
 
 				// Remote server might not be responding.. try to fetch Google's thumbnail instead..
@@ -247,10 +260,11 @@ export default class DataEditScreen extends React.Component {
 						{ text: I18n.t('btn.cancel'), style: "cancel" }
 					], { cancelable: false });
 
-					this.setState({ saving: false });
+					this.setState({ saving: false, downloading: false });
 				});
 			});
 		} else {
+			this.setState({ saving: true, autofocus: addMore });
 			return callback();
 		}
 	}
@@ -280,12 +294,11 @@ export default class DataEditScreen extends React.Component {
 		state.searchImageQuery = '';
 		state.spellCheckFields = [];
 		state.translationFields = [];
-
 		if (dataset.include_image) {
-			if (row.image?.private_hash) {
-				state.imageUri = $polymind.getThumbnailByPrivateHash(row.image.private_hash, 'avatar');
+			if (row.image?.filename_disk) {
+				state.imageUri = Thumbnail.getOriginal(row.image.filename_disk);
 			} else if (fields[0].length > 3) {
-				this.fetchImages(fields[0], dataset.columns[0].lang);
+				this.fetchImages(fields[0], dataset.columns[0].lang, false, true);
 			}
 		}
 
@@ -410,7 +423,7 @@ export default class DataEditScreen extends React.Component {
 					});
 
 					if (!this.state.imageUri) {
-						this.fetchImages(this.state.fields[fieldIdx], dataset.columns[fieldIdx].lang);
+						this.fetchImages(this.state.fields[fieldIdx], dataset.columns[fieldIdx].lang, false, true);
 					}
 				} else {
 					this.setState({ spellCheckFields });
@@ -506,7 +519,7 @@ export default class DataEditScreen extends React.Component {
 		});
 	}
 
-	fetchImages(query, locale, customQuery = false) {
+	fetchImages(query, locale, customQuery = false, resetOffset = false) {
 
 		// Query only until first separating character..
 		query = query.split(',')[0];
@@ -545,7 +558,7 @@ export default class DataEditScreen extends React.Component {
 				const items = response.items.map(item => item.image.thumbnailLink);
 				images = images.concat(items);
 
-				const imageOffset = this.state.imageOffset + 9;
+				const imageOffset = (resetOffset ? 0 : this.state.imageOffset) + 9;
 
 				this.setState({ largeImages, selectedImageIdx: this.state.selectedImageIdx, images, lastSearchQuery: query, imageOffset, canFetchMoreImages: imageOffset < 27 && totalResults >= 9 });
 			})
@@ -731,6 +744,25 @@ export default class DataEditScreen extends React.Component {
 				style={{flex: 1}}
 			>
 				<View style={{flex: 1}}>
+
+					<Modal animationType="fade" transparent={true} visible={this.state.uploading}>
+						<View style={styles.centeredView}>
+							<View style={styles.modalView}>
+								<ActivityIndicator size="large" color={THEME.primary} />
+								<Text style={[styles.modalText, {marginTop: 10}]}>{I18n.t('state.uploading')}</Text>
+							</View>
+						</View>
+					</Modal>
+
+					<Modal animationType="fade" transparent={true} visible={this.state.downloading}>
+						<View style={styles.centeredView}>
+							<View style={styles.modalView}>
+								<ActivityIndicator size="large" color={THEME.primary} />
+								<Text style={[styles.modalText, {marginTop: 10}]}>{I18n.t('state.downloading')}</Text>
+							</View>
+						</View>
+					</Modal>
+
 					<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
 
 						{/*FIELDS*/}
@@ -838,7 +870,7 @@ export default class DataEditScreen extends React.Component {
 								renderErrorMessage={false}
 								leftIcon={() => this.state.fetchingCustom ? <ActivityIndicator color={THEME.primary} /> : <Icon name={'image-search'} style={{opacity: 0.333}} />}
 								onChangeText={value => this.setState({ searchImageQuery: value })}
-								onSubmitEditing={event => this.fetchImages(this.state.searchImageQuery, undefined, true)}
+								onSubmitEditing={event => this.fetchImages(this.state.searchImageQuery, undefined, true, true)}
 							/>
 
 							{this.state.emptyImageResults && <View style={{marginTop: 10, padding: 10, backgroundColor: THEME.warning, borderRadius: 5, flexDirection: 'row', alignItems: 'center'}}>
@@ -949,4 +981,33 @@ const styles = StyleSheet.create({
 	activeTagText: {
 		color: 'white'
 	},
+	centeredView: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.2)',
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	modalView: {
+		margin: 20,
+		backgroundColor: "white",
+		borderRadius: 10,
+		padding: 35,
+		alignItems: "center",
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5
+	},
+	textStyle: {
+		color: "white",
+		fontWeight: "bold",
+		textAlign: "center"
+	},
+	modalText: {
+		textAlign: "center"
+	}
 });

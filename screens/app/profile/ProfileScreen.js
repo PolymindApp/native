@@ -19,7 +19,7 @@ const pages = [
 	{ title: I18n.t('legal.privacy'), name: 'ProfilePage', props: { slug: 'privacy' } },
 ];
 
-const preview = require('../../../assets/images/avatar.png');
+const preview = require('../../../assets/images/icon.png');
 
 export default class ProfileScreen extends React.Component {
 
@@ -91,7 +91,12 @@ export default class ProfileScreen extends React.Component {
 	}
 
 	componentDidMount() {
-		this.load();
+		// this.load();
+		let thumbnail = preview;
+		if (global.user.avatar && global.user.avatar.private_hash) {
+			thumbnail = { uri : $polymind.getThumbnailByPrivateHash(global.user.avatar.private_hash, 'avatar') }
+		}
+		this.setState({ me: global.user, thumbnail, loading: false });
 	}
 
 	render() {

@@ -1,0 +1,115 @@
+<style>
+	html, body {
+		margin: 0
+	}
+</style>
+<script type="text/javascript" src="https://visjs.github.io/vis-network/standalone/umd/vis-network.min.js"></script>
+<script type="text/javascript">
+
+	let nodes = null;
+	let edges = null;
+	let network = null;
+	let isNativeAndroid = false;
+
+	function init(data, isAndroid, focusId) {
+		isNativeAndroid = isAndroid;
+		nodes = data.nodes;
+		edges = data.edges;
+		draw();
+
+		if (focusId) {
+			focusOn(focusId);
+		}
+	}
+
+	function focusOn(id) {
+		network.focus(id, {
+			scale: 3,
+			locked: false,
+			animation: {
+				duration: 300,
+			}
+		});
+		network.selectNodes([id]);
+	}
+
+	function emit(type, data) {
+		window.ReactNativeWebView.postMessage(JSON.stringify({
+			type,
+			data,
+		}), isNativeAndroid ? undefined : '*');
+	}
+
+	function nodesFilter() {
+		return true;
+	}
+
+	function edgesFilter() {
+		return true;
+	}
+
+	function draw() {
+
+		const container = document.getElementById('container');
+		const options = {
+			nodes: {
+				borderWidth: 12,
+				size: 30,
+				color: {
+					border: 'rgba(0, 0, 0, 0.5)',
+					highlight: '#1B8E8A',
+				},
+				font: {
+					color: '#222',
+					highlight: '#1B8E8A',
+					background: '#eee',
+				},
+			},
+			edges: {
+				color: {
+					color: 'rgba(0, 0, 0, 0.5)',
+					highlight: '#1B8E8A',
+				},
+			},
+			layout: {
+				randomSeed: 1,
+				improvedLayout: true,
+				hierarchical: {
+					direction: 'DU'
+				}
+			},
+			interaction: {
+				dragNodes :false
+			},
+			physics: {
+				enabled: false
+			},
+		};
+
+		const data = {
+			nodes: new vis.DataSet(nodes),
+			edges: new vis.DataSet(edges),
+		};
+		const views = {
+			nodes: new vis.DataView(data.nodes, { filter: nodesFilter }),
+			edges: new vis.DataView(data.edges, { filter: edgesFilter }),
+		};
+
+		network = new vis.Network(container, views, options);
+
+		network.on('click', params => {
+			emit('click', {
+				nodes: params.nodes,
+				edges: params.edges,
+			});
+		});
+
+		network.on('selectEdge', event => {
+			// event.preventDefault();
+		});
+	}
+</script>
+
+<body style="background-color: #eee">
+	<div id="container"></div>
+</body>

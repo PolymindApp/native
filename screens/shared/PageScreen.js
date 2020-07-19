@@ -36,7 +36,7 @@ export default class PageScreen extends React.Component {
 		}
 
 		navigation.setOptions({
-			title: this.state.page.title,
+			title: this.state.page.title.length > 15 ? this.state.page.title.substring(0, 15) + '...' : this.state.page.title,
 		});
 
 		return (

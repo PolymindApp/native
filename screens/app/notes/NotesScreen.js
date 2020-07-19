@@ -1,7 +1,7 @@
 import React from 'react'
 import {ActivityIndicator, Image, Platform, RefreshControl, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {SearchBar, ListItem, Icon, Text} from "react-native-elements";
-import {Button} from 'react-native-paper';
+import {Button, IconButton} from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import Storage from '../../../components/storage';
 import PolymindSDK, { THEME, Dataset, DatasetColumn } from '@polymind/sdk-js';
@@ -15,7 +15,7 @@ export default class NotesScreen extends React.Component {
 		super(props);
 		this.state = {
 			search: '',
-			loading: false,
+			loading: true,
 			refreshing: false,
 			datasets: [],
 		}
@@ -93,7 +93,12 @@ export default class NotesScreen extends React.Component {
 						default: (<Button onPress={() => this.handleAdd()} icon="plus" color={'white'}>{I18n.t('btn.add')}</Button>)
 					})}
 				</View>
-			)
+			),
+			headerLeft: () => (
+				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+					<IconButton onPress={() => navigation.push('HelpNotes')} icon={'help-circle'} color={'white'} />
+				</View>
+			),
 		});
 
 		if (this.state.loading) {
@@ -132,6 +137,9 @@ export default class NotesScreen extends React.Component {
 									containerStyle={{width: 32}}
 								/>}
 								title={dataset.name}
+								subtitle={
+									<Text style={{opacity: 0.5}}>{I18n.t('notes.totalRows', { count: dataset.total_rows })}</Text>
+								}
 								topDivider={datasetIdx === 0}
 								delayPressIn={0}
 								bottomDivider

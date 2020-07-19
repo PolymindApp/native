@@ -47,7 +47,7 @@ export default class ClassicForm extends React.Component {
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
 				style={{flex: 1}}
 			>
-				<Animated.ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingBottom: 0 }]}>
+				<Animated.ScrollView style={styles.container} keyboardShouldPersistTaps="always" contentContainerStyle={[styles.content, { paddingBottom: 0 }]}>
 
 					{/*LOGO*/}
 					{/*	{!this.state.keyboardVisible ? (*/}
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
 		marginHorizontal: -100,
 		paddingHorizontal: 150,
 		marginTop: -200,
-		paddingTop: 215,
+		paddingTop: 230,
 		paddingBottom: 30,
 	},
 	headerText: {

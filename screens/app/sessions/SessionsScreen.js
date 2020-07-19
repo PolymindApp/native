@@ -1,24 +1,12 @@
 import * as React from 'react';
-import {
-	StyleSheet,
-	View,
-	RefreshControl,
-	TouchableOpacity,
-	ActivityIndicator,
-	Dimensions,
-	Slider,
-	Image
-} from 'react-native';
+import {StyleSheet, View, RefreshControl, TouchableOpacity, ActivityIndicator, Dimensions, Slider, Image} from 'react-native';
 import {Card, Icon, Text, Divider, Input, ListItem} from 'react-native-elements';
-import { Button } from 'react-native-paper';
+import {Button, IconButton} from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import I18n from '../../../locales/i18n';
 import PolymindSDK, { Dataset, THEME, Time, SessionStatsService, AssemblyParameters } from '@polymind/sdk-js';
 import RBSheet from "react-native-raw-bottom-sheet";
-import moment from 'moment';
-import 'moment/locale/fr';
-import 'moment/locale/es';
-import 'moment/locale/it';
+import moment from "moment/min/moment-with-locales";
 
 const $polymind = new PolymindSDK();
 
@@ -66,6 +54,7 @@ export default class SessionsScreen extends React.Component {
 
 	load(loadMore = false) {
 		return SessionStatsService.getAll('live', startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD')).then(stats => {
+
 			const items = Object.keys(stats.daily);
 			const mayHaveMore = items.length > 0;
 			startDate = moment(startDate).subtract(1, 'month');
@@ -84,6 +73,11 @@ export default class SessionsScreen extends React.Component {
 
 		navigation.setOptions({
 			title: I18n.t('title.sessions'),
+			headerLeft: () => (
+				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+					<IconButton onPress={() => navigation.push('HelpSessions')} icon={'help-circle'} color={'white'} />
+				</View>
+			),
 		});
 
 		this.resetDates();
@@ -99,7 +93,7 @@ export default class SessionsScreen extends React.Component {
 			if (global.mustRefreshSession) {
 				this.resetDates();
 				global.mustRefreshSession = false;
-				callback()
+				callback();
 			}
 		});
 		callback();

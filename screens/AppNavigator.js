@@ -2,13 +2,14 @@ import React from 'react';
 import { THEME } from '@polymind/sdk-js';
 import TabBarIcon from '../components/TabBarIcon';
 import NotesNavigator from "./app/NotesNavigator";
+import DictionaryNavigator from "./app/DictionaryNavigator";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import SessionsNavigator from "./app/SessionsNavigator";
 import ProfileNavigator from "./app/ProfileNavigator";
 import I18n from '../locales/i18n';
 
 const BottomTab = createBottomTabNavigator();
-const INITIAL_ROUTE_NAME = 'Sessions';
+const INITIAL_ROUTE_NAME = 'Dictionary';
 
 export default class AppNavigator extends React.Component {
 
@@ -24,13 +25,30 @@ export default class AppNavigator extends React.Component {
 					borderTopWidth: 0,
 				},
 			}}>
+
+				<BottomTab.Screen
+					name="Dictionary"
+					component={DictionaryNavigator}
+					options={{
+						title: I18n.t('navigation.dictionary'),
+						tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="dictionary" />,
+					}}
+				/>
+				<BottomTab.Screen
+					name="Notes"
+					component={NotesNavigator}
+					options={{
+						title: I18n.t('navigation.cards'),
+						tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="cards" />,
+					}}
+				/>
 				<BottomTab.Screen
 					name="Sessions"
 					component={SessionsNavigator}
 					options={{
 						tabBarLabel: I18n.t('navigation.sessions'),
 						tabBarVisible: !this.state.keyboardVisible,
-						tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="timelapse" />,
+						tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="headphones" />,
 					}}
 					listeners={({ navigation, route }) => ({
 						tabPress: event => {
@@ -40,14 +58,6 @@ export default class AppNavigator extends React.Component {
 							}
 						},
 					})}
-				/>
-				<BottomTab.Screen
-					name="Notes"
-					component={NotesNavigator}
-					options={{
-						title: I18n.t('navigation.notes'),
-						tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="book-open" />,
-					}}
 				/>
 				<BottomTab.Screen
 					name="Profile"

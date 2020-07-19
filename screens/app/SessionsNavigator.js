@@ -5,6 +5,7 @@ import PlayerScreen from "./sessions/PlayerScreen";
 import StatsScreen from "./sessions/StatsScreen";
 import { THEME } from '@polymind/sdk-js';
 import I18n from '../../locales/i18n';
+import HelpSessionsScreen from "./help/HelpSessionsScreen";
 
 const Stack = createStackNavigator();
 const INITIAL_ROUTE_NAME = 'Sessions';
@@ -28,6 +29,9 @@ export default function SessionsNavigator({ navigation, route }) {
 			<Stack.Screen name="SessionsStats" component={StatsScreen} />
 			<Stack.Screen name="SessionsPlayer" component={PlayerScreen} options={{
 				cardStyle: { backgroundColor: 'black' },
+			}} />
+			<Stack.Screen name="HelpSessions" component={HelpSessionsScreen} options={{
+				title: I18n.t('title.help'),
 			}} />
 		</Stack.Navigator>
 	);

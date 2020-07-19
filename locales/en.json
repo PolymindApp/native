@@ -6,6 +6,7 @@
 		"clearCacheTitle": "Clear cache",
 		"deleteDatasetDesc": "All notes of the \"{{name}}\" list will be deleted. Do you wish to proceed?",
 		"deleteDatasetTitle": "Delete notes",
+		"listenTitle": "Listen",
 		"signOutDesc": "Your session will be terminated. Do you wish to proceed?",
 		"signOutTitle": "Sign Out",
 		"uploadFromUrlErrorDesc": "Unable to fetch the image from the remote server. You may try again or choose another image.",
@@ -22,6 +23,7 @@
 		"clearCache": "Clear cache",
 		"continue": "Continue",
 		"delete": "Delete",
+		"edit": "Edit",
 		"fetchMore": "Fetch more",
 		"grant": "Grant",
 		"loadMore": "Load more",
@@ -30,12 +32,14 @@
 		"next": "Next",
 		"ok": "OK",
 		"options": "Options",
+		"ready": "Ready",
 		"resendActivation": "Resend",
 		"resetPassword": "Reset",
 		"save": "Save",
 		"share": "Share",
 		"signIn": "Sign In",
 		"signOut": "Sign Out",
+		"skip": "Skip",
 		"start": "Start",
 		"startSession": "Start session",
 		"takePhoto": "Take photo",
@@ -114,18 +118,47 @@
 		"filter": "Filter...",
 		"searchCloud": "Search on the cloud.."
 	},
+	"language": {
+		"cmn": "Chinese",
+		"cy": "Welsh",
+		"da": "Danish",
+		"de": "German",
+		"en": "English",
+		"es": "Spanish",
+		"fr": "French",
+		"hi": "Hindi",
+		"is": "Icelandic",
+		"it": "Italian",
+		"ja": "Japanese",
+		"ko": "Korean",
+		"nb": "Norwegian",
+		"nl": "Dutch",
+		"pl": "Polish",
+		"pt": "Portuguese",
+		"ro": "Romanian",
+		"ru": "Russian",
+		"sv": "Swedish",
+		"tr": "Turkish"
+	},
 	"legal": {
 		"privacy": "Privacy Policies",
 		"terms": "Terms and Conditions"
 	},
 	"navigation": {
+		"cards": "Cards",
+		"dictionary": "Dictionary",
 		"notes": "Notes",
 		"profile": "Profile",
 		"sessions": "Sessions"
 	},
 	"notes": {
 		"emptyDesc": "You need list of notes to start a session.",
-		"emptyTitle": "No list yet"
+		"emptyTitle": "No list yet",
+		"totalRows": {
+			"one": "One card",
+			"other": "{{count}} cards",
+			"zero": "No data yet"
+		}
 	},
 	"permission": {
 		"manualCameraActivationDesc": "You have to grant camera access manually if you wish to use it in this application.",
@@ -202,11 +235,15 @@
 	},
 	"state": {
 		"deleting": "Deleting...",
+		"downloading": "Downloading..",
 		"generating": "Generating...",
 		"loading": "Loading..",
-		"saving": "Saving..."
+		"saving": "Saving...",
+		"uploading": "Uploading.."
 	},
 	"title": {
+		"dictionary": "Dictionary",
+		"help": "Help",
 		"loading": "Loading...",
 		"newColumn": "New Column",
 		"newList": "New List",
@@ -218,5 +255,13 @@
 		"profileInformations": "Information",
 		"profileSettings": "Settings",
 		"sessions": "Sessions"
+	},
+	"welcome": {
+		"listenDesc": "Then start a session and let Polymind\\'s voice guide you through your learning process.",
+		"listenTitle": "Listen",
+		"noteDesc": "First, enter the questions and answers you want to remember.",
+		"noteTitle": "Note",
+		"rememberDesc": "Finally, take advantage of the freedom of attention! Do the dishes, medidate or even go to the gym!",
+		"rememberTitle": "Remember"
 	}
 }

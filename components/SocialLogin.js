@@ -4,7 +4,7 @@ import * as Google from 'expo-google-app-auth';
 import React from 'react';
 import {SocialIcon} from "react-native-elements";
 import {View, Vibration, ActivityIndicator, Platform, Alert} from "react-native";
-import PolymindSDK, { THEME, SSOService, FileService, UserService } from '@polymind/sdk-js';
+import PolymindSDK, { User, THEME, SSOService, FileService, UserService } from '@polymind/sdk-js';
 import {AppContext} from "../contexts";
 import I18n from "../locales/i18n";
 // import * as Facebook from 'expo-facebook';
@@ -30,19 +30,26 @@ export default class SocialLogin extends React.Component {
 
 	async socialLogin(provider) {
 
+		const { navigation } = this.props;
+
 		const signInCallback = (provider, token, meta, photo) => {
 			this.setState({ logging: true });
-			SSOService.login(provider, token, meta).then(response => {
-				$polymind.setToken(response.data.token);
-				if (response.wasNew && photo) {
-					FileService.uploadFromUrl(photo).then(fileResponse => {
-						return UserService.update(response.data.user.id, {
-							avatar: fileResponse.data.id
+			return SSOService.login(provider, token, meta).then(response => {
+				$polymind.login(response.email, response.tempHash).then(loginResponse => {
+					global.user = loginResponse.data.user;
+
+					if (response.wasNew && photo) {
+						return FileService.uploadFromUrl(photo).then(fileResponse => {
+							return UserService.update(response.data.user.id, {
+								avatar: fileResponse.data.id
+							});
+						}).finally(() => {
+							this.context.setSignedIn(true);
 						});
-					}).finally(() => this.context.setSignedIn(true));
-				} else {
-					this.context.setSignedIn(true);
-				}
+					} else {
+						this.context.setSignedIn(true);
+					}
+				});
 			});
 		};
 

@@ -47,6 +47,7 @@ export default class LoginScreen extends React.Component {
 		this.setState({ loading: true });
 		$polymind.login(this.state.email, this.state.password)
 			.then(response => {
+				global.user = response.data.user;
 				this.context.setSignedIn(true);
 			})
 			.catch(err => {

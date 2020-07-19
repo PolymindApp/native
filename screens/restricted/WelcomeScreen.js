@@ -14,14 +14,14 @@ export default class WelcomeScreen extends React.Component {
 				{/*LOGO*/}
 				<View style={{flex: 0.25, justifyContent: 'center', alignItems: 'center', paddingTop: 15}}>
 					<View style={styles.logoContainer}>
-						<Image source={require('../../assets/images/polymind-dark.png')} style={{ width: 60, height: 70 }} />
+						<Image source={require('../../assets/images/polymind-dark.png')} style={{ width: 40, height: 46 }} />
 						<Text style={styles.logoText}>Polymind</Text>
 					</View>
 				</View>
 
 				{/*IMAGE*/}
-				<View style={{flex: 0.5, marginVertical: 30}}>
-					<Image source={require('../../assets/images/welcome.png')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height * 0.4}} />
+				<View style={{flex: 0.5, marginVertical: 30, alignItems: 'center'}}>
+					<Image source={require('../../assets/images/welcome.png')} style={{width: Dimensions.get('window').width * 0.8, height: Dimensions.get('window').height * 0.4}} />
 				</View>
 
 				<View style={{flex: 0.25, backgroundColor: THEME.primary, justifyContent: 'center', padding: 30 }}>

@@ -63,7 +63,9 @@ export default class ProfileNavigator extends React.Component {
 				<Stack.Screen name="ProfileSettings" component={SettingsScreen} options={{
 					title: I18n.t('title.profileSettings'),
 				}} />
-				<Stack.Screen name="ProfilePage" component={PageScreen} />
+				<Stack.Screen name="ProfilePage" component={PageScreen} options={{
+					title: I18n.t('state.loading'),
+				}} />
 			</Stack.Navigator>
 		);
 	}

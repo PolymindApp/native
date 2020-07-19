@@ -10,6 +10,7 @@ import { HeaderBackButton } from '@react-navigation/stack';
 import {Audio} from "expo-av";
 import Offline from '../../../utils/Offline';
 import Sound from '../../../utils/Sound';
+import ContextualOptions from "../../../components/ContextualOptions";
 
 const memory = {
 	sounds: {},
@@ -47,7 +48,18 @@ export default class StatsScreen extends React.Component {
 		iframeLoaded: false,
 		playerUrl: null,
 		loaded: false,
+		index: false,
 	};
+
+	optionItems = [
+		{ name: I18n.t('btn.cancel'), callback: () => {}, cancel: true },
+		// { icon: 'pencil', name: I18n.t('btn.edit'), callback: () => {
+		// 	const { navigation } = this.props;
+		// 	const { dataset, index } = this.state;
+		// 	// navigation.push('NotesDataEdit', {...route.params, rowIdx: index, datasetDataContext: this});
+		// } },
+		{ name: I18n.t('btn.share'), callback: () => this.share() },
+	];
 
 	webview = null;
 
@@ -55,6 +67,8 @@ export default class StatsScreen extends React.Component {
 
 		const { navigation } = this.props;
 		const { settings } = this.props.route.params;
+
+		global.currentPlayerDatasetId = settings.dataset.id;
 
 		this.setState({ generating: true });
 		Promise.all([
@@ -90,7 +104,8 @@ export default class StatsScreen extends React.Component {
 		activateKeepAwake();
 		this._navigationFocus = navigation.addListener('focus', () => {
 			activateKeepAwake();
-			this.sendMessage('native_play');
+			this.sendMessage('native_play', global.playerMustRefreshDataset);
+			global.playerMustRefreshDataset = false;
 		});
 		this._navigationBlur = navigation.addListener('blur', () => {
 			deactivateKeepAwake();
@@ -117,10 +132,8 @@ export default class StatsScreen extends React.Component {
 				/>
 			),
 			headerRight: () => (
-				<View style={{marginRight: 10}}>
-					<TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => this.share()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
-						<Text style={{color: 'white'}}>{I18n.t('btn.share')}</Text>
-					</TouchableOpacity>
+				<View style={{marginRight: 10, flexDirection: 'row'}}>
+					<ContextualOptions items={this.optionItems} />
 				</View>
 			)
 		});
@@ -214,7 +227,7 @@ export default class StatsScreen extends React.Component {
 
 		switch (type) {
 			case 'index':
-				console.log('index', data);
+				this.setState({ index: data });
 				break;
 			case 'read':
 				const locale = Locale.abbrToLocale(data.settings.lang);

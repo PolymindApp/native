@@ -17,11 +17,14 @@ export default class ContextualOptions extends React.Component {
 		const destructiveButtonIndex = iosItems.findIndex(item => item.destructive);
 		const cancelButtonIndex = iosItems.findIndex(item => item.cancel);
 
+		this.props.onOpen && this.props.onOpen();
+
 		ActionSheetIOS.showActionSheetWithOptions({
 			options: texts,
 			destructiveButtonIndex,
 			cancelButtonIndex
 		}, buttonIndex => {
+			this.props.onClose && this.props.onClose();
 			items[buttonIndex].callback();
 		});
 	}
@@ -39,13 +42,17 @@ export default class ContextualOptions extends React.Component {
 			default: (
 				<Menu
 					visible={this.state.menu}
-					onDismiss={() => this.setState({ menu: false })}
+					onDismiss={() => {
+						this.props.onClose && this.props.onClose();
+						this.setState({ menu: false });
+					}}
 					anchor={
 						<IconButton onPress={() => this.setState({ menu: true })} icon="dots-vertical" color={'white'} disabled={disabled}></IconButton>
 					}
 				>
 					{items.filter(item => item.android !== false).map((item, itemIdx) => (
 						<Menu.Item key={itemIdx} onPress={() => {
+							this.props.onOpen && this.props.onOpen();
 							item.callback();
 							this.setState({ menu: false });
 						}} title={item.name} icon={item.icon} />
