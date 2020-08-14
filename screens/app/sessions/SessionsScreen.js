@@ -74,9 +74,9 @@ export default class SessionsScreen extends React.Component {
 		navigation.setOptions({
 			title: I18n.t('title.sessions'),
 			headerLeft: () => (
-				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-					<IconButton onPress={() => navigation.push('HelpSessions')} icon={'help-circle'} color={'white'} />
-				</View>
+				<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }} onPress={() => navigation.push('ProfilePage', { slug: 'help-sessions' })} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+					<Text style={{color: 'white'}}>{I18n.t('btn.help')}</Text>
+				</TouchableOpacity>
 			),
 		});
 
@@ -228,7 +228,7 @@ export default class SessionsScreen extends React.Component {
 				>
 					<View style={{padding: 10, flex: 1, justifyContent: 'flex-end'}}>
 						<View style={{flex: 1}}>
-							<Text style={{marginBottom: 10}} h4>
+							<Text style={{marginBottom: 10, textAlign: 'center'}} h4>
 								{I18n.t('session.drawerSelectList')}
 							</Text>
 							<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>

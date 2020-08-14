@@ -25,7 +25,9 @@
 		"delete": "Delete",
 		"edit": "Edit",
 		"fetchMore": "Fetch more",
+		"filters": "Filters",
 		"grant": "Grant",
+		"help": "Help",
 		"loadMore": "Load more",
 		"newNotes": "Add notes",
 		"newSession": "Start a session",
@@ -257,7 +259,7 @@
 		"sessions": "Sessions"
 	},
 	"welcome": {
-		"listenDesc": "Then start a session and let Polymind\\'s voice guide you through your learning process.",
+		"listenDesc": "Then start a session and let Polymind's voice guide you through your learning process.",
 		"listenTitle": "Listen",
 		"noteDesc": "First, enter the questions and answers you want to remember.",
 		"noteTitle": "Note",

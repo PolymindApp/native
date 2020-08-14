@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "Kaushald4/vector-icons#master",
-    "@polymind/sdk-js": "0.1.8-beta.1",
+	"@polymind/sdk-js": "file:../sdk-js",
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/masked-view": "0.1.6",
     "@react-navigation/bottom-tabs": "^5.3.1",

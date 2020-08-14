@@ -9,7 +9,7 @@ import ProfileNavigator from "./app/ProfileNavigator";
 import I18n from '../locales/i18n';
 
 const BottomTab = createBottomTabNavigator();
-const INITIAL_ROUTE_NAME = 'Dictionary';
+const INITIAL_ROUTE_NAME = 'Notes';
 
 export default class AppNavigator extends React.Component {
 
@@ -26,14 +26,14 @@ export default class AppNavigator extends React.Component {
 				},
 			}}>
 
-				<BottomTab.Screen
-					name="Dictionary"
-					component={DictionaryNavigator}
-					options={{
-						title: I18n.t('navigation.dictionary'),
-						tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="dictionary" />,
-					}}
-				/>
+				{/*<BottomTab.Screen*/}
+				{/*	name="Dictionary"*/}
+				{/*	component={DictionaryNavigator}*/}
+				{/*	options={{*/}
+				{/*		title: I18n.t('navigation.dictionary'),*/}
+				{/*		tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="dictionary" />,*/}
+				{/*	}}*/}
+				{/*/>*/}
 				<BottomTab.Screen
 					name="Notes"
 					component={NotesNavigator}

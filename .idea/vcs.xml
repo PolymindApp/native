@@ -2,5 +2,15 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../chrome-ext" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../client" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../component-slideshow" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../component-spaceshooter" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../firefox-ext" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../player" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../sdk-js" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../sdk-php" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../server" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../www" vcs="Git" />
   </component>
 </project>

@@ -1,10 +1,10 @@
 import {CardStyleInterpolators, createStackNavigator} from "@react-navigation/stack";
 import React from 'react';
 import GraphScreen from "./dictionary/GraphScreen";
-import HelpDictionaryScreen from "./help/HelpDictionaryScreen";
 import { THEME } from '@polymind/sdk-js';
 import I18n from '../../locales/i18n';
 import {AppContext} from "../../contexts";
+import PageScreen from "../shared/PageScreen";
 
 const Stack = createStackNavigator();
 
@@ -28,8 +28,8 @@ export default class Dictionary extends React.Component {
 				<Stack.Screen name="Graph" component={GraphScreen} options={{
 					title: I18n.t('title.dictionary'),
 				}} />
-				<Stack.Screen name="HelpDictionary" component={HelpDictionaryScreen} options={{
-					title: I18n.t('title.help'),
+				<Stack.Screen name="ProfilePage" component={PageScreen} options={{
+					title: I18n.t('state.loading'),
 				}} />
 			</Stack.Navigator>
 		);

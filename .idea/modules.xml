@@ -2,8 +2,17 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../sdk-js/.idea/Polymind (SDK JS).iml" filepath="$PROJECT_DIR$/../sdk-js/.idea/Polymind (SDK JS).iml" />
+      <module fileurl="file://$PROJECT_DIR$/../chrome-ext/.idea/chrome-ext.iml" filepath="$PROJECT_DIR$/../chrome-ext/.idea/chrome-ext.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../client/.idea/client.iml" filepath="$PROJECT_DIR$/../client/.idea/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../component-slideshow/.idea/component-slideshow.iml" filepath="$PROJECT_DIR$/../component-slideshow/.idea/component-slideshow.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../component-spaceshooter/.idea/component-spaceshooter.iml" filepath="$PROJECT_DIR$/../component-spaceshooter/.idea/component-spaceshooter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../firefox-ext/.idea/firefox-ext.iml" filepath="$PROJECT_DIR$/../firefox-ext/.idea/firefox-ext.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/native.iml" filepath="$PROJECT_DIR$/.idea/native.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../player/.idea/player.iml" filepath="$PROJECT_DIR$/../player/.idea/player.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../sdk-js/.idea/sdk-js.iml" filepath="$PROJECT_DIR$/../sdk-js/.idea/sdk-js.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../sdk-php/.idea/sdk-php.iml" filepath="$PROJECT_DIR$/../sdk-php/.idea/sdk-php.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../server/.idea/server.iml" filepath="$PROJECT_DIR$/../server/.idea/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../www/.idea/www.iml" filepath="$PROJECT_DIR$/../www/.idea/www.iml" />
     </modules>
   </component>
 </project>

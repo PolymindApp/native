@@ -1,5 +1,5 @@
 import React from 'react';
-import {ActivityIndicator, StyleSheet, View, Linking, Alert} from 'react-native';
+import {ActivityIndicator, StyleSheet, View, Linking, Alert, Text} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Icon, ListItem, SocialIcon } from 'react-native-elements';
 import PolymindSDK, { User, THEME, FileService, UserService } from "@polymind/sdk-js";
@@ -91,7 +91,7 @@ export default class ProfileScreen extends React.Component {
 	}
 
 	componentDidMount() {
-		// this.load();
+		this.load();
 		let thumbnail = preview;
 		if (global.user.avatar && global.user.avatar.private_hash) {
 			thumbnail = { uri : $polymind.getThumbnailByPrivateHash(global.user.avatar.private_hash, 'avatar') }

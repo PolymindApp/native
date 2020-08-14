@@ -4,9 +4,20 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.expo" />
       <excludeFolder url="file://$MODULE_DIR$/.expo-shared" />
+      <excludeFolder url="file://$MODULE_DIR$/web-build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Polymind (SDK JS)" />
+    <orderEntry type="module" module-name="sdk-js" />
+    <orderEntry type="module" module-name="sdk-php" />
+    <orderEntry type="module" module-name="player" />
+    <orderEntry type="module" module-name="server" />
+    <orderEntry type="module" module-name="component-slideshow" />
+    <orderEntry type="module" module-name="component-spaceshooter" />
+    <orderEntry type="module" module-name="client" />
+    <orderEntry type="module" module-name="www" />
+    <orderEntry type="module" module-name="chrome-ext" />
+    <orderEntry type="module" module-name="firefox-ext" />
   </component>
 </module>

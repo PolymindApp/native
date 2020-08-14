@@ -1,5 +1,15 @@
 import React from 'react'
-import {View, ActivityIndicator, Platform, Modal, StyleSheet, Text, Dimensions, Image} from 'react-native';
+import {
+	View,
+	ActivityIndicator,
+	Platform,
+	Modal,
+	StyleSheet,
+	Text,
+	Dimensions,
+	Image,
+	TouchableOpacity
+} from 'react-native';
 import { WebView } from 'react-native-webview';
 import { IconButton } from 'react-native-paper';
 import { THEME } from '@polymind/sdk-js';
@@ -110,14 +120,14 @@ export default class StatsScreen extends React.Component {
 
 		navigation.setOptions({
 			headerLeft: () => (
-				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-					<IconButton onPress={() => navigation.push('HelpDictionary')} icon={'help-circle'} color={'white'} />
-				</View>
+				<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }} onPress={() => navigation.push('ProfilePage', { slug: 'help-dictionary' })} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+					<Text style={{color: 'white'}}>{I18n.t('btn.help')}</Text>
+				</TouchableOpacity>
 			),
 			headerRight: () => (
-				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-					<IconButton icon={'filter-variant'} color={'white'} />
-				</View>
+				<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 10 }} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+					<Text style={{color: 'white'}}>{I18n.t('btn.filters')}</Text>
+				</TouchableOpacity>
 			),
 		});
 

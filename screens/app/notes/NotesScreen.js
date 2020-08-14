@@ -84,6 +84,11 @@ export default class NotesScreen extends React.Component {
 
 		navigation.setOptions({
 			title: I18n.t('title.notes'),
+			headerLeft: () => (
+				<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }} onPress={() => navigation.push('ProfilePage', { slug: 'help-notes', backgroundColor: 'white' })} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+					<Text style={{color: 'white'}}>{I18n.t('btn.help')}</Text>
+				</TouchableOpacity>
+			),
 			headerRight: () => datasets.length > 0 && (
 				<View style={{marginRight: 10}}>
 					{Platform.select({
@@ -92,11 +97,6 @@ export default class NotesScreen extends React.Component {
 						</TouchableOpacity>),
 						default: (<Button onPress={() => this.handleAdd()} icon="plus" color={'white'}>{I18n.t('btn.add')}</Button>)
 					})}
-				</View>
-			),
-			headerLeft: () => (
-				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-					<IconButton onPress={() => navigation.push('HelpNotes')} icon={'help-circle'} color={'white'} />
 				</View>
 			),
 		});

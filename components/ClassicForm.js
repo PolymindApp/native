@@ -20,10 +20,11 @@ export default class ClassicForm extends React.Component {
 		this.keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", event => {
 			Animated.parallel([
 				Animated.timing(this.keyboardHeight, {duration: event.duration, toValue: event.endCoordinates.height,}),
-				Animated.timing(this.fontSize, {duration: event.duration, toValue: 16,}),
+				Animated.timing(this.fontSize, {duration: event.duration, toValue: 16.64,}),
 				Animated.timing(this.fontWidth, {duration: event.duration, toValue: 160,}),
 				Animated.timing(this.iconSize, {duration: event.duration, toValue: 32,}),
 			]).start();
+			this.setState({ keyboardVisible: true });
 		});
 		this.keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", event => {
 			Animated.parallel([
@@ -32,6 +33,7 @@ export default class ClassicForm extends React.Component {
 				Animated.timing(this.fontWidth, {duration: event.duration, toValue: 250,}),
 				Animated.timing(this.iconSize, {duration: event.duration, toValue: 60,}),
 			]).start();
+			this.setState({ keyboardVisible: false });
 		});
 	}
 
@@ -50,9 +52,8 @@ export default class ClassicForm extends React.Component {
 				<Animated.ScrollView style={styles.container} keyboardShouldPersistTaps="always" contentContainerStyle={[styles.content, { paddingBottom: 0 }]}>
 
 					{/*LOGO*/}
-					{/*	{!this.state.keyboardVisible ? (*/}
 					<View style={styles.header}>
-						<AnimatedIcon name={icon} size={this.iconSize} color={'white'} />
+						<AnimatedIcon name={icon} size={this.iconSize} color={'rgba(255, 255, 255, 0.5)'} />
 						<Animated.Text style={[styles.headerText, { fontSize: this.fontSize, width: this.fontWidth }]}>{title}</Animated.Text>
 					</View>
 
@@ -62,12 +63,11 @@ export default class ClassicForm extends React.Component {
 					</View>
 
 					{/*FOOTER*/}
-					{footer && !this.state.keyboardVisible ? (
+					{footer && !this.state.keyboardVisible &&
 					<View style={{...styles.view, justifyContent: 'flex-end', marginBottom: 15}}>
 						<Divider style={{marginVertical: 15, marginHorizontal: 30}}/>
 						{footer}
-					</View>
-					) : null}
+					</View>}
 
 				</Animated.ScrollView>
 			</KeyboardAvoidingView>
@@ -88,10 +88,6 @@ const styles = StyleSheet.create({
 		backgroundColor: THEME.primary,
 		justifyContent: 'center',
 		alignItems: 'center',
-		borderBottomStartRadius: 5000,
-		borderBottomEndRadius: 5000,
-		marginHorizontal: -100,
-		paddingHorizontal: 150,
 		marginTop: -200,
 		paddingTop: 230,
 		paddingBottom: 30,

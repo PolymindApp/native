@@ -5,9 +5,9 @@ import NotesScreen from "./notes/NotesScreen";
 import I18n from '../../locales/i18n';
 import DataScreen from "./notes/DataScreen";
 import ColumnEditScreen from "./notes/ColumnEditScreen";
-import HelpNotesScreen from "./help/HelpNotesScreen";
 import { THEME } from '@polymind/sdk-js';
 import DataEditScreen from "./notes/DataEditScreen";
+import PageScreen from "../shared/PageScreen";
 
 const Stack = createStackNavigator();
 const INITIAL_ROUTE_NAME = 'Notes';
@@ -33,8 +33,8 @@ export default class NotesNavigator extends React.Component {
 				<Stack.Screen name="NotesData" component={DataScreen} />
 				<Stack.Screen name="NotesDataEdit" component={DataEditScreen} />
 				<Stack.Screen name="NotesColumnEdit" component={ColumnEditScreen} />
-				<Stack.Screen name="HelpNotes" component={HelpNotesScreen} options={{
-					title: I18n.t('title.help'),
+				<Stack.Screen name="ProfilePage" component={PageScreen} options={{
+					title: I18n.t('state.loading'),
 				}} />
 			</Stack.Navigator>
 		);
