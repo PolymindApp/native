@@ -30,10 +30,14 @@ export default class SessionsScreen extends React.Component {
 					explanation: false,
 					image: false,
 				},
+				filters: {
+					sort: ['field', 'id', 'desc'],
+					tags: [],
+				},
 				component: {
-					mode: 'linearAssertive',
+					mode: 'linearPassive',
 					speed: 5,
-					range: 20,
+					range: 50,
 					readQuestion: true,
 					readAnswer: true,
 				},
@@ -232,7 +236,7 @@ export default class SessionsScreen extends React.Component {
 								{I18n.t('session.drawerSelectList')}
 							</Text>
 							<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
-								{this.state.datasets.map((dataset, datasetIdx) => (
+								{this.state.datasets.filter(dataset => dataset.total_rows > 0).map((dataset, datasetIdx) => (
 									<ListItem
 										key={dataset.guid}
 										leftIcon={<Icon

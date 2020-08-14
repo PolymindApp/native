@@ -16,7 +16,13 @@ const refInputs = [
 export default class DataSettingsScreen extends React.Component {
 
 	state = {
+		ready: false,
 		saving: false,
+	}
+
+	componentDidMount() {
+		const dataset = this.props.route.params.datasetContext.state.dataset;
+		this.setState({ dataset, ready: true });
 	}
 
 	handleAddColumn() {
@@ -73,7 +79,7 @@ export default class DataSettingsScreen extends React.Component {
 		const { navigation, route } = this.props;
 		const datasetContext = route.params.datasetContext;
 		const datasetsContext = route.params.datasetsContext;
-		const dataset = datasetContext.state.dataset;
+		const dataset = this.state.dataset;
 		const clone = new Dataset(Helpers.deepClone(dataset));
 		const transactions = clone.getTransactions(datasetContext.state.originalDataset);
 		const wasNew = clone.id === null;
@@ -87,6 +93,7 @@ export default class DataSettingsScreen extends React.Component {
 
 			dataset.applyTransactionResponse(response);
 			dataset.id = response.dataset[0].result.data.id;
+			datasetContext.setState({ dataset });
 			datasetContext.updateOriginal(dataset);
 			route.params.datasetContext.setState({dataset, wasValid: dataset.isValid()});
 			if (wasNew) {
@@ -106,8 +113,12 @@ export default class DataSettingsScreen extends React.Component {
 	}
 
 	render() {
-		const dataset = this.props.route.params.datasetContext.state.dataset;
+		const dataset = this.state.dataset;
 		const { navigation, route } = this.props;
+
+		if (!this.state.ready) {
+			return null;
+		}
 
 		return (
 			<KeyboardAvoidingView
@@ -122,6 +133,7 @@ export default class DataSettingsScreen extends React.Component {
 						<List.Subheader>{I18n.t('dataset.settings.general')}</List.Subheader>
 						<View style={{marginHorizontal: 10, borderRadius: 10, padding: 5, paddingTop: 15, backgroundColor: 'white'}}>
 							<Input
+								clearButtonMode={'always'}
 								autoFocus={!dataset.id}
 								label={I18n.t('field.name')}
 								placeholder={I18n.t('field.dataPlaceholder')}
@@ -170,7 +182,7 @@ export default class DataSettingsScreen extends React.Component {
 							<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
 								<ListItem
 									title={I18n.t('dataset.settings.includeImage')}
-									checkmark={{ checked: dataset.include_image === 1 }}
+									checkmark={dataset.include_image}
 									delayPressIn={0}
 									onPress={() => {
 										dataset.include_image = !dataset.include_image;

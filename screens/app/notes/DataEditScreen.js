@@ -104,16 +104,8 @@ export default class DataEditScreen extends React.Component {
 	}
 
 	getTags() {
-		const tags = [];
 		const { dataset } = this.props.route.params.datasetContext.state;
-		dataset.rows.forEach(row => {
-			row.tags.forEach(tag => {
-				if (tags.indexOf(tag) === -1) {
-					tags.push(tag);
-				}
-			});
-		});
-		return tags;
+		return dataset.getTags();
 	}
 
 	onRowRemove(row) {
@@ -136,7 +128,7 @@ export default class DataEditScreen extends React.Component {
 
 	save(addMore = false) {
 		const { navigation, route } = this.props;
-		const { datasetContext, datasetDataContext } = this.props.route.params;
+		const { datasetsContext, datasetIdx, datasetContext, datasetDataContext } = this.props.route.params;
 		const { dataset, originalDataset } = datasetContext.state;
 		const { rowIdx } = route.params;
 
@@ -174,10 +166,15 @@ export default class DataEditScreen extends React.Component {
 				}
 
 				dataset.applyTransactionResponse(response);
-				dataset.total_rows++;
 
 				if (fileData) {
 					dataset.rows[rowIdx].image = fileData;
+				}
+
+				const listDataset = datasetsContext.state.datasets.find(item => item.guid === dataset.guid);
+				if (listDataset) {
+					listDataset.total_rows++;
+					datasetsContext.setState({datasets: datasetsContext.state.datasets});
 				}
 
 				datasetContext.updateOriginal(dataset);

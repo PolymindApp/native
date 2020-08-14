@@ -151,7 +151,7 @@
 		"dictionary": "Dictionary",
 		"notes": "Notes",
 		"profile": "Profile",
-		"sessions": "Sessions"
+		"sessions": "Session"
 	},
 	"notes": {
 		"emptyDesc": "You need list of notes to start a session.",

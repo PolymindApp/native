@@ -52,7 +52,7 @@ export default class DataScreen extends React.Component {
 			return new Promise((resolve, reject) => resolve(dataset));
 		}
 
-		return $polymind.getDatasetRows(dataset.id).then(response => {
+		return $polymind.getDatasetRows(dataset.id, 10000).then(response => {
 			dataset.rows = response;
 			const originalDataset = Helpers.deepClone(dataset);
 			this.setState({ dataset, originalDataset, loaded: true, wasValid: dataset.isValid(), selectedIndex: dataset.isValid() ? 0 : 1 });

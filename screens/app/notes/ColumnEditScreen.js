@@ -121,6 +121,7 @@ export default class ColumnEditScreen extends React.Component {
 				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
 					<View style={{margin: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white'}}>
 						<Input
+							clearButtonMode={'always'}
 							label={I18n.t('field.columnName')}
 							inputStyle={{color:THEME.primary}}
 							inputContainerStyle={{borderBottomWidth: 0}}
