@@ -35,9 +35,8 @@ export default class SocialLogin extends React.Component {
 		const signInCallback = (provider, token, meta, photo) => {
 			this.setState({ logging: true });
 			return SSOService.login(provider, token, meta).then(response => {
-				$polymind.login(response.email, response.tempHash).then(loginResponse => {
+				return $polymind.login(response.email, response.tempHash).then(loginResponse => {
 					global.user = loginResponse.data.user;
-
 					if (response.wasNew && photo) {
 						return FileService.uploadFromUrl(photo).then(fileResponse => {
 							return UserService.update(response.data.user.id, {
@@ -90,7 +89,7 @@ export default class SocialLogin extends React.Component {
 			}
 		} catch ({ message }) {
 			// Alert.alert(I18n.t('error.ssoLoginTitle'), I18n.t('error.ssoLoginDesc'));
-			console.log(message);
+			console.log('error', message);
 			Vibration.vibrate();
 			this.setState({ logging: false });
 		}

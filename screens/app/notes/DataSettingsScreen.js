@@ -107,6 +107,8 @@ export default class DataSettingsScreen extends React.Component {
 			if (wasNew) {
 				navigation.navigate('DataData', route.params);
 			}
+		}).catch(err => {
+			console.log(err);
 		}).finally(() => {
 			this.setState({ saving: false });
 		});

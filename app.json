@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "polymind",
@@ -31,7 +31,7 @@
 	"android": {
 	  "package": "com.polymind.native",
 	  "permissions": ["CAMERA"],
-	  "versionCode": 1,
+	  "versionCode": 2,
 	  "intentFilters": [
 		{
 		  "action": "VIEW",
@@ -52,8 +52,8 @@
 	},
     "ios": {
 	  "bundleIdentifier": "com.polymind.native",
-	  "buildNumber": "1.0.1",
-      "supportsTablet": true,
+	  "buildNumber": "1.0.5",
+      "supportsTablet": false,
 	  "associatedDomains": ["polymind.app"],
 	  "usesAppleSignIn": true,
 	  "config": {

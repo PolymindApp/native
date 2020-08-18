@@ -25,7 +25,11 @@ export default class WelcomeScreen extends React.Component {
 		navigation.navigate('App');
 
 		global.user.settings.native.welcomeScreen = true;
-		UserService.update(global.user.id, { settings: global.user.settings }).then(response => console.log(response));
+		UserService.update(global.user.id, { settings: global.user.settings })
+			.then(response => console.log(response))
+			.catch(err => {
+				console.log(err);
+			});
 	}
 
 	render() {

@@ -56,6 +56,8 @@ export default class DataScreen extends React.Component {
 			dataset.rows = response;
 			const originalDataset = Helpers.deepClone(dataset);
 			this.setState({ dataset, originalDataset, loaded: true, wasValid: dataset.isValid(), selectedIndex: dataset.isValid() ? 0 : 1 });
+		}).catch(err => {
+			console.log(err);
 		});
 	}
 

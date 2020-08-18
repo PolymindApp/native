@@ -36,6 +36,9 @@ export default class InformationsScreen extends React.Component {
 				this.updateOriginal();
 				this.props.navigation.pop();
 			})
+			.catch(err => {
+				console.log(err);
+			})
 			.finally(() => this.setState({ saving: false }))
 	}
 

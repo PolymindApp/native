@@ -40,6 +40,8 @@ export default class ProfileScreen extends React.Component {
 				thumbnail = { uri : $polymind.getThumbnailByPrivateHash(me.avatar.private_hash, 'avatar') }
 			}
 			this.setState({ me, thumbnail, loading: false });
+		}).catch(err => {
+			console.log(err);
 		});
 	}
 

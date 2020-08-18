@@ -48,7 +48,7 @@ export default class StatsScreen extends React.Component {
 		iframeLoaded: false,
 		playerUrl: null,
 		loaded: false,
-		index: false,
+		currentRowId: null,
 	};
 
 	optionItems = [
@@ -56,7 +56,7 @@ export default class StatsScreen extends React.Component {
 		// { icon: 'pencil', name: I18n.t('btn.edit'), callback: () => {
 		// 	const { navigation } = this.props;
 		// 	const { dataset, index } = this.state;
-		// 	// navigation.push('NotesDataEdit', {...route.params, rowIdx: index, datasetDataContext: this});
+		// 	navigation.push('NotesDataEdit', {...route.params, rowIdx: index, datasetDataContext: this});
 		// } },
 		{ name: I18n.t('btn.share'), callback: () => this.share() },
 	];
@@ -74,27 +74,32 @@ export default class StatsScreen extends React.Component {
 		Promise.all([
 			ComponentService.getAll(),
 			// $polymind.me(),
-		]).then(([components, user]) => {
+		])
+			.then(([components, user]) => {
 
-			const component = new Component(components.data[0]);
-			const parameters = component.getDefaultParameters(settings.dataset);
-			Object.assign(parameters, settings.params, {
-				// general: {
-				// 	dark: user.settings.theme === 'dark',
-				// }
-			});
-
-			return SessionStructureService.generate({
-				dataset: settings.dataset.id,
-				component: component.id,
-				parameters,
-			})
-				.then(session => {
-					const playerUrl = $polymind.playerUrl + '/d/' + session.hash + '/live?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2) + '&autoplay=1';
-					console.log(playerUrl);
-					this.setState({ session, playerUrl, generating: false });
+				const component = new Component(components.data[0]);
+				const parameters = component.getDefaultParameters(settings.dataset);
+				Object.assign(parameters, settings.params, {
+					// general: {
+					// 	dark: user.settings.theme === 'dark',
+					// }
 				});
-		}).finally(() => this.setState({ generating: false }));
+
+				return SessionStructureService.generate({
+					dataset: settings.dataset.id,
+					component: component.id,
+					parameters,
+				})
+					.then(session => {
+						const playerUrl = $polymind.playerUrl + '/d/' + session.hash + '/live?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2) + '&autoplay=1';
+						console.log(playerUrl);
+						this.setState({ session, playerUrl, generating: false });
+					});
+			})
+			.catch(err => {
+				console.log(err);
+			})
+			.finally(() => this.setState({ generating: false }));
 
 		ScreenOrientation.unlockAsync();
 		const subscription = ScreenOrientation.addOrientationChangeListener(info => {
@@ -124,7 +129,7 @@ export default class StatsScreen extends React.Component {
 								clearTimeout(terminateBackTimeout);
 								terminateBackTimeout = setTimeout(() => {
 									this.goBack();
-								}, !this.state.loaded ? 0 : 5000);
+								}, !this.state.loaded ? 0 : 500);
 							}, style: 'destructive' },
 							{ text: I18n.t('btn.cancel'), style: "cancel" }
 						], { cancelable: false });
@@ -224,10 +229,11 @@ export default class StatsScreen extends React.Component {
 	async handleMessage(event) {
 		const { navigation } = this.props;
 		const { type, data } = JSON.parse(event.nativeEvent.data);
+		const { settings } = this.props.route.params;
 
 		switch (type) {
 			case 'index':
-				this.setState({ index: data });
+				this.setState({ currentRowId: data.rowId });
 				break;
 			case 'read':
 				const locale = Locale.abbrToLocale(data.settings.lang);

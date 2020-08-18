@@ -123,6 +123,8 @@ export default class DataEditScreen extends React.Component {
 			datasetContext.updateOriginal(dataset);
 			datasetDataContext.setState({ dataset });
 			return response;
+		}).catch(err => {
+			console.log(err);
 		});
 	}
 
@@ -204,6 +206,8 @@ export default class DataEditScreen extends React.Component {
 							const base64 = File.btoa(data);
 							Offline.cacheBase64(base64);
 						});
+					}).catch(err => {
+						console.log(err);
 					});
 				}).catch(err => console.log(err));
 
@@ -219,10 +223,10 @@ export default class DataEditScreen extends React.Component {
 					}
 				}
 				addMore && this.refInputs[0].focus();
+			}).catch(err => {
+				console.log(err);
 			}).finally(() => this.setState({ saving: false, downloading: false, uploading: false, autofocus: addMore, imageUri }));
 		};
-
-
 
 		if (this.state.mustUploadLocalUri) {
 			this.setState({ saving: true, uploading: true, autofocus: addMore });

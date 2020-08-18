@@ -15,6 +15,7 @@ export default class NotesScreen extends React.Component {
 		super(props);
 		this.state = {
 			search: '',
+			internet: true,
 			loading: true,
 			refreshing: false,
 			datasets: [],
@@ -55,6 +56,8 @@ export default class NotesScreen extends React.Component {
 	load() {
 		return $polymind.getDatasets().then(datasets => {
 			this.setState({ datasets });
+		}).catch(err => {
+			console.log(err);
 		});
 	}
 

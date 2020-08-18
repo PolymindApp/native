@@ -68,6 +68,8 @@ export default class SessionsScreen extends React.Component {
 			Object.assign(newStats, stats.daily);
 
 			this.setState({ mayHaveMore, stats: newStats, offset: (this.state.offset + this.state.limit) });
+		}).catch(err => {
+			console.log(err);
 		});
 	}
 

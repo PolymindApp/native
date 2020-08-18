@@ -20,6 +20,8 @@ export default class PageScreen extends React.Component {
 		const locale = I18n.locale.substring(0, 2);
 		PageService.get(locale, this.props.route.params.slug).then(page => {
 			this.setState({ page: page.getContent(locale), loading: false });
+		}).catch(err => {
+			console.log(err);
 		});
 	}
 
