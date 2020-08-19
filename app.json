@@ -23,11 +23,6 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-	"androidNavigationBar": {
-	  "visible": "sticky-immersive",
-	  "barStyle": "light-content",
-	  "backgroundColor": "#1B8E8A"
-	},
 	"android": {
 	  "package": "com.polymind.native",
 	  "permissions": ["CAMERA"],

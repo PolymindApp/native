@@ -178,6 +178,7 @@ export default class StatsScreen extends React.Component {
 		switch (orientation) {
 			case ScreenOrientation.Orientation.LANDSCAPE_LEFT:
 			case ScreenOrientation.Orientation.LANDSCAPE_RIGHT:
+				StatusBar.setHidden(true, 'slide');
 				navigation.setOptions({
 					headerShown: false,
 				});
@@ -187,6 +188,7 @@ export default class StatsScreen extends React.Component {
 				break;
 			case ScreenOrientation.Orientation.PORTRAIT_UP:
 			case ScreenOrientation.Orientation.PORTRAIT_DOWN:
+				StatusBar.setHidden(false, 'slide');
 				navigation.setOptions({
 					headerShown: true,
 				});
