@@ -119,11 +119,11 @@ export default class StatsScreen extends React.Component {
 		const { navigation } = this.props;
 
 		navigation.setOptions({
-			headerLeft: () => (
-				<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }} onPress={() => navigation.push('ProfilePage', { slug: 'help-dictionary' })} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
-					<Text style={{color: 'white'}}>{I18n.t('btn.help')}</Text>
-				</TouchableOpacity>
-			),
+			// headerLeft: () => (
+			// 	<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }} onPress={() => navigation.push('ProfilePage', { slug: 'help-dictionary' })} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+			// 		<Text style={{color: 'white'}}>{I18n.t('btn.help')}</Text>
+			// 	</TouchableOpacity>
+			// ),
 			headerRight: () => (
 				<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 10 }} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
 					<Text style={{color: 'white'}}>{I18n.t('btn.filters')}</Text>
@@ -140,7 +140,7 @@ export default class StatsScreen extends React.Component {
 		}
 
 		return (
-			<View style={{flex: 1}}>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 				<View style={styles.carousel}>
 					<Carousel
 						ref={(c) => { this._carousel = c; }}

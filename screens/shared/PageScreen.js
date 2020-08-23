@@ -43,28 +43,30 @@ export default class PageScreen extends React.Component {
 		});
 
 		return (
-			<WebView
-				originWhitelist={['*']}
-				useWebKit={true}
-				scalesPageToFit={true}
-				automaticallyAdjustContentInsets={true}
-				source={{ html: `
-					<html>
-						<head>
-							<base href="https://www.polymind.app">
-							<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900' rel='stylesheet' type='text/css'>
-							<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-							<style>
-								body { font-family: 'Roboto', sans-serif; padding: 1rem; }
-								p, li { color: rgba(0, 0, 0, 0.5) }
-							</style>
-						</head>
-						<body style={{padding: '10px', backgroundColor: params.backgroundColor || '#eee'; margin: 0 }}>
-							${this.state.page.content}
-						</body>
-					</html>
-				` }}
-			/>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
+				<WebView
+					originWhitelist={['*']}
+					useWebKit={true}
+					scalesPageToFit={true}
+					automaticallyAdjustContentInsets={true}
+					source={{ html: `
+						<html>
+							<head>
+								<base href="https://www.polymind.app">
+								<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900' rel='stylesheet' type='text/css'>
+								<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+								<style>
+									body { font-family: 'Roboto', sans-serif; padding: 1rem; }
+									p, li { color: rgba(0, 0, 0, 0.5) }
+								</style>
+							</head>
+							<body style={{padding: '10px', backgroundColor: params.backgroundColor || '#eee'; margin: 0 }}>
+								${this.state.page.content}
+							</body>
+						</html>
+					` }}
+				/>
+			</View>
 		)
 	}
 }

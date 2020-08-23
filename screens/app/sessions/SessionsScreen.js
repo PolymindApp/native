@@ -4,7 +4,7 @@ import {Card, Icon, Text, Divider, Input, ListItem} from 'react-native-elements'
 import {Button, IconButton} from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import I18n from '../../../locales/i18n';
-import PolymindSDK, { Dataset, THEME, Time, SessionStatsService, AssemblyParameters } from '@polymind/sdk-js';
+import PolymindSDK, { Dataset, THEME, Time, SessionStatsService, AssemblyParameters, DatasetService } from '@polymind/sdk-js';
 import RBSheet from "react-native-raw-bottom-sheet";
 import moment from "moment/min/moment-with-locales";
 
@@ -31,13 +31,13 @@ export default class SessionsScreen extends React.Component {
 					image: false,
 				},
 				filters: {
-					sort: ['field', 'id', 'desc'],
+					sort: ['field', 'id', 'asc'],
 					tags: [],
 				},
 				component: {
-					mode: 'linearPassive',
-					speed: 5,
-					range: 50,
+					mode: 'linearAssertive',
+					speed: 10,
+					range: 20,
 					readQuestion: true,
 					readAnswer: true,
 				},
@@ -79,11 +79,11 @@ export default class SessionsScreen extends React.Component {
 
 		navigation.setOptions({
 			title: I18n.t('title.sessions'),
-			headerLeft: () => (
-				<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }} onPress={() => navigation.push('ProfilePage', { slug: 'help-sessions' })} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
-					<Text style={{color: 'white'}}>{I18n.t('btn.help')}</Text>
-				</TouchableOpacity>
-			),
+			// headerLeft: () => (
+			// 	<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }} onPress={() => navigation.push('ProfilePage', { slug: 'help-sessions' })} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+			// 		<Text style={{color: 'white'}}>{I18n.t('btn.help')}</Text>
+			// 	</TouchableOpacity>
+			// ),
 		});
 
 		this.resetDates();
@@ -120,18 +120,30 @@ export default class SessionsScreen extends React.Component {
 		});
 	}
 
-	startSession(settings) {
+	startSession(settings, dataset) {
 		this.RBSheet.close();
 
-		// If 0 or 55, it means Unlimited
-		if ([0, 55].indexOf(settings.params.component.range) !== -1) {
-			settings.params.component.range = 0;
-		}
-		this.props.navigation.push('SessionsPlayer', { settings })
+		$polymind.getDataset(dataset.id).then(dataset => {
+
+			settings.dataset = dataset;
+			settings.params.dataset.question = dataset.columns[0].guid;
+			if (dataset.columns.length > 1) {
+				settings.params.dataset.answer = dataset.columns[1].guid;
+			} else {
+				this.state.newSession.params.component.mode = 'linearPassive';
+			}
+
+			// If 0 or 55, it means Unlimited
+			if ([0, 55].indexOf(settings.params.component.range) !== -1) {
+				settings.params.component.range = 0;
+			}
+
+			this.props.navigation.push('SessionsPlayer', { settings })
+		});
 	}
 
 	loadDatasets() {
-		return $polymind.getDatasets().then(datasets => {
+		return DatasetService.getSimpleList(global.user.id).then(datasets => {
 			datasets = datasets.sort((a,b) => (a.created_on > b.created_on) ? 1 : ((b.created_on > a.created_on) ? -1 : 0)).reverse();
 			this.setState({ datasets });
 		});
@@ -219,7 +231,7 @@ export default class SessionsScreen extends React.Component {
 		const height = Math.max(Dimensions.get('window').height, Dimensions.get('window').width);
 
 		return (
-			<View style={{flex: 1}}>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 				<RBSheet
 					ref={ref => this.RBSheet = ref}
 					height={height / 1.2}
@@ -240,28 +252,20 @@ export default class SessionsScreen extends React.Component {
 							<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
 								{this.state.datasets.filter(dataset => dataset.total_rows > 0).map((dataset, datasetIdx) => (
 									<ListItem
-										key={dataset.guid}
+										key={datasetIdx}
 										leftIcon={<Icon
 											name={dataset.icon.substring(4) || 'database'}
 											color={THEME.primary}
 											containerStyle={{width: 32}}
 										/>}
 										title={dataset.name}
+										subtitle={I18n.t('session.remainingRows', { count: dataset.remaining_rows })}
+										subtitleStyle={{color: 'rgba(0, 0, 0, 0.33)'}}
 										topDivider={datasetIdx !== 0}
 										delayPressIn={0}
+										disabled={dataset.remaining_rows === 0}
 										onPress={() => {
-											const newSession = this.state.newSession;
-											newSession.dataset = dataset;
-
-											const columns = this.state.newSession.dataset.columns;
-											newSession.params.dataset.question = columns[0].guid;
-											if (columns.length > 1) {
-												newSession.params.dataset.answer = columns[1].guid;
-											} else {
-												newSession.params.component.mode = 'linearPassive';
-											}
-
-											this.startSession(this.state.newSession);
+											this.startSession(this.state.newSession, dataset);
 										}}
 										chevron
 									/>
@@ -329,11 +333,11 @@ export default class SessionsScreen extends React.Component {
 						</View>
 					))}
 
-					{this.state.mayHaveMore && <View style={{padding: 10}}>
-						<Button mode="outline" onPress={() => this.handleLoadMore()} loading={this.state.loadingMore} disabled={this.state.loadingMore} delayPressIn={0}>
-							{I18n.t('btn.loadMore')}
-						</Button>
-					</View>}
+					{/*{this.state.mayHaveMore && <View style={{padding: 10}}>*/}
+					{/*	<Button mode="outline" onPress={() => this.handleLoadMore()} loading={this.state.loadingMore} disabled={this.state.loadingMore} delayPressIn={0}>*/}
+					{/*		{I18n.t('btn.loadMore')}*/}
+					{/*	</Button>*/}
+					{/*</View>}*/}
 				</ScrollView>
 
 				{this.state.datasets.length > 0 && (

@@ -37,6 +37,7 @@
 		"ready": "Prêt",
 		"resendActivation": "Renvoyer",
 		"resetPassword": "Réinitialiser",
+		"restart": "Redémarrer",
 		"save": "Enregistrer",
 		"share": "Partager",
 		"signIn": "S'inscrire",
@@ -50,17 +51,28 @@
 		"update": "Mettre à jour",
 		"upload": "Télécharger"
 	},
+	"dataSettings": {
+		"columnsDesc": "Les colonnes sont les données que vous pouvez pratiquer et alterner lors de vos sessions. Vous pouvez par exemple créer une liste en deux (2) langues ou plus ou juste une (1) si vous n'avez pas besoin de réponse. Assurez-vous de définir leur langue en conséquence.",
+		"iconDesc": "Pour vous aider à reconnaître vos listes beaucoup plus facilement, vous pouvez leur attribuer une icône.",
+		"imageDesc": "Si vous souhaitez améliorer votre expérience d'apprentissage avec des images, cochez cette case. Lorsque coché, Polymind suggérera automatiquement des images lorsque vous entrerez de nouvelles cartes et les affichera en arrière-plan lors votre session.",
+		"titleDesc": "Nommez votre liste en fonction de vos besoins. Ex: \"Conversation de base en anglais\""
+	},
+	"dataSettingsColumn": {
+		"titleDesc": "Il peut s'agir du nom de la langue ou d'un titre générique tel que \"Question\" ou \"Réponse\"."
+	},
 	"dataset": {
 		"data": {
 			"edit": {
 				"didYouMean": "Vouliez-vous dire :",
 				"image": "Image",
-				"imageDesc": "Choisissez une image qui correspond à votre idée:",
+				"imageChooseDesc": "Choisissez une image qui correspond à votre idée :",
+				"imageDesc": "Nous avons recherché \"{{terms}}\" pour vous sur Google Images. Si vous obtenez des résultats étranges, essayez d'utiliser le champ ci-dessus. Notez que les requêtes en anglais ont tendance à obtenir de meilleurs résultats.",
 				"noImageFound": "Aucune image trouvée basé sur vos critères de recherche.",
 				"possibleTranslation": "Traduction :",
 				"removeImageDesc": "Voulez-vous vraiment supprimer l'image de cette note?",
 				"removeImageTitle": "Effacer l'image",
-				"tags": "Étiquettes"
+				"tags": "Étiquettes",
+				"tagsDesc": "Cela vous permet de filtrer les cartes par étiquettes lors de vos sessions."
 			}
 		},
 		"settings": {
@@ -69,6 +81,7 @@
 			"includeImage": "Inclure une image",
 			"isPrivate": "Privé",
 			"noColumnWarn": "Vous devez au moins ajouter une colonne à vos notes.",
+			"optional": "Optionnel",
 			"others": "Autres"
 		}
 	},
@@ -90,8 +103,9 @@
 		"userNotFoundTitle": "Utilisateur inexistant"
 	},
 	"field": {
+		"answer": "Réponse",
 		"columnLanguage": "Langue",
-		"columnLanguageDesc": "Choisissez ce champ avec soin car il définira le langage vocal synthétique.",
+		"columnLanguageDesc": "Pendant votre session, une voix synthétique lira vos entrées. Il est important de définir correctement la langue de cette colonne afin d'obtenir une expérience audio appropriée.",
 		"columnName": "Nom",
 		"confirmationPlaceholder": "Confirmez votre mot de passe",
 		"dataPlaceholder": "Valeur",
@@ -100,25 +114,31 @@
 		"icon": "Icône",
 		"name": "Nom",
 		"passwordPlaceholder": "Mot de passe",
+		"question": "Question",
 		"settings": {
 			"darkMode": "Mode sombre"
 		},
-		"tagPlaceholder": "Ajoutez une nouvelle étiquette ici..",
+		"tagPlaceholder": "Tapez et appuyez sur confirmer ici...",
+		"title": "Titre",
+		"typeHerePlaceholder": "Écrivez ici...",
 		"user": {
 			"biography": "Biographie",
 			"quote": "Citation",
 			"screen_name": "Nom complet"
 		}
 	},
+	"flipCardDialogDesc": "Souhaitez-vous vraiment retourner les cartes? Faites-le si vous souhaitez étudier dans l'autre sens.",
+	"flipCardDialogTitle": "Inverser les cartes",
 	"header": {
 		"back": "Retour"
 	},
 	"iconSelector": {
-		"chooseIcon": "Choisissez une icône :"
+		"chooseIcon": "Choisissez une icône :",
+		"none": "Pas encore d'icône"
 	},
 	"input": {
 		"filter": "Filtrer...",
-		"searchCloud": "Chercher sur le nuage.."
+		"searchCloud": "Rechercher sur Google Image..."
 	},
 	"language": {
 		"cmn": "Chinois",
@@ -168,6 +188,15 @@
 	},
 	"profile": {
 		"activities": "Activités",
+		"clearCacheDesc": "Si vous rencontrez des problèmes, vider la cache peut être une solution.",
+		"contact": "Nous contacter",
+		"debug": "Déboguer",
+		"developers": "Développeurs",
+		"information": {
+			"biographyDesc": "Une brève description de vous-même. Qu'apprenez-vous ? Quels sont vos objectifs ?",
+			"completeNameDesc": "Le nom que vous souhaitez afficher lorsque les gens regardent votre profil.",
+			"quoteDesc": "Quelque chose qui a du sens pour vous."
+		},
 		"informations": "Informations",
 		"legalSection": "Légale",
 		"myInfoSection": "Mes informations",
@@ -176,7 +205,9 @@
 			"administrator": "Administrateur",
 			"member": "Membre"
 		},
-		"socialSection": "Suivez nous :"
+		"socialSection": "Suivez nous :",
+		"support": "Soutien",
+		"tools": "Outils"
 	},
 	"restricted": {
 		"accountVerifiedSubtitle": "Vous pouvez maintenant accéder votre compte Polymind.",
@@ -224,6 +255,11 @@
 		"range": "Gamme de questions",
 		"rangeDesc": "Posez les questions par paquet de {{range}} éléments.",
 		"rangeUnlimited": "Illimité",
+		"remainingRows": {
+			"one": "Une dernière carte à étudier",
+			"other": "{{count}} cartes à étudier",
+			"zero": "Plus de carte à étudier"
+		},
 		"speed": "Délais entre les questions :",
 		"speedSeconds": "{{seconds}} secondes",
 		"types": {
@@ -244,6 +280,8 @@
 		"uploading": "Téléchargement.."
 	},
 	"title": {
+		"contact": "Nous contacter",
+		"debug": "Déboguer",
 		"dictionary": "Dictionnaire",
 		"help": "Aide",
 		"loading": "Chargement...",
@@ -256,7 +294,8 @@
 		"profileActivities": "Activités",
 		"profileInformations": "Informations",
 		"profileSettings": "Configurations",
-		"sessions": "Sessions"
+		"sessions": "Sessions",
+		"tools": "Outils"
 	},
 	"welcome": {
 		"listenDesc": "Ensuite, démarrez une session et laissez la voix de Polymind vous guider à travers votre processus d'apprentissage.",

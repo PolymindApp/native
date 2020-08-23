@@ -2,6 +2,8 @@ import {CardStyleInterpolators, createStackNavigator} from "@react-navigation/st
 import React from 'react';
 import ProfileScreen from "./profile/ProfileScreen";
 import InformationsScreen from "./profile/InformationsScreen";
+import ToolsScreen from "./profile/ToolsScreen";
+import DebugScreen from "./profile/DebugScreen";
 import { THEME } from '@polymind/sdk-js';
 import I18n from '../../locales/i18n';
 import {Platform, Text, TouchableOpacity, View, Alert, Image} from "react-native";
@@ -11,6 +13,7 @@ import PolymindSDK from "@polymind/sdk-js";
 import ActivitiesScreen from "./profile/ActivitiesScreen";
 import SettingsScreen from "./profile/SettingsScreen";
 import PageScreen from "../shared/PageScreen";
+import WwwScreen from "../shared/WwwScreen";
 
 const $polymind = new PolymindSDK();
 const Stack = createStackNavigator();
@@ -62,6 +65,15 @@ export default class ProfileNavigator extends React.Component {
 				}} />
 				<Stack.Screen name="ProfileSettings" component={SettingsScreen} options={{
 					title: I18n.t('title.profileSettings'),
+				}} />
+				<Stack.Screen name="ProfileContact" component={WwwScreen} options={{
+					title: I18n.t('title.contact'),
+				}} />
+				<Stack.Screen name="ProfileTools" component={ToolsScreen} options={{
+					title: I18n.t('title.tools'),
+				}} />
+				<Stack.Screen name="ProfileDebug" component={DebugScreen} options={{
+					title: I18n.t('title.debug'),
 				}} />
 				<Stack.Screen name="ProfilePage" component={PageScreen} options={{
 					title: I18n.t('state.loading'),

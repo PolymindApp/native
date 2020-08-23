@@ -17,6 +17,7 @@ export default class AppNavigator extends React.Component {
 		keyboardVisible: false,
 	}
 
+
 	render() {
 		return (
 			<BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME} tabBarOptions={{

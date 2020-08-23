@@ -1,8 +1,8 @@
 import React from 'react';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import {AppState, ActivityIndicator, StyleSheet, StatusBar, TouchableOpacity, View, Share, Alert} from 'react-native';
-import PolymindSDK, { File, THEME, SessionStructureService, ComponentService, Component, Locale } from '@polymind/sdk-js';
+import {AppState, ActivityIndicator, View, Share, Alert} from 'react-native';
+import PolymindSDK, { THEME, SessionStructureService, ComponentService, Component, Locale } from '@polymind/sdk-js';
 import {Text} from "react-native-elements";
 import I18n from "../../../locales/i18n";
 import { WebView } from 'react-native-webview';
@@ -44,15 +44,18 @@ export default class StatsScreen extends React.Component {
 		appState: AppState.currentState,
 		generating: false,
 		structure: null,
-		session: null,
 		iframeLoaded: false,
 		playerUrl: null,
+		shareUrl: null,
 		loaded: false,
 		currentRowId: null,
 	};
 
 	optionItems = [
 		{ name: I18n.t('btn.cancel'), callback: () => {}, cancel: true },
+		{ name: I18n.t('btn.restart'), callback: () => {
+				this.sendMessage('restart');
+		} },
 		// { icon: 'pencil', name: I18n.t('btn.edit'), callback: () => {
 		// 	const { navigation } = this.props;
 		// 	const { dataset, index } = this.state;
@@ -66,94 +69,124 @@ export default class StatsScreen extends React.Component {
 	componentDidMount() {
 
 		const { navigation } = this.props;
-		const { settings } = this.props.route.params;
-
-		global.currentPlayerDatasetId = settings.dataset.id;
+		const { hash } = this.props.route.params
+		let { settings } = this.props.route.params;
 
 		this.setState({ generating: true });
-		Promise.all([
-			ComponentService.getAll(),
-			// $polymind.me(),
-		])
-			.then(([components, user]) => {
 
-				const component = new Component(components.data[0]);
-				const parameters = component.getDefaultParameters(settings.dataset);
-				Object.assign(parameters, settings.params, {
-					// general: {
-					// 	dark: user.settings.theme === 'dark',
-					// }
-				});
+		if (hash) {
+			SessionStructureService.get(hash).then(response => {
+				settings = response;
 
-				return SessionStructureService.generate({
-					dataset: settings.dataset.id,
-					component: component.id,
-					parameters,
-				})
-					.then(session => {
-						const playerUrl = $polymind.playerUrl + '/d/' + session.hash + '/live?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2) + '&autoplay=1';
-						console.log(playerUrl);
-						this.setState({ session, playerUrl, generating: false });
+				global.currentPlayerDatasetId = settings.dataset.id;
+
+				const playerUrl = $polymind.playerUrl + '/session/' + hash + '?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2) + '&autoplay=1';
+				const shareUrl = $polymind.playerUrl + '/session/' + hash;
+
+				onReady();
+
+				this.setState({ playerUrl, shareUrl, generating: false });
+			});
+		} else {
+			global.currentPlayerDatasetId = settings.dataset.id;
+
+			Promise.all([
+				ComponentService.getAll(),
+				// $polymind.me(),
+			])
+				.then(([components, user]) => {
+
+					const component = new Component(components.data[0]);
+					const parameters = component.getDefaultParameters(settings.dataset);
+					Object.assign(parameters, settings.params, {
+						// general: {
+						// 	dark: user.settings.theme === 'dark',
+						// }
 					});
-			})
-			.catch(err => {
-				console.log(err);
-			})
-			.finally(() => this.setState({ generating: false }));
 
-		ScreenOrientation.unlockAsync();
-		const subscription = ScreenOrientation.addOrientationChangeListener(info => {
-			this.adjustScreenOrientation(info.orientationInfo.orientation);
-		});
+					return SessionStructureService.generate({
+						dataset: settings.dataset.id,
+						component: component.id,
+						parameters,
+					})
+						.then(session => {
+							const playerUrl = $polymind.playerUrl + '/session/' + session.hash + '?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2) + '&autoplay=1';
+							const shareUrl = $polymind.playerUrl + '/session/' + session.hash;
 
-		activateKeepAwake();
-		this._navigationFocus = navigation.addListener('focus', () => {
+							onReady();
+
+							this.setState({ playerUrl, shareUrl, generating: false });
+						});
+				})
+				.catch(err => {
+					console.log(err);
+				})
+				.finally(() => this.setState({ generating: false }));
+		}
+
+		const onReady = () => {
+			ScreenOrientation.unlockAsync();
+			const subscription = ScreenOrientation.addOrientationChangeListener(info => {
+				this.adjustScreenOrientation(info.orientationInfo.orientation);
+			});
+
 			activateKeepAwake();
-			this.sendMessage('native_play', global.playerMustRefreshDataset);
-			global.playerMustRefreshDataset = false;
-		});
-		this._navigationBlur = navigation.addListener('blur', () => {
-			deactivateKeepAwake();
-			this.sendMessage('native_pause');
-		});
+			this._navigationFocus = navigation.addListener('focus', () => {
+				activateKeepAwake();
+				this.sendMessage('native_play', { force: global.playerMustRefreshDataset });
+				global.playerMustRefreshDataset = false;
+			});
+			this._navigationBlur = navigation.addListener('blur', () => {
+				deactivateKeepAwake();
+				this.sendMessage('native_pause');
+			});
 
-		navigation.setOptions({
-			title: settings.dataset.name,
-			headerLeft: (props) => (
-				<HeaderBackButton
-					{...props}
-					onPress={() => {
-						Alert.alert(I18n.t('alert.backSessionTitle'), I18n.t('alert.backSessionDesc'), [
-							{ text: I18n.t('btn.terminate'), onPress: () => {
-								this.sendMessage('terminate_and_back');
-								clearTimeout(terminateBackTimeout);
-								terminateBackTimeout = setTimeout(() => {
-									this.goBack();
-								}, !this.state.loaded ? 0 : 500);
-							}, style: 'destructive' },
-							{ text: I18n.t('btn.cancel'), style: "cancel" }
-						], { cancelable: false });
-					}}
-				/>
-			),
-			headerRight: () => (
-				<View style={{marginRight: 10, flexDirection: 'row'}}>
-					<ContextualOptions items={this.optionItems} />
-				</View>
-			)
-		});
+			navigation.setOptions({
+				title: settings.dataset.name,
+				headerLeft: (props) => (
+					<HeaderBackButton
+						{...props}
+						onPress={() => {
+							Alert.alert(I18n.t('alert.backSessionTitle'), I18n.t('alert.backSessionDesc'), [
+								{ text: I18n.t('btn.terminate'), onPress: () => {
+										this.sendMessage('terminate_and_back');
+										clearTimeout(terminateBackTimeout);
+										terminateBackTimeout = setTimeout(() => {
+											this.goBack();
+										}, !this.state.loaded ? 0 : 500);
+									}, style: 'destructive' },
+								{ text: I18n.t('btn.cancel'), style: "cancel" }
+							], { cancelable: false });
+						}}
+					/>
+				),
+				headerRight: () => (
+					<View style={{marginRight: 10, flexDirection: 'row'}}>
+						<ContextualOptions items={this.optionItems}
+										   onOpen={() => this.sendMessage('native_pause')}
+										   onClose={() => this.sendMessage('native_play')}
+						/>
+					</View>
+				)
+			});
 
-		AppState.addEventListener('change', this.handleAppStateChange);
+			AppState.addEventListener('change', this.handleAppStateChange);
+		}
 	}
 
 	componentWillUnmount() {
-		StatusBar.setHidden(false, 'slide');
+
 		ScreenOrientation.removeOrientationChangeListeners();
 		ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
 
 		deactivateKeepAwake();
-		this._navigationFocus();
-		this._navigationBlur();
+
+		if (this._navigationFocus instanceof Function) {
+			this._navigationFocus();
+		}
+		if (this._navigationBlur instanceof Function) {
+			this._navigationBlur();
+		}
 
 		AppState.removeEventListener('change', this.handleAppStateChange);
 	}
@@ -161,10 +194,8 @@ export default class StatsScreen extends React.Component {
 	handleAppStateChange = nextAppState => {
 
 		if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-			console.log('Foreground');
 			// this.toggleKeepMergedVoicesAudioSessionAlive(true);
 		} else if (nextAppState !== 'active') {
-			console.log('Background');
 			// this.toggleKeepMergedVoicesAudioSessionAlive(false);
 		}
 
@@ -178,27 +209,26 @@ export default class StatsScreen extends React.Component {
 		switch (orientation) {
 			case ScreenOrientation.Orientation.LANDSCAPE_LEFT:
 			case ScreenOrientation.Orientation.LANDSCAPE_RIGHT:
-				StatusBar.setHidden(true, 'slide');
-				navigation.setOptions({
-					headerShown: false,
-				});
+
 				navigation.dangerouslyGetParent().setOptions({
 					tabBarVisible: false,
+					animationEnabled: false,
+				});
+				navigation.setOptions({
+					headerShown: false,
 				});
 				break;
 			case ScreenOrientation.Orientation.PORTRAIT_UP:
 			case ScreenOrientation.Orientation.PORTRAIT_DOWN:
-				StatusBar.setHidden(false, 'slide');
+
+				navigation.dangerouslyGetParent().setOptions({
+					tabBarVisible: true,
+					animationEnabled: false,
+				});
 				navigation.setOptions({
 					headerShown: true,
 				});
-				navigation.dangerouslyGetParent().setOptions({
-					tabBarVisible: true,
 
-					style: {
-						borderTopWidth: 0,
-					}
-				});
 				break;
 		}
 	}
@@ -209,7 +239,7 @@ export default class StatsScreen extends React.Component {
 		try {
 			const result = await Share.share({
 				message: settings.dataset.name,
-				url: this.state.playerUrl,
+				url: this.state.shareUrl,
 			}, {
 				tintColor: THEME.primary
 			});
@@ -370,7 +400,7 @@ export default class StatsScreen extends React.Component {
 
 	render() {
 		return (
-			<View style={{flex: 1}}>
+			<View style={{flex: 1, marginBottom: -1}}>
 				{!this.state.loaded && <View style={{flex: 1000, alignItems: 'center', justifyContent: 'center'}}>
 					<ActivityIndicator size={'large'} color={THEME.primary} />
 					<Text style={{marginTop: 10, color: THEME.primary}}>{I18n.t('state.loading')}</Text>
@@ -384,6 +414,8 @@ export default class StatsScreen extends React.Component {
 					domStorageEnabled={true}
 					javaScriptEnabled={true}
 					scrollEnabled={false}
+					scalesPageToFit={true}
+					automaticallyAdjustContentInsets={true}
 					onMessage={event => this.handleMessage(event)}
 					startInLoadingState={!this.state.generating}
 					style={!this.state.loaded ? { flex: 0, height: 0, opacity: 0, backgroundColor: 'black' } : {}}

@@ -131,7 +131,7 @@ export default class DataDataScreen extends React.Component {
 		const { navigation, route } = this.props;
 
 		return (
-			<View style={{flex: 1}}>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 				{dataset.rows.length === 0 ? (
 					this.state.refreshing ? (
 						<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>

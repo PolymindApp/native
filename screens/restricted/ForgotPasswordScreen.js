@@ -10,7 +10,7 @@ export default class ForgotPasswordScreen extends React.Component {
 
 	constructor(props) {
 		super(props);
-		console.log(props);
+
 		this.state = {
 			loading: false,
 			email: props.route?.params?.defaultEmail || '',
@@ -34,7 +34,6 @@ export default class ForgotPasswordScreen extends React.Component {
 				navigation.navigate('ForgotPasswordEmailSent');
 			})
 			.catch(err => {
-				console.log(err.code, err);
 				let type = 'unknown';
 				let buttons = [
 					{ text: I18n.t('btn.ok'), style: 'cancel' }

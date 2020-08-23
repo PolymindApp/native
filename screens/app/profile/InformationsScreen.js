@@ -53,7 +53,7 @@ export default class InformationsScreen extends React.Component {
 
 	render() {
 		return (
-			<View style={{flex: 1}}>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
 					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
 						<Input
@@ -67,6 +67,8 @@ export default class InformationsScreen extends React.Component {
 							ref={ref => { refInputs[0] = ref }}
 							onSubmitEditing={() => refInputs[1].focus()}
 						/>
+
+						<Text style={styles.desc}>{I18n.t('profile.information.completeNameDesc')}</Text>
 					</View>
 					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
 						<Input
@@ -80,6 +82,8 @@ export default class InformationsScreen extends React.Component {
 							renderErrorMessage={false}
 							ref={ref => { refInputs[1] = ref }}
 						/>
+
+						<Text style={styles.desc}>{I18n.t('profile.information.biographyDesc')}</Text>
 					</View>
 					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
 						<Input
@@ -95,6 +99,8 @@ export default class InformationsScreen extends React.Component {
 							ref={ref => { refInputs[2] = ref }}
 							onSubmitEditing={Keyboard.dismiss}
 						/>
+
+						<Text style={styles.desc}>{I18n.t('profile.information.quoteDesc')}</Text>
 					</View>
 				</ScrollView>
 				<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
@@ -111,5 +117,11 @@ export default class InformationsScreen extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1
+	},
+	desc: {
+		margin: 10,
+		marginTop: 0,
+		color: 'rgba(0, 0, 0, 0.33)',
+		fontSize: 12,
 	}
 });

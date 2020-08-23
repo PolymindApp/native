@@ -116,13 +116,14 @@ export default class ColumnEditScreen extends React.Component {
 		});
 
 		return (
-			<View style={{flex: 1}}>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 
 				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
 					<View style={{margin: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white'}}>
 						<Input
 							clearButtonMode={'always'}
-							label={I18n.t('field.columnName')}
+							label={I18n.t('field.title')}
+							placeholder={I18n.t('field.typeHerePlaceholder')}
 							inputStyle={{color:THEME.primary}}
 							inputContainerStyle={{borderBottomWidth: 0}}
 							defaultValue={this.state.column.name}
@@ -133,11 +134,16 @@ export default class ColumnEditScreen extends React.Component {
 							ref={ref => { refInputs[0] = ref }}
 							// onSubmitEditing={() => refInputs[1].focus()}
 						/>
+						<Text style={styles.desc}>{I18n.t('dataSettingsColumn.titleDesc')}</Text>
 					</View>
 					<View style={{margin: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white'}}>
 
 						<Text style={{padding: 10, fontWeight: 'bold', fontSize: 16, color: '#999'}}>
 							{I18n.t('field.columnLanguage')}
+						</Text>
+
+						<Text style={styles.desc}>
+							{I18n.t('field.columnLanguageDesc')}
 						</Text>
 
 						<Picker
@@ -150,9 +156,6 @@ export default class ColumnEditScreen extends React.Component {
 								<Picker.Item key={item.value} label={item.text} value={item.value} />
 							))}
 						</Picker>
-						<Text style={{padding: 10}}>
-							{I18n.t('field.columnLanguageDesc')}
-						</Text>
 
 					</View>
 				</ScrollView>
@@ -172,6 +175,12 @@ export default class ColumnEditScreen extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1
+		flex: 1,
+	},
+	desc: {
+		margin: 10,
+		marginTop: 0,
+		color: 'rgba(0, 0, 0, 0.33)',
+		fontSize: 12,
 	}
 });

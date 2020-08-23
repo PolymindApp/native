@@ -46,7 +46,7 @@ export default class SettingsScreen extends React.Component {
 
 	render() {
 		return (
-			<View style={{flex: 1}}>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
 					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, backgroundColor: 'white'}}>
 						<ListItem
@@ -74,6 +74,6 @@ export default class SettingsScreen extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1
+		flex: 1,
 	}
 });

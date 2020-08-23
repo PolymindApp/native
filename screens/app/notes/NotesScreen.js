@@ -33,10 +33,18 @@ export default class NotesScreen extends React.Component {
 	handleAdd() {
 		const { navigation, route } = this.props;
 		const { datasets } = this.state;
+		const locale = I18n.locale.substring(0, 2);
+
 		navigation.navigate('NotesData', {
 			datasetsContext: this,
 			dataset: new Dataset({
-				columns: [new DatasetColumn()]
+				columns: [new DatasetColumn({
+					name: I18n.t('field.question'),
+					lang: locale
+				}), new DatasetColumn({
+					name: I18n.t('field.answer'),
+					lang: locale
+				})]
 			}),
 			datasetIdx: datasets.length,
 		});
@@ -54,7 +62,7 @@ export default class NotesScreen extends React.Component {
 	}
 
 	load() {
-		return $polymind.getDatasets().then(datasets => {
+		return $polymind.getDatasets(global.user.id).then(datasets => {
 			this.setState({ datasets });
 		}).catch(err => {
 			console.log(err);
@@ -87,11 +95,11 @@ export default class NotesScreen extends React.Component {
 
 		navigation.setOptions({
 			title: I18n.t('title.notes'),
-			headerLeft: () => (
-				<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }} onPress={() => navigation.push('ProfilePage', { slug: 'help-notes', backgroundColor: 'white' })} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
-					<Text style={{color: 'white'}}>{I18n.t('btn.help')}</Text>
-				</TouchableOpacity>
-			),
+			// headerLeft: () => (
+			// 	<TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }} onPress={() => navigation.push('ProfilePage', { slug: 'help-notes', backgroundColor: 'white' })} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+			// 		<Text style={{color: 'white'}}>{I18n.t('btn.help')}</Text>
+			// 	</TouchableOpacity>
+			// ),
 			headerRight: () => datasets.length > 0 && (
 				<View style={{marginRight: 10}}>
 					{Platform.select({
@@ -115,7 +123,7 @@ export default class NotesScreen extends React.Component {
 		const filteredDatasets = this.filteredDatasets();
 
 		return (
-			<View style={{flex: 1}}>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 				{datasets.length > 0 && <SearchBar placeholder={I18n.t('input.filter')} cancelButtonTitle={I18n.t('btn.cancel')} cancelButtonProps={{ color: THEME.primary, buttonStyle: { marginTop: -3 } }} onChangeText={this.updateSearch} value={search} platform={Platform.OS === 'ios' ? 'ios' : 'android'} />}
 				<ScrollView style={styles.container} contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={'handled'} refreshControl={
 					<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh.bind(this)} />
@@ -141,7 +149,7 @@ export default class NotesScreen extends React.Component {
 								/>}
 								title={dataset.name}
 								subtitle={
-									<Text style={{opacity: 0.5}}>{I18n.t('notes.totalRows', { count: dataset.total_rows })}</Text>
+									<Text style={{opacity: 0.33}}>{I18n.t('notes.totalRows', { count: dataset.total_rows })}</Text>
 								}
 								topDivider={datasetIdx === 0}
 								delayPressIn={0}
@@ -165,4 +173,10 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
+	desc: {
+		margin: 10,
+		marginTop: 0,
+		color: 'rgba(0, 0, 0, 0.33)',
+		fontSize: 12,
+	}
 });

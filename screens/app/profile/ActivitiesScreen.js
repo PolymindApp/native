@@ -1,5 +1,5 @@
 import React from 'react'
-import {Platform, StyleSheet, Text} from 'react-native';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import PolymindSDK from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
@@ -14,9 +14,11 @@ export default class ActivitiesScreen extends React.Component {
 
 	render() {
 		return (
-			<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
-				<Text>Data</Text>
-			</ScrollView>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
+				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
+					<Text>Data</Text>
+				</ScrollView>
+			</View>
 		);
 	};
 }

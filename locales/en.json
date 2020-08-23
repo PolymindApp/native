@@ -37,6 +37,7 @@
 		"ready": "Ready",
 		"resendActivation": "Resend",
 		"resetPassword": "Reset",
+		"restart": "Restart",
 		"save": "Save",
 		"share": "Share",
 		"signIn": "Sign In",
@@ -50,17 +51,28 @@
 		"update": "Update",
 		"upload": "Upload"
 	},
+	"dataSettings": {
+		"columnsDesc": "The columns are the data you can practice and alternate during your sessions. You could for instance create a list in two (2) languages or more or just one (1) if you don't need an answer. Make sure you set their language accordingly.",
+		"iconDesc": "To help you recognize your lists much easily, you can assign them an icon.",
+		"imageDesc": "If you wish to improve your learning experience with images, check this box. When checked, Polymind will automatically suggest images while you enter new cards and will display them in background during your session.",
+		"titleDesc": "Name your list according to your need. Ex: \"Basic Conversation in French\""
+	},
+	"dataSettingsColumn": {
+		"titleDesc": "It could be the language name or a generic title such as \"Question\" or \"Answer\"."
+	},
 	"dataset": {
 		"data": {
 			"edit": {
 				"didYouMean": "Did you mean:",
 				"image": "Image",
-				"imageDesc": "Choose an image that matches your idea:",
+				"imageChooseDesc": "Choose an image that matches your idea:",
+				"imageDesc": "We searched \"{{terms}}\" for you on Google Images. If you get strange results, try searching using the field above. Note that English queries tend to get better results.",
 				"noImageFound": "No image found based on your search query.",
 				"possibleTranslation": "Translation:",
 				"removeImageDesc": "Are you sure you wish to remove the image from this note?",
 				"removeImageTitle": "Remove Image",
-				"tags": "Tags"
+				"tags": "Tags",
+				"tagsDesc": "This allows you to filter cards by tags during your sessions."
 			}
 		},
 		"settings": {
@@ -69,6 +81,7 @@
 			"includeImage": "Include image",
 			"isPrivate": "Private",
 			"noColumnWarn": "You must at least add a column to your notes.",
+			"optional": "Optional",
 			"others": "Others"
 		}
 	},
@@ -90,8 +103,9 @@
 		"userNotFoundTitle": "User not found"
 	},
 	"field": {
+		"answer": "Answer",
 		"columnLanguage": "Language",
-		"columnLanguageDesc": "Choose this field carefully as it will set the synthetic voice language.",
+		"columnLanguageDesc": "During your session, a synthetic voice will read your entries. It's important to define this column's language correctly in order to get a proper audio experience.",
 		"columnName": "Name",
 		"confirmationPlaceholder": "Confirm your password",
 		"dataPlaceholder": "Value",
@@ -100,25 +114,31 @@
 		"icon": "Icon",
 		"name": "Name",
 		"passwordPlaceholder": "Password",
+		"question": "Question",
 		"settings": {
 			"darkMode": "Dark mode"
 		},
-		"tagPlaceholder": "Add a new tag here..",
+		"tagPlaceholder": "Type and press confirm here...",
+		"title": "Title",
+		"typeHerePlaceholder": "Type here...",
 		"user": {
 			"biography": "Biography",
 			"quote": "Quote",
 			"screen_name": "Complete name"
 		}
 	},
+	"flipCardDialogDesc": "Do you really wish to flip the cards around? Do this if you want to study the other way around.",
+	"flipCardDialogTitle": "Flip cards",
 	"header": {
 		"back": "Back"
 	},
 	"iconSelector": {
-		"chooseIcon": "Choose an icon:"
+		"chooseIcon": "Choose an icon:",
+		"none": "No icon yet"
 	},
 	"input": {
 		"filter": "Filter...",
-		"searchCloud": "Search on the cloud.."
+		"searchCloud": "Search on Google Image..."
 	},
 	"language": {
 		"cmn": "Chinese",
@@ -168,6 +188,15 @@
 	},
 	"profile": {
 		"activities": "Activities",
+		"clearCacheDesc": "If you are experiencing issues, clearing the cache might be a solution.",
+		"contact": "Get in touch",
+		"debug": "Debug",
+		"developers": "Developers",
+		"information": {
+			"biographyDesc": "A brief description of yourself. What are you learning? What are your goals?",
+			"completeNameDesc": "The name you want to be displayed when people watch your profile.",
+			"quoteDesc": "Something that makes sense to you."
+		},
 		"informations": "Information",
 		"legalSection": "Legal",
 		"myInfoSection": "My Info",
@@ -176,7 +205,9 @@
 			"administrator": "Administrator",
 			"member": "Member"
 		},
-		"socialSection": "Follow us:"
+		"socialSection": "Follow us:",
+		"support": "Support",
+		"tools": "Tools"
 	},
 	"restricted": {
 		"accountVerifiedSubtitle": "You can now access your Polymind account.",
@@ -224,6 +255,11 @@
 		"range": "Range of questions",
 		"rangeDesc": "Ask questions per pack of {{range}} items.",
 		"rangeUnlimited": "Unlimited",
+		"remainingRows": {
+			"one": "One last card to study",
+			"other": "{{count}} cards to study",
+			"zero": "No more card to study"
+		},
 		"speed": "Delay between questions:",
 		"speedSeconds": "{{seconds}} seconds",
 		"types": {
@@ -244,6 +280,8 @@
 		"uploading": "Uploading.."
 	},
 	"title": {
+		"contact": "Get in touch",
+		"debug": "Debug",
 		"dictionary": "Dictionary",
 		"help": "Help",
 		"loading": "Loading...",
@@ -256,7 +294,8 @@
 		"profileActivities": "Activities",
 		"profileInformations": "Information",
 		"profileSettings": "Settings",
-		"sessions": "Sessions"
+		"sessions": "Sessions",
+		"tools": "Tools"
 	},
 	"welcome": {
 		"listenDesc": "Then start a session and let Polymind's voice guide you through your learning process.",

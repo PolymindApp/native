@@ -105,7 +105,16 @@ export default class DataEditScreen extends React.Component {
 
 	getTags() {
 		const { dataset } = this.props.route.params.datasetContext.state;
-		return dataset.getTags();
+		const tags = dataset.getTags();
+		const defaultTags = ['noun', 'verb', 'adjective', 'difficult', 'easy'];
+
+		defaultTags.forEach(tag => {
+			if (tags.indexOf(tag) === -1) {
+				tags.unshift(tag);
+			}
+		});
+
+		return tags;
 	}
 
 	onRowRemove(row) {
@@ -740,219 +749,226 @@ export default class DataEditScreen extends React.Component {
 		}
 
 		return (
-			<KeyboardAvoidingView
-				behavior={Platform.OS === "ios" ? "padding" : "height"}
-				style={{flex: 1}}
-			>
-				<View style={{flex: 1}}>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
+				<KeyboardAvoidingView
+					behavior={Platform.OS === "ios" ? "padding" : "height"}
+					style={{flex: 1}}
+				>
+					<View style={{flex: 1}}>
 
-					<Modal animationType="fade" transparent={true} visible={this.state.uploading}>
-						<View style={styles.centeredView}>
-							<View style={styles.modalView}>
-								<ActivityIndicator size="large" color={THEME.primary} />
-								<Text style={[styles.modalText, {marginTop: 10}]}>{I18n.t('state.uploading')}</Text>
-							</View>
-						</View>
-					</Modal>
-
-					<Modal animationType="fade" transparent={true} visible={this.state.downloading}>
-						<View style={styles.centeredView}>
-							<View style={styles.modalView}>
-								<ActivityIndicator size="large" color={THEME.primary} />
-								<Text style={[styles.modalText, {marginTop: 10}]}>{I18n.t('state.downloading')}</Text>
-							</View>
-						</View>
-					</Modal>
-
-					<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
-
-						{/*FIELDS*/}
-						{this.state.fields.map((field, fieldIdx) => {
-							const spellCheck = this.state.spellCheckFields[fieldIdx];
-							const translation = this.state.translationFields[fieldIdx];
-							return (
-								<View key={dataset.columns[fieldIdx].guid} style={{marginHorizontal: 10, borderRadius: 10, paddingVertical: 10, backgroundColor: 'white', marginBottom: 10}}>
-									<Input
-										clearButtonMode={'always'}
-										autoFocus={this.state.autofocus && fieldIdx === 0}
-										inputContainerStyle={{borderBottomWidth: 0}}
-										label={
-											<View style={{flexDirection: 'row', alignItems: 'center'}}>
-												<Text style={{flex: 1}}>{dataset.columns[fieldIdx].name}</Text>
-												<Text style={{opacity: 0.3}}>{dataset.columns[fieldIdx].lang.toUpperCase()}</Text>
-											</View>
-										}
-										placeholder={I18n.t('field.dataPlaceholder')}
-										inputStyle={{color:THEME.primary}}
-										defaultValue={row.cells[fieldIdx].text}
-										value={this.state.fields[fieldIdx]}
-										onChangeText={value => {
-											this.checkServices(fieldIdx)
-											this.applyValue(fieldIdx, value, true);
-										}}
-										returnKeyType = {fieldIdx === dataset.columns.length - 1 ? 'done' : "next"}
-										ref={ref => { this.refInputs[fieldIdx] = ref }}
-										autoCapitalize={'sentences'}
-										spellCheck={true}
-										renderErrorMessage={false}
-										// rightIcon={
-										// 	<View style={{flexDirection: 'row'}}>
-										// 		<IconButton icon={'microphone'} color={THEME.primary} onPress={() => this.speechToText(fieldIdx)} delayPressIn={0} />
-										// 	</View>
-										// }
-										onSubmitEditing={() => {
-											if (fieldIdx === dataset.columns.length - 1) {
-												// this.save(true);
-											} else {
-												this.refInputs[fieldIdx + 1].focus();
-											}
-										}}
-									/>
-									{(spellCheck || translation) && (
-										<View style={{padding: 10, paddingBottom: 0}}>
-											{spellCheck && (
-												<View style={{flexDirection: 'row', alignItems: 'center'}}>
-													<Text style={{color: THEME.error, marginRight: 10}}>
-														{I18n.t('dataset.data.edit.didYouMean')}
-													</Text>
-													<TouchableOpacity
-														hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
-														style={{padding: 5, borderRadius: 5, backgroundColor: '#eee', flexDirection: 'row'}}
-														onPress={() => this.applyValue(fieldIdx, spellCheck.suggestion, true, 0)}
-													>
-														{spellCheck.parts.map((part, partIdx) => part)}
-													</TouchableOpacity>
-												</View>
-											)}
-											{translation && (
-												<View style={{flexDirection: 'row', alignItems: 'center'}}>
-													<Text style={{color: THEME.error, marginRight: 10}}>
-														{I18n.t('dataset.data.edit.possibleTranslation')}
-													</Text>
-													<TouchableOpacity
-														hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
-														style={{padding: 5, borderRadius: 5, backgroundColor: '#eee'}}
-														onPress={() => this.applyValue(fieldIdx, translation)}
-													>
-														<Text>{translation}</Text>
-													</TouchableOpacity>
-												</View>
-											)}
-										</View>
-									)}
+						<Modal animationType="fade" transparent={true} visible={this.state.uploading}>
+							<View style={styles.centeredView}>
+								<View style={styles.modalView}>
+									<ActivityIndicator size="large" color={THEME.primary} />
+									<Text style={[styles.modalText, {marginTop: 10}]}>{I18n.t('state.uploading')}</Text>
 								</View>
-							);
-						})}
-
-						{/*IMAGES*/}
-						{dataset.include_image && <View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, backgroundColor: 'white', marginBottom: 10 }}>
-							<View style={{flexDirection: 'row', alignItems: 'center'}}>
-								<Icon name={'image'} color={THEME.primary} style={{marginRight: 5}} />
-								<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.image')}</Text>
 							</View>
+						</Modal>
 
-							{this.state.imageUri &&
-								<View style={{ marginTop: 5 }}>
-									<TouchableOpacity style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center', zIndex: 1, top: 10, right: 10}} onPress={() => this.removeImage()}>
-										<Icon name={'close'} color={THEME.error} style={{width: 23, height: 23}} size={24} backgroundColor={'white'} borderRadius={100} />
-									</TouchableOpacity>
+						<Modal animationType="fade" transparent={true} visible={this.state.downloading}>
+							<View style={styles.centeredView}>
+								<View style={styles.modalView}>
+									<ActivityIndicator size="large" color={THEME.primary} />
+									<Text style={[styles.modalText, {marginTop: 10}]}>{I18n.t('state.downloading')}</Text>
+								</View>
+							</View>
+						</Modal>
 
-									<Image source={{ uri: this.state.imageUri }} style={{width: '100%', height: (Dimensions.get('window').width - 40)}} />
+						<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
+
+							{/*FIELDS*/}
+							{this.state.fields.map((field, fieldIdx) => {
+								const spellCheck = this.state.spellCheckFields[fieldIdx];
+								const translation = this.state.translationFields[fieldIdx];
+								return (
+									<View key={dataset.columns[fieldIdx].guid} style={{marginHorizontal: 10, borderRadius: 10, paddingVertical: 10, backgroundColor: 'white', marginBottom: 10}}>
+										<Input
+											clearButtonMode={'always'}
+											autoFocus={this.state.autofocus && fieldIdx === 0}
+											inputContainerStyle={{borderBottomWidth: 0}}
+											label={
+												<View style={{flexDirection: 'row', alignItems: 'center'}}>
+													<Text style={{flex: 1}}>{dataset.columns[fieldIdx].name}</Text>
+													<Text style={{opacity: 0.3}}>{dataset.columns[fieldIdx].lang.toUpperCase()}</Text>
+												</View>
+											}
+											placeholder={I18n.t('field.typeHerePlaceholder')}
+											inputStyle={{color:THEME.primary}}
+											defaultValue={row.cells[fieldIdx].text}
+											value={this.state.fields[fieldIdx]}
+											onChangeText={value => {
+												this.checkServices(fieldIdx)
+												this.applyValue(fieldIdx, value, true);
+											}}
+											returnKeyType = {fieldIdx === dataset.columns.length - 1 ? 'done' : "next"}
+											ref={ref => { this.refInputs[fieldIdx] = ref }}
+											autoCapitalize={'sentences'}
+											spellCheck={true}
+											renderErrorMessage={false}
+											// rightIcon={
+											// 	<View style={{flexDirection: 'row'}}>
+											// 		<IconButton icon={'microphone'} color={THEME.primary} onPress={() => this.speechToText(fieldIdx)} delayPressIn={0} />
+											// 	</View>
+											// }
+											onSubmitEditing={() => {
+												if (fieldIdx === dataset.columns.length - 1) {
+													// this.save(true);
+												} else {
+													this.refInputs[fieldIdx + 1].focus();
+												}
+											}}
+										/>
+										{(spellCheck || translation) && (
+											<View style={{padding: 10, paddingBottom: 0}}>
+												{spellCheck && (
+													<View style={{flexDirection: 'row', alignItems: 'center'}}>
+														<Text style={{color: THEME.error, marginRight: 10}}>
+															{I18n.t('dataset.data.edit.didYouMean')}
+														</Text>
+														<TouchableOpacity
+															hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
+															style={{padding: 5, borderRadius: 5, backgroundColor: '#eee', flexDirection: 'row'}}
+															onPress={() => this.applyValue(fieldIdx, spellCheck.suggestion, true, 0)}
+														>
+															{spellCheck.parts.map((part, partIdx) => part)}
+														</TouchableOpacity>
+													</View>
+												)}
+												{translation && (
+													<View style={{flexDirection: 'row', alignItems: 'center'}}>
+														<Text style={{color: THEME.error, marginRight: 10}}>
+															{I18n.t('dataset.data.edit.possibleTranslation')}
+														</Text>
+														<TouchableOpacity
+															hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
+															style={{padding: 5, borderRadius: 5, backgroundColor: '#eee'}}
+															onPress={() => this.applyValue(fieldIdx, translation)}
+														>
+															<Text>{translation}</Text>
+														</TouchableOpacity>
+													</View>
+												)}
+											</View>
+										)}
+									</View>
+								);
+							})}
+
+							{/*IMAGES*/}
+							{dataset.include_image ? <View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, backgroundColor: 'white', marginBottom: 10 }}>
+								<View style={{flexDirection: 'row', alignItems: 'center'}}>
+									<Icon name={'image'} color={THEME.primary} style={{marginRight: 5}} />
+									<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.image')}</Text>
+								</View>
+
+								{this.state.imageUri &&
+									<View style={{ marginTop: 5 }}>
+										<TouchableOpacity style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center', zIndex: 1, top: 10, right: 10}} onPress={() => this.removeImage()}>
+											<Icon name={'close'} color={THEME.error} style={{width: 23, height: 23}} size={24} backgroundColor={'white'} borderRadius={100} />
+										</TouchableOpacity>
+
+										<Image source={{ uri: this.state.imageUri }} style={{width: '100%', height: (Dimensions.get('window').width - 40)}} />
+									</View>}
+
+								<Input
+									clearButtonMode={'always'}
+									underlineColorAndroid={'transparent'}
+									inputContainerStyle={{marginHorizontal: -10, borderBottomWidth: 0}}
+									placeholder={I18n.t('input.searchCloud')}
+									inputStyle={{color:THEME.primary}}
+									returnKeyType={'done'}
+									value={this.state.searchImageQuery}
+									renderErrorMessage={false}
+									leftIcon={() => this.state.fetchingCustom ? <ActivityIndicator color={THEME.primary} /> : <Icon name={'image-search'} style={{opacity: 0.333}} />}
+									onChangeText={value => this.setState({ searchImageQuery: value })}
+									onSubmitEditing={event => this.fetchImages(this.state.searchImageQuery, undefined, true, true)}
+								/>
+
+								{this.state.emptyImageResults && <View style={{marginTop: 10, padding: 10, backgroundColor: THEME.warning, borderRadius: 5, flexDirection: 'row', alignItems: 'center'}}>
+									<Icon name={'alert'} style={{marginRight: 10}} />
+									<Text style={{flex: 1, flexWrap: 'wrap'}}>{I18n.t('dataset.data.edit.noImageFound')}</Text>
 								</View>}
 
-							<Input
-								clearButtonMode={'always'}
-								underlineColorAndroid={'transparent'}
-								inputContainerStyle={{marginHorizontal: -10, borderBottomWidth: 0}}
-								placeholder={I18n.t('input.searchCloud')}
-								inputStyle={{color:THEME.primary}}
-								returnKeyType={'done'}
-								value={this.state.searchImageQuery}
-								renderErrorMessage={false}
-								leftIcon={() => this.state.fetchingCustom ? <ActivityIndicator color={THEME.primary} /> : <Icon name={'image-search'} style={{opacity: 0.333}} />}
-								onChangeText={value => this.setState({ searchImageQuery: value })}
-								onSubmitEditing={event => this.fetchImages(this.state.searchImageQuery, undefined, true, true)}
-							/>
+								{this.state.images.length > 0 && (this.state.lastSearchQuery !== this.state.searchImageQuery) && <Text style={styles.desc}>
+									{I18n.t('dataset.data.edit.imageDesc', { terms: this.state.lastSearchQuery })}
+								</Text>}
+								{this.state.images.length > 0 && <Text style={[styles.desc, { fontWeight: "700"}]}>
+									{I18n.t('dataset.data.edit.imageChooseDesc')}
+								</Text>}
+								{this.state.images.length > 0 && <View style={{marginTop: 10, flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+									{this.state.images.map((image, imageIdx) => (
+										<TouchableOpacity key={imageIdx} style={{ width: '33.333%', height: Dimensions.get('window').width / 3 }} onPress={() => this.toggleImageSelection(imageIdx)}>
+											{this.state.selectedImageIdx === imageIdx && (<View style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center', zIndex: 1, top: 5, right: 5}}>
+												<Icon name={'check-circle'} color={THEME.primary} style={{width: 23, height: 23}} size={24} backgroundColor={'white'} borderRadius={100} />
+											</View>)}
 
-							{this.state.emptyImageResults && <View style={{marginTop: 10, padding: 10, backgroundColor: THEME.warning, borderRadius: 5, flexDirection: 'row', alignItems: 'center'}}>
-								<Icon name={'alert'} style={{marginRight: 10}} />
-								<Text style={{flex: 1, flexWrap: 'wrap'}}>{I18n.t('dataset.data.edit.noImageFound')}</Text>
-							</View>}
+											<Image source={{ uri: image }} style={{ width: '100%', height: Dimensions.get('window').width / 3 }} />
+										</TouchableOpacity>
+									))}
+								</View>}
 
-							{this.state.images.length > 0 && <Text style={{marginTop: 5, opacity: 0.5}}>
-								{I18n.t('dataset.data.edit.imageDesc')}
-							</Text>}
-							{this.state.images.length > 0 && <View style={{marginTop: 10, flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
-								{this.state.images.map((image, imageIdx) => (
-									<TouchableOpacity key={imageIdx} style={{ width: '33.333%', height: Dimensions.get('window').width / 3 }} onPress={() => this.toggleImageSelection(imageIdx)}>
-										{this.state.selectedImageIdx === imageIdx && (<View style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center', zIndex: 1, top: 5, right: 5}}>
-											<Icon name={'check-circle'} color={THEME.primary} style={{width: 23, height: 23}} size={24} backgroundColor={'white'} borderRadius={100} />
-										</View>)}
+								{this.state.canFetchMoreImages && <Button mode={'text'} style={{marginTop: 10}} onPress={() => this.fetchImages(this.state.lastSearchQuery, dataset.columns[0].lang)} disabled={this.state.fetching} loading={this.state.fetching}>
+									{I18n.t('btn.fetchMore')}
+								</Button>}
 
-										<Image source={{ uri: image }} style={{ width: '100%', height: Dimensions.get('window').width / 3 }} />
-									</TouchableOpacity>
-								))}
-							</View>}
-
-							{this.state.canFetchMoreImages && <Button mode={'text'} style={{marginTop: 10}} onPress={() => this.fetchImages(this.state.lastSearchQuery, dataset.columns[0].lang)} disabled={this.state.fetching} loading={this.state.fetching}>
-								{I18n.t('btn.fetchMore')}
-							</Button>}
-
-							<Button mode={'outlined'} icon={'cloud-upload'} style={{marginTop: 10}} onPress={() => this.uploadFromGallery()} disabled={this.state.uploading} loading={this.state.uploading}>
-								{I18n.t('btn.upload')}
-							</Button>
-
-							{this.state.hasCamera && <Button mode={'outlined'} icon={'camera'} style={{marginTop: 5}} onPress={() => this.openCamera()} disabled={this.state.uploading} loading={this.state.uploading}>
-								{I18n.t('btn.takePhoto')}
-							</Button>}
-						</View>}
-
-						{/*TAGS*/}
-						<View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, paddingBottom: 7.5, backgroundColor: 'white', marginBottom: 25 }}>
-
-							<View style={{flexDirection: 'row', alignItems: 'center'}}>
-								<Icon name={'tag-multiple'} color={THEME.primary} style={{marginRight: 5}} />
-								<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.tags')}</Text>
-							</View>
-
-							<View style={{marginTop: 5, marginHorizontal: -2.5, flexDirection: 'row', flexWrap: 'wrap'}}>
-								{this.state.allTags.map((tag, tagIdx) => (
-									<TouchableOpacity key={tagIdx} style={this.state.tags.indexOf(tag) === -1 ? styles.tag : styles.activeTag} onPress={() => this.toggleTag(tag)}>
-										<Text style={(this.state.tags.indexOf(tag) === -1 ? styles.tagText : styles.activeTagText)}>{tag}</Text>
-									</TouchableOpacity>
-								))}
-							</View>
-
-							<Input
-								underlineColorAndroid={'transparent'}
-								inputContainerStyle={{marginHorizontal: -10, borderBottomWidth: 0}}
-								placeholder={I18n.t('field.tagPlaceholder')}
-								inputStyle={{color:THEME.primary}}
-								returnKeyType={'done'}
-								value={this.state.addTagInput}
-								renderErrorMessage={false}
-								leftIcon={() => <Icon name={'plus'} />}
-								ref={ref => { this.refTagInput = ref }}
-								onChangeText={value => this.setState({ addTagInput: value })}
-								onSubmitEditing={event => this.pushTag(this.state.addTagInput)}
-							/>
-						</View>
-					</ScrollView>
-
-					<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
-						<Divider style={{marginBottom: 10}} />
-						<View style={{flexDirection: 'row', alignItems: 'center'}}>
-							<IconButton icon={'chevron-left'} type={'clear'} onPress={() => this.previous()} delayPressIn={0} disabled={dataset.rows.length <= 1} style={{marginVertical: -5, marginLeft: -0}} />
-							<View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-								<Button style={{flex: 1}} mode="contained" loading={this.state.saving} onPress={() => this.save(row.id ? false : true)} disabled={!row.isValid() || !this.hasDifferences() || this.state.saving}>
-									{I18n.t(row.id ? 'btn.save' : 'btn.add')}
+								<Button mode={'outlined'} icon={'cloud-upload'} style={{marginTop: 10}} onPress={() => this.uploadFromGallery()} disabled={this.state.uploading} loading={this.state.uploading}>
+									{I18n.t('btn.upload')}
 								</Button>
+
+								{this.state.hasCamera && <Button mode={'outlined'} icon={'camera'} style={{marginTop: 5}} onPress={() => this.openCamera()} disabled={this.state.uploading} loading={this.state.uploading}>
+									{I18n.t('btn.takePhoto')}
+								</Button>}
+							</View> : null}
+
+							{/*TAGS*/}
+							<View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, paddingBottom: 7.5, backgroundColor: 'white', marginBottom: 25 }}>
+
+								<View style={{flexDirection: 'row', alignItems: 'center'}}>
+									<Icon name={'tag-multiple'} color={THEME.primary} style={{marginRight: 5}} />
+									<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.tags')}</Text>
+								</View>
+
+								<View style={{marginTop: 5, marginHorizontal: -2.5, flexDirection: 'row', flexWrap: 'wrap'}}>
+									{this.state.allTags.map((tag, tagIdx) => (
+										<TouchableOpacity key={tagIdx} style={this.state.tags.indexOf(tag) === -1 ? styles.tag : styles.activeTag} onPress={() => this.toggleTag(tag)}>
+											<Text style={(this.state.tags.indexOf(tag) === -1 ? styles.tagText : styles.activeTagText)}>{tag}</Text>
+										</TouchableOpacity>
+									))}
+								</View>
+
+								<Input
+									underlineColorAndroid={'transparent'}
+									inputContainerStyle={{marginHorizontal: -10, borderBottomWidth: 0}}
+									placeholder={I18n.t('field.tagPlaceholder')}
+									inputStyle={{color:THEME.primary}}
+									returnKeyType={'done'}
+									value={this.state.addTagInput}
+									renderErrorMessage={false}
+									leftIcon={() => <Icon name={'plus'} />}
+									ref={ref => { this.refTagInput = ref }}
+									onChangeText={value => this.setState({ addTagInput: value })}
+									onSubmitEditing={event => this.pushTag(this.state.addTagInput)}
+								/>
+
+								<Text style={styles.desc}>{I18n.t('dataset.data.edit.tagsDesc')}</Text>
 							</View>
-							<IconButton icon={'chevron-right'} type={'clear'} onPress={() => this.next()} delayPressIn={0} disabled={dataset.rows.length <= 1} style={{marginVertical: -5, marginRight: -0}} />
+						</ScrollView>
+
+						<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
+							<Divider style={{marginBottom: 10}} />
+							<View style={{flexDirection: 'row', alignItems: 'center'}}>
+								{row.id ? <IconButton icon={'chevron-left'} type={'clear'} onPress={() => this.previous()} delayPressIn={0} disabled={dataset.rows.length <= 1} style={{marginVertical: -5, marginLeft: -0}} /> : null}
+								<View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+									<Button style={{flex: 1}} mode="contained" loading={this.state.saving} onPress={() => this.save(row.id ? false : true)} disabled={!row.isValid() || !this.hasDifferences() || this.state.saving}>
+										{I18n.t(row.id ? 'btn.save' : 'btn.add')}
+									</Button>
+								</View>
+								{row.id ? <IconButton icon={'chevron-right'} type={'clear'} onPress={() => this.next()} delayPressIn={0} disabled={dataset.rows.length <= 1} style={{marginVertical: -5, marginRight: -0}} /> : null}
+							</View>
 						</View>
 					</View>
-				</View>
-			</KeyboardAvoidingView>
+				</KeyboardAvoidingView>
+			</View>
 		);
 	};
 }
@@ -1010,5 +1026,11 @@ const styles = StyleSheet.create({
 	},
 	modalText: {
 		textAlign: "center"
+	},
+	desc: {
+		margin: 10,
+		marginTop: 0,
+		color: 'rgba(0, 0, 0, 0.33)',
+		fontSize: 12,
 	}
 });

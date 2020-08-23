@@ -4,7 +4,6 @@ import { UserService, THEME } from '@polymind/sdk-js';
 import {ActivityIndicator, View} from "react-native";
 import {Icon, Text} from "react-native-elements";
 import {Button} from "react-native-paper";
-import ConfirmationScreen from '../restricted/ConfirmationScreen';
 
 export default class RegisterScreen extends React.Component {
 

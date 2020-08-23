@@ -60,7 +60,7 @@ export default class StatsScreen extends React.Component {
 		const data = this.getData();
 
 		return (
-			<View style={{flex: 1}}>
+			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 				<WebView
 					originWhitelist={['*']}
 					useWebKit={true}

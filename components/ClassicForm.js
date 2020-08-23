@@ -1,16 +1,14 @@
 import React from 'react';
-import {Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Animated, View} from "react-native";
-import { Divider, Icon, Text} from "react-native-elements";
+import {Keyboard, KeyboardAvoidingView, Platform, Text, Easing, StyleSheet, Animated, View, ScrollView} from "react-native";
+import { Divider, Icon} from "react-native-elements";
 import { THEME } from "@polymind/sdk-js";
 
-const AnimatedIcon = Animated.createAnimatedComponent(Icon);
+// const AnimatedIcon = Animated.createAnimatedComponent(Icon);
 
 export default class ClassicForm extends React.Component {
 
-	keyboardHeight = new Animated.Value(0);
-	fontSize = new Animated.Value(26);
-	fontWidth = new Animated.Value(250);
-	iconSize = new Animated.Value(60);
+	animatedValue = new Animated.Value(0);
+	animatedValueNative = new Animated.Value(0);
 
 	state = {
 		keyboardVisible: false,
@@ -19,19 +17,15 @@ export default class ClassicForm extends React.Component {
 	componentDidMount() {
 		this.keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", event => {
 			Animated.parallel([
-				Animated.timing(this.keyboardHeight, {duration: event.duration, toValue: event.endCoordinates.height,}),
-				Animated.timing(this.fontSize, {duration: event.duration, toValue: 16.64,}),
-				Animated.timing(this.fontWidth, {duration: event.duration, toValue: 160,}),
-				Animated.timing(this.iconSize, {duration: event.duration, toValue: 32,}),
+				Animated.timing(this.animatedValue, {useNativeDriver: false, toValue: 1, duration: event.duration, easing: Easing.ease}),
+				Animated.timing(this.animatedValueNative, {useNativeDriver: false, toValue: 1, duration: event.duration, easing: Easing.ease})
 			]).start();
 			this.setState({ keyboardVisible: true });
 		});
 		this.keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", event => {
 			Animated.parallel([
-				Animated.timing(this.keyboardHeight, {duration: event.duration, toValue: 0,}),
-				Animated.timing(this.fontSize, {duration: event.duration, toValue: 26,}),
-				Animated.timing(this.fontWidth, {duration: event.duration, toValue: 250,}),
-				Animated.timing(this.iconSize, {duration: event.duration, toValue: 60,}),
+				Animated.timing(this.animatedValue, {useNativeDriver: false, toValue: 0, duration: event.duration, easing: Easing.ease}),
+				Animated.timing(this.animatedValueNative, {useNativeDriver: false, toValue: 0, duration: event.duration, easing: Easing.ease})
 			]).start();
 			this.setState({ keyboardVisible: false });
 		});
@@ -47,29 +41,40 @@ export default class ClassicForm extends React.Component {
 		return (
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
-				style={{flex: 1}}
+				style={{flex: 0}}
 			>
-				<Animated.ScrollView style={styles.container} keyboardShouldPersistTaps="always" contentContainerStyle={[styles.content, { paddingBottom: 0 }]}>
+				<ScrollView style={styles.container} keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.content, { paddingBottom: 0 }]}>
 
 					{/*LOGO*/}
-					<View style={styles.header}>
-						<AnimatedIcon name={icon} size={this.iconSize} color={'rgba(255, 255, 255, 0.5)'} />
-						<Animated.Text style={[styles.headerText, { fontSize: this.fontSize, width: this.fontWidth }]}>{title}</Animated.Text>
-					</View>
+					<Animated.View style={[styles.header, {
+						marginBottom: this.animatedValue.interpolate({
+							inputRange: [0, 1],
+							outputRange: [0, -100]
+						}),
+						transform: [{
+							scale: this.animatedValueNative.interpolate({
+								inputRange: [0, 1],
+								outputRange: [1, 0.5]
+							})
+						}],
+					}]}>
+						<Icon name={icon} size={48} color={'rgba(255, 255, 255, 0.5)'} />
+						<Text style={styles.headerText}>{title}</Text>
+					</Animated.View>
 
 					{/*FORM*/}
-					<View style={{...styles.view, marginVertical: 30, flexGrow: 2}}>
+					<View style={{...styles.view, marginVertical: 30, flex: 1}}>
 						{children}
 					</View>
 
 					{/*FOOTER*/}
-					{footer && !this.state.keyboardVisible &&
+					{footer &&
 					<View style={{...styles.view, justifyContent: 'flex-end', marginBottom: 15}}>
 						<Divider style={{marginVertical: 15, marginHorizontal: 30}}/>
 						{footer}
 					</View>}
 
-				</Animated.ScrollView>
+				</ScrollView>
 			</KeyboardAvoidingView>
 		)
 	}
@@ -89,8 +94,11 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginTop: -200,
+		marginBottom: 0,
 		paddingTop: 230,
 		paddingBottom: 30,
+		paddingHorizontal: 10060,
+		marginHorizontal: -10000,
 	},
 	headerText: {
 		fontSize: 30,
