@@ -127,8 +127,6 @@
 			"screen_name": "Nom complet"
 		}
 	},
-	"flipCardDialogDesc": "Souhaitez-vous vraiment retourner les cartes? Faites-le si vous souhaitez étudier dans l'autre sens.",
-	"flipCardDialogTitle": "Inverser les cartes",
 	"header": {
 		"back": "Retour"
 	},

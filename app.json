@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.5",
+    "version": "1.0.7",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "polymind",
@@ -26,7 +26,7 @@
 	"android": {
 	  "package": "com.polymind.native",
 	  "permissions": ["CAMERA"],
-	  "versionCode": 2,
+	  "versionCode": 3,
 	  "intentFilters": [
 		{
 		  "action": "VIEW",

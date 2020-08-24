@@ -127,8 +127,6 @@
 			"screen_name": "Nombre completo"
 		}
 	},
-	"flipCardDialogDesc": "¿Realmente deseas dar la vuelta a las cartas? Haga esto si quiere estudiar al revés.",
-	"flipCardDialogTitle": "Cartas invertidas",
 	"header": {
 		"back": "Volver"
 	},
