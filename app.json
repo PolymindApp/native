@@ -47,7 +47,7 @@
 	},
     "ios": {
 	  "bundleIdentifier": "com.polymind.native",
-	  "buildNumber": "1.0.5",
+	  "buildNumber": "1.0.7",
       "supportsTablet": false,
 	  "associatedDomains": ["polymind.app"],
 	  "usesAppleSignIn": true,

@@ -16,6 +16,8 @@ import WelcomeScreen from "./screens/app/welcome/WelcomeScreen";
 const Stack = createStackNavigator();
 const navigationRef = React.createRef();
 
+console.log(THEME);
+
 const themePaper = {
 	...DefaultTheme,
 	roundness: 2,

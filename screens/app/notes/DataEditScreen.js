@@ -1,7 +1,7 @@
 import React from 'react'
 import {Alert, ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View, Modal} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import PolymindSDK, { Thumbnail, TextToSpeechService, File, Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
+import { Thumbnail, Hash, Color, TextToSpeechService, File, Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
 import {Divider, Icon, Input, Text} from "react-native-elements";
 import {Button, IconButton} from "react-native-paper";
@@ -10,12 +10,9 @@ import Constants from "expo-constants";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from 'expo-permissions';
 import { Camera } from 'expo-camera';
-import {Linking } from "expo";
+import { Linking } from "expo";
 import * as ImageManipulator from "expo-image-manipulator";
 import Offline from "../../../utils/Offline";
-import Sound from "../../../utils/Sound";
-
-const $polymind = new PolymindSDK();
 
 let checkServiceTimeout;
 let lastCheckServiceFieldContent = '';
@@ -106,7 +103,7 @@ export default class DataEditScreen extends React.Component {
 	getTags() {
 		const { dataset } = this.props.route.params.datasetContext.state;
 		const tags = dataset.getTags();
-		const defaultTags = ['noun', 'verb', 'adjective', 'difficult', 'easy'];
+		const defaultTags = ['noun', 'verb', 'adjective', 'hard', 'unsure', 'easy'];
 
 		defaultTags.forEach(tag => {
 			if (tags.indexOf(tag) === -1) {
@@ -115,6 +112,14 @@ export default class DataEditScreen extends React.Component {
 		});
 
 		return tags;
+	}
+
+	getTagTheme(tag) {
+		const hex = Color.stringToHex(tag);
+		return THEME.tags[tag] || {
+			color: '#' + hex,
+			dark: Color.isDark(hex),
+		}
 	}
 
 	onRowRemove(row) {
@@ -930,7 +935,7 @@ export default class DataEditScreen extends React.Component {
 
 								<View style={{marginTop: 5, marginHorizontal: -2.5, flexDirection: 'row', flexWrap: 'wrap'}}>
 									{this.state.allTags.map((tag, tagIdx) => (
-										<TouchableOpacity key={tagIdx} style={this.state.tags.indexOf(tag) === -1 ? styles.tag : styles.activeTag} onPress={() => this.toggleTag(tag)}>
+										<TouchableOpacity key={tagIdx} style={this.state.tags.indexOf(tag) === -1 ? styles.tag : { ...styles.activeTag, backgroundColor: this.getTagTheme(tag).color }} onPress={() => this.toggleTag(tag)}>
 											<Text style={(this.state.tags.indexOf(tag) === -1 ? styles.tagText : styles.activeTagText)}>{tag}</Text>
 										</TouchableOpacity>
 									))}
@@ -989,7 +994,6 @@ const styles = StyleSheet.create({
 		paddingVertical: 5,
 		paddingHorizontal: 10,
 		margin: 2.5,
-		backgroundColor: THEME.primary,
 		borderRadius: 5,
 	},
 	tagText: {

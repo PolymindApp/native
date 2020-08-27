@@ -38,6 +38,7 @@ export default class ClassicForm extends React.Component {
 
 	render() {
 		const { icon, title, footer, children } = this.props;
+
 		return (
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : "height"}

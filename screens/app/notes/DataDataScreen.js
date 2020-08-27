@@ -5,7 +5,7 @@ import I18n from "../../../locales/i18n";
 import {ScrollView} from "react-native-gesture-handler";
 import {Row, Table} from "react-native-table-component";
 import {FAB} from "react-native-paper";
-import PolymindSDK, { THEME } from '@polymind/sdk-js';
+import PolymindSDK, { Color, THEME } from '@polymind/sdk-js';
 
 const $polymind = new PolymindSDK();
 
@@ -14,6 +14,7 @@ export default class DataDataScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			tags: [],
 			search: '',
 		};
 	}
@@ -31,6 +32,21 @@ export default class DataDataScreen extends React.Component {
 		const dataset = this.props.route.params.datasetContext.state.dataset;
 		const rows = dataset.rows.filter(row => {
 			const found = false;
+
+			if (this.state.tags.length > 0) {
+				let hasTag = false;
+				for (let i = 0; i < row.tags.length; i++) {
+					const tag = row.tags[i];
+					if (this.state.tags.indexOf(tag) !== -1) {
+						hasTag = true;
+						break;
+					}
+				}
+				if (!hasTag) {
+					return false;
+				}
+			}
+
 			for (let i = 0; i < row.cells.length; i++) {
 				const cell = row.cells[i];
 				if ((cell.text || '').trim().toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1) {
@@ -68,6 +84,24 @@ export default class DataDataScreen extends React.Component {
 		}
 	}
 
+	toggleTag(tag) {
+		const idx = this.state.tags.indexOf(tag);
+		if (idx === -1) {
+			this.state.tags.push(tag);
+		} else {
+			this.state.tags.splice(idx, 1);
+		}
+		this.setState({ tags: this.state.tags });
+	}
+
+	getTagTheme(tag) {
+		const hex = Color.stringToHex(tag);
+		return THEME.tags[tag] || {
+			color: '#' + hex,
+			dark: Color.isDark(hex),
+		}
+	}
+
 	add() {
 		const { route, navigation } = this.props;
 		navigation.push('NotesDataEdit', {...route.params, rowIdx: route.params.datasetContext.state.dataset.rows.length, datasetDataContext: this});
@@ -76,6 +110,7 @@ export default class DataDataScreen extends React.Component {
 	tableData() {
 		const dataset = this.props.route.params.datasetContext.state.dataset;
 		const imageSize = dataset.include_image ? 40 : 0;
+		const hasTags = dataset.getTags().length > 0;
 		const data = {
 			header: [],
 			width: [],
@@ -90,12 +125,21 @@ export default class DataDataScreen extends React.Component {
 		let width = Dimensions.get('window').width;
 		if (dataset.columns.length > 1) {
 			width = width / 2;
+
+			// if (hasTags) {
+			// 	width -= 50 / dataset.columns.length;
+			// }
 		}
 
 		dataset.columns.forEach((column, columnIdx) => {
 			data.header.push(column.name);
 			data.width.push(width);
 		});
+
+		if (hasTags) {
+			data.header.push(<Icon name={'tag-multiple'} />);
+			data.width.push(50);
+		}
 
 		this.filteredRows().forEach((row, rowIdx) => {
 			const item = [];
@@ -112,6 +156,12 @@ export default class DataDataScreen extends React.Component {
 			dataset.columns.forEach((column, columnIdx) => {
 				item.push(row.cells[columnIdx].text);
 			});
+			item.push(row.tags.map(tag => <View style={{
+				borderRadius: 100,
+				backgroundColor: 'red',
+				width: 10,
+				height: 10,
+			}}></View>));
 			data.rows.push(item);
 		});
 
@@ -129,6 +179,7 @@ export default class DataDataScreen extends React.Component {
 		const tableData = this.tableData();
 		const dataset = this.props.route.params.datasetContext.state.dataset;
 		const { navigation, route } = this.props;
+		const tags = dataset.getTags();
 
 		return (
 			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
@@ -146,6 +197,16 @@ export default class DataDataScreen extends React.Component {
 				) : (
 					<View style={{flex: 1}}>
 						<SearchBar placeholder={I18n.t('input.filter')} cancelButtonTitle={I18n.t('btn.cancel')} cancelButtonProps={{ color: THEME.primary, buttonStyle: { marginTop: -3 } }} onChangeText={this.updateSearch} value={this.state.search} platform={Platform.OS === 'ios' ? 'ios' : 'android'} />
+
+						{tags.length > 0 && (
+							<View style={{flexDirection: 'row', flexWrap: 'wrap', padding: 5, marginTop: -15 }}>
+								{tags.map((tag, tagIdx) => (
+									<TouchableOpacity key={tagIdx} style={this.state.tags.indexOf(tag) === -1 ? styles.tag : { ...styles.activeTag, backgroundColor: this.getTagTheme(tag).color }} onPress={() => this.toggleTag(tag)}>
+										<Text style={(this.state.tags.indexOf(tag) === -1 ? styles.tagText : styles.activeTagText)}>{tag}</Text>
+									</TouchableOpacity>
+								))}
+							</View>
+						)}
 
 						<ScrollView horizontal={true} enabled={dataset.columns.length > 2} >
 							<View>
@@ -212,5 +273,25 @@ const styles = StyleSheet.create({
 	header: { backgroundColor: '#eee' },
 	text: { textAlign: 'left', padding: 5 },
 	dataWrapper: {  },
-	row: { backgroundColor: 'white' }
+	row: { backgroundColor: 'white' },
+
+	tag: {
+		paddingVertical: 5,
+		paddingHorizontal: 10,
+		margin: 2.5,
+		backgroundColor: '#eee',
+		borderRadius: 5,
+	},
+	activeTag: {
+		paddingVertical: 5,
+		paddingHorizontal: 10,
+		margin: 2.5,
+		borderRadius: 5,
+	},
+	tagText: {
+		color: 'black',
+	},
+	activeTagText: {
+		color: 'white'
+	},
 });

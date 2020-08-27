@@ -48,7 +48,7 @@ export default class ColumnEditScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			autofocus: true,
+			autofocus: props.route.params.column.id === null,
 			saving: false,
 			deleting: false,
 			column: {
@@ -115,6 +115,9 @@ export default class ColumnEditScreen extends React.Component {
 			) : null
 		});
 
+		const tmpColumn = new DatasetColumn(this.state.column)
+		const canApply = !tmpColumn.isValid() || !this.hasDifferences() || this.state.saving;
+
 		return (
 			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 
@@ -162,7 +165,7 @@ export default class ColumnEditScreen extends React.Component {
 
 				<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
 					<Divider style={{marginBottom: 10}} />
-					<Button mode="contained" onPress={() => this.save()} disabled={!column.isValid() || !this.hasDifferences() || this.state.saving} loading={this.state.saving}>
+					<Button mode="contained" onPress={() => this.save()} disabled={canApply} loading={this.state.saving}>
 						{!this.isGuidAlreadyExists(column.guid)
 							? I18n.t('btn.add')
 							: I18n.t('btn.update')}

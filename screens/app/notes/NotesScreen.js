@@ -1,11 +1,21 @@
 import React from 'react'
-import {ActivityIndicator, Image, Platform, RefreshControl, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+	ActivityIndicator, Animated,
+	Dimensions,
+	Image,
+	Platform,
+	RefreshControl,
+	StyleSheet,
+	TouchableOpacity,
+	View
+} from 'react-native';
 import {SearchBar, ListItem, Icon, Text} from "react-native-elements";
 import {Button, IconButton} from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
-import Storage from '../../../components/storage';
-import PolymindSDK, { THEME, Dataset, DatasetColumn } from '@polymind/sdk-js';
+import PolymindSDK, { THEME, Dataset, DatasetColumn, Color } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
+import Card from "../../../components/Card";
+import placeholder from '../../../assets/images/placeholder.png';
 
 const $polymind = new PolymindSDK();
 
@@ -19,6 +29,7 @@ export default class NotesScreen extends React.Component {
 			loading: true,
 			refreshing: false,
 			datasets: [],
+			scrollY: new Animated.Value(0),
 		}
 	}
 
@@ -67,6 +78,46 @@ export default class NotesScreen extends React.Component {
 		}).catch(err => {
 			console.log(err);
 		});
+	}
+
+	getImages(dataset) {
+		let images = [];
+		dataset.rows.reverse().forEach(row => {
+			if (images.length < 5 && row.image?.private_hash) {
+				images.push($polymind.getThumbnailByPrivateHash(row.image.private_hash, 'avatar'));
+			}
+		});
+		if (images.length === 0) {
+			images.push(placeholder);
+		}
+		return images;
+	}
+
+	getTags(dataset) {
+		const tags = [];
+		let total = 0;
+		dataset.rows.forEach(row => {
+			row.tags.forEach(tag => {
+				let index = tags.indexOf(tag);
+				if (index === -1) {
+					const color = (THEME.tags[tag] && THEME.tags[tag].color) || ('#' + Color.stringToHex(tag));
+					const dark = (THEME.tags[tag] && THEME.tags[tag].dark )|| Color.isDark(color);
+					tags.push({
+						name: tag,
+						color,
+						dark,
+						count: 0,
+					});
+					index = tags.length - 1;
+				}
+				tags[index].count++;
+				total++;
+			});
+		});
+		tags.forEach(tag => {
+			tag.percent = tag.count * 100 / total;
+		});
+		return tags;
 	}
 
 	filteredDatasets() {
@@ -124,10 +175,24 @@ export default class NotesScreen extends React.Component {
 
 		return (
 			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
-				{datasets.length > 0 && <SearchBar placeholder={I18n.t('input.filter')} cancelButtonTitle={I18n.t('btn.cancel')} cancelButtonProps={{ color: THEME.primary, buttonStyle: { marginTop: -3 } }} onChangeText={this.updateSearch} value={search} platform={Platform.OS === 'ios' ? 'ios' : 'android'} />}
-				<ScrollView style={styles.container} contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={'handled'} refreshControl={
+
+				<Animated.ScrollView style={styles.container} contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={'handled'} refreshControl={
 					<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh.bind(this)} />
-				}>
+				} onScroll={Animated.event(
+					[{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }],
+					{ useNativeDriver: true }
+				)}>
+					{datasets.length > 0 && (
+						<SearchBar
+							style={{backgroundColor: 'red'}}
+							placeholder={I18n.t('input.filter')}
+							cancelButtonTitle={I18n.t('btn.cancel')}
+							cancelButtonProps={{ color: THEME.primary, buttonStyle: { marginTop: -3 } }}
+							onChangeText={this.updateSearch}
+							value={search}
+							platform={Platform.OS === 'ios' ? 'ios' : 'android'}
+						/>
+					)}
 					{datasets.length === 0 && (
 						<View style={{flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10}}>
 							<Icon name={'file-question'} size={64} style={{opacity: 0.3}}></Icon>
@@ -138,32 +203,44 @@ export default class NotesScreen extends React.Component {
 							</Button>
 						</View>
 					)}
-					{
-						filteredDatasets.map((dataset, datasetIdx) => (
-							<ListItem
-								key={dataset.guid}
-								leftIcon={<Icon
-									name={dataset.icon.substring(4) || 'database'}
-									color={THEME.primary}
-									containerStyle={{width: 32}}
-								/>}
-								title={dataset.name}
-								subtitle={
-									<Text style={{opacity: 0.33}}>{I18n.t('notes.totalRows', { count: dataset.total_rows })}</Text>
-								}
-								topDivider={datasetIdx === 0}
-								delayPressIn={0}
-								bottomDivider
-								chevron={true}
-								onPress={() => navigation.push('NotesData', {
-									datasetsContext: this,
-									dataset,
-									datasetIdx,
-								})}
-							/>
-						))
-					}
-				</ScrollView>
+					<View style={{flexDirection: 'row', flexWrap: 'wrap', margin: 5}}>
+						{filteredDatasets.map((dataset, datasetIdx) => (
+
+							<View key={datasetIdx} style={{ width: '50%', padding: 5 }}>
+								<Card onPress={() => navigation.push('NotesData', {
+										datasetsContext: this,
+										dataset,
+										datasetIdx,
+									})}
+									images={{
+										items: this.getImages(dataset),
+										width: Dimensions.get('window').width / 2 - 15,
+										height: 100,
+									}}
+								>
+									{/*TAGS PERCENTAGE*/}
+									<View style={{flex: 1, flexDirection: 'row', height: 3, backgroundColor: '#ccc'}}>
+										{this.getTags(dataset).map(tag => (
+											<View style={{backgroundColor: tag.color, height: 3, flex: (100 / tag.percent)}} />
+										))}
+									</View>
+
+									<View style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}>
+										<Icon
+											name={dataset.icon.substring(4) || 'database'}
+											color={THEME.primary}
+											containerStyle={{width: 32}}
+										/>
+										<View style={{marginLeft: 5, flex: 1 }}>
+											<Text style={{flex:1}} numberOfLines={1} ellipsizeMode='tail'>{dataset.name}</Text>
+											<Text style={{flex:1}} numberOfLines={1} ellipsizeMode='tail' style={{opacity: 0.33}}>{I18n.t('notes.totalRows', { count: dataset.total_rows })}</Text>
+										</View>
+									</View>
+								</Card>
+							</View>
+						))}
+					</View>
+				</Animated.ScrollView>
 			</View>
 		);
 	};
@@ -172,6 +249,7 @@ export default class NotesScreen extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.05)'
 	},
 	desc: {
 		margin: 10,

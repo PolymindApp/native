@@ -11,7 +11,8 @@ export default class WwwScreen extends React.Component {
 	render() {
 
 		const { params } = this.props.route;
-		const uri = $polymind.getEnvVar('WWW_URL') + params.path + '?layout=0';
+		const locale = I18n.locale.substring(0, 2);
+		const uri = $polymind.getEnvVar('WWW_URL') + params.path + '?layout=0&locale=' + locale;
 
 		return (
 				<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>

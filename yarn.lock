@@ -6572,6 +6572,11 @@ react-native-appearance@~0.3.3:
     invariant "^2.2.4"
     use-subscription "^1.0.0"
 
+react-native-drag-sort@^2.3.7:
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/react-native-drag-sort/-/react-native-drag-sort-2.3.7.tgz#20608ad41df4a82248d8f3503a40fcaeba275d79"
+  integrity sha512-p6WmyKgKf93MzsWBtQWyO6n1Kg1Z9ihSSLEr2EdpGjddnOP0bKzuosm6+zyw2xd4AJwAaCjl2nGZGFYbUu2czQ==
+
 react-native-elements@^2.0.1:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/react-native-elements/-/react-native-elements-2.0.4.tgz#ea5a6bb34cabd48dcd6c6546e4737d2075e40ee3"
@@ -6602,6 +6607,13 @@ react-native-gesture-handler@~1.6.0:
   resolved "git+https://github.com/xcarpentier/ex-react-native-i18n.git#c260b6ec5db1e204dede274c30290ee3de137b99"
   dependencies:
     expo-localization "^5.0.1"
+
+react-native-image-slider-box@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/react-native-image-slider-box/-/react-native-image-slider-box-1.0.12.tgz#4abb7b6d26f12859ac059d4fe7555c72a201e23a"
+  integrity sha512-Yq7xLmrAxNWjSAZJ78ZQkg13/30UJc17yvBwRFAidGrMaVo2Go9glRdRJ2U212APsQVHskAhSgW6YHinuTLoIA==
+  dependencies:
+    react-native-snap-carousel "*"
 
 react-native-iphone-x-helper@^1.2.1:
   version "1.2.1"
@@ -6662,7 +6674,7 @@ react-native-simple-store@^2.0.2:
     "@react-native-community/async-storage" "1.3.3"
     lodash.merge "4.6.2"
 
-react-native-snap-carousel@^3.9.1:
+react-native-snap-carousel@*, react-native-snap-carousel@^3.9.1:
   version "3.9.1"
   resolved "https://registry.yarnpkg.com/react-native-snap-carousel/-/react-native-snap-carousel-3.9.1.tgz#6fd9bd8839546c2c6043a41d2035afbc6fe0443e"
   integrity sha512-xWEGusacIgK1YaDXLi7Gao2+ISLoGPVEBR8fcMf4tOOJQufutlNwkoLu0l6B8Qgsrre0nTxoVZikRgGRDWlLaQ==
