@@ -260,6 +260,15 @@
 		},
 		"speed": "Retraso entre preguntas:",
 		"speedSeconds": "{{seconds}} segundos",
+		"stats": {
+			"noFilteredItemDesc": "No se encontró nada en el rango seleccionado",
+			"noFilteredItemTitle": "Sin objeto",
+			"title": {
+				"one": "Una tarjeta revisada el {{date}}",
+				"other": "{{count}} tarjetas revisadas el {{date}}",
+				"zero": "No se revisó ninguna tarjeta el {{date}}"
+			}
+		},
 		"types": {
 			"autoAssertiveDesc": "Las notas se muestran y pronuncian automáticamente, pero usted está obligado a responder.",
 			"autoAssertiveTitle": "Automático asertivo",

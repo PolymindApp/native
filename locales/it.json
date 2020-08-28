@@ -260,6 +260,15 @@
 		},
 		"speed": "Ritardo tra le domande:",
 		"speedSeconds": "{{seconds}} secondi",
+		"stats": {
+			"noFilteredItemDesc": "Nessun risultato trovato nell'intervallo selezionato",
+			"noFilteredItemTitle": "Nessun elemento",
+			"title": {
+				"one": "Una carta recensita su {{date}}",
+				"other": "{{count}} schede recensite su {{date}}",
+				"zero": "Nessuna carta esaminata il {{date}}"
+			}
+		},
 		"types": {
 			"autoAssertiveDesc": "Le note vengono mostrate e pronunciate automaticamente, ma sei obbligato a rispondere.",
 			"autoAssertiveTitle": "Automatico assertivo",

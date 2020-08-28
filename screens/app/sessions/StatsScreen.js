@@ -1,41 +1,112 @@
 import React from 'react'
-import {View, ActivityIndicator} from 'react-native';
+import {View, ScrollView, ActivityIndicator, Platform, FlatList} from 'react-native';
 import { WebView } from 'react-native-webview';
-import { THEME, SessionStatsService } from '@polymind/sdk-js';
+import { THEME, SessionStatsService, Time } from '@polymind/sdk-js';
+import {ListItem, Text} from "react-native-elements";
+import {Icon} from 'react-native-elements';
+import moment from 'moment';
+import I18n from "../../../locales/i18n";
+import {List} from "react-native-paper";
+
+const graphHTML = require('./Stats.html');
 
 export default class StatsScreen extends React.Component {
 
+	webview = null;
+
 	state = {
 		loading: true,
-		stats: {},
+		min: null,
+		max: null,
+		data: [],
+		stats: [],
 	};
 
 	componentDidMount() {
 		const { session } = this.props.route.params;
 		this.setState({ loading: true });
 		SessionStatsService.getAllById(session.id).then(stats => {
-			this.setState({ stats });
-		}).finally(() => this.setState({ loading: false }));
+			const data = this.getData(stats);
+			this.setState({ data, stats });
+		}).finally(data => this.setState({ loading: false }));
+	}
+
+	async handleMessage(event) {
+
+		const {type, data} = JSON.parse(event.nativeEvent.data);
+
+		switch (type) {
+			case 'rangeChanged':
+				this.setState({
+					min: moment(data.start).unix(),
+					max: moment(data.end).unix()
+				});
+				break;
+		}
+	}
+
+	initGraph(data) {
+
+		const xMin = data.reduce((prev, curr) => {
+			if (curr.x === 0) {return prev;}
+			return prev.x < curr.x ? prev : curr;
+		}).x;
+		const xMax = data.reduce((prev, curr) => {
+			if (curr.x === 0) {return prev;}
+			return prev.x > curr.x ? prev : curr;
+		}).x;
+		const yMin = data.reduce((prev, curr) => {
+			if (curr.y === 0) {return prev;}
+			return prev.y < curr.y ? prev : curr;
+		}).y;
+		let yMax = data.reduce((prev, curr) => {
+			if (curr.y === 0) {return prev;}
+			return prev.y > curr.y ? prev : curr;
+		}).y;
+
+		if (yMax > 50) {
+			yMax = 50;
+		}
+
+		const params = {
+			data,
+			xMin,
+			xMax,
+			yMin,
+			yMax,
+		};
+
+		this.webview.injectJavaScript(`
+			(function() {
+				let json = '` + JSON.stringify(params) + `';
+				let data = JSON.parse(json);
+				init(data, ` + (Platform.OS === 'android') + `);
+			})();
+		`);
+	}
+
+	handleScroll(event) {
+		console.log(event);
 	}
 
 	//https://github.com/wuxudong/react-native-charts-wrapper
-	getData() {
-		const colors = {
-			easy: THEME.primary,
-			unsure: THEME.secondary,
-			hard: THEME.third
-		};
+	getData(stats, min = null, max = null) {
+
+		const groups = ['easy', 'unsure', 'hard', 'viewed'];
 		const items = [];
-		this.state.stats.items.forEach(item => {
+		stats.items.filter(item => {
+			return (min === null || item.showed_on >= min)
+				&& (max === null || item.showed_on <= max);
+		}).forEach(item => {
+			const index = groups.indexOf(item.tag);
 			items.push({
-				x: item.id,
+				x: item.showed_on * 1000,
 				y: item.duration,
-				z: item.showed_on,
-				style: colors[item.tag] || '#666',
+				group: index === -1 ? 3 : index,
+				formattedTime: moment(item.showed_on * 1000).format('HH:mm:ss'),
+				data: item,
 			});
 		});
-
-		console.log(items);
 
 		return items;
 	}
@@ -44,6 +115,7 @@ export default class StatsScreen extends React.Component {
 
 		const { navigation } = this.props;
 		const { session } = this.props.route.params;
+		const startDate = moment(session.start_date).format('YYYY-MM-DD');
 
 		navigation.setOptions({
 			title: session.title
@@ -57,70 +129,56 @@ export default class StatsScreen extends React.Component {
 			);
 		}
 
-		const data = this.getData();
+		const data = this.getData(this.state.stats, this.state.min, this.state.max);
 
 		return (
 			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
+				<List.Subheader>
+					{I18n.t('session.stats.title', { count: session.totalCount, date: startDate })}
+				</List.Subheader>
+				<View style={{flex: 2}}>
+					{data.length === 0 ? (
+						<View style={{flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10}}>
+							<Icon name={'file-question'} size={64} style={{opacity: 0.3}}></Icon>
+							<Text style={{textAlign: 'center'}} h3>{I18n.t('session.stats.noFilteredItemTitle')}</Text>
+							<Text style={{textAlign: 'center'}} h5>{I18n.t('session.stats.noFilteredItemDesc')}</Text>
+						</View>
+					) : null}
+					<FlatList
+						data={data}
+						renderItem={({ item, index }) => <ListItem
+							title={item.data.text}
+							subtitle={item.formattedTime}
+							subtitleStyle={{opacity: 0.33}}
+							leftIcon={() => (
+								<Icon name={'circle'} color={THEME.tags[item.data.tag].color} />
+							)}
+							rightElement={() => (
+								<Text>{Time.duration(item.data.duration, false)}</Text>
+							)}
+							topDivider={index > 0}
+						/>}
+						keyExtractor={item => item.x + item.y}
+					/>
+				</View>
 				<WebView
+					ref={webview => this.webview = webview}
+					style={{flex: 1}}
 					originWhitelist={['*']}
 					useWebKit={true}
 					mediaPlaybackRequiresUserAction={false}
+					onMessage={event => this.handleMessage(event)}
 					allowsInlineMediaPlayback={true}
+					onLoadEnd={() => this.initGraph(this.state.data)}
 					domStorageEnabled={true}
 					javaScriptEnabled={true}
 					scrollEnabled={false}
-					source={{ html: `
-						  <script type="text/javascript" src="https://visjs.github.io/vis-graph3d/standalone/umd/vis-graph3d.min.js"></script>
-						  <script type="text/javascript">
-
-							let data = null;
-							let graph = null;
-
-							function onclick(point) {
-							  console.log(point);
-							}
-
-							function drawVisualization() {
-
-						  	  data = new vis.DataSet();
-
-							  const json = '` + JSON.stringify(data) + `';
-							  const stats = JSON.parse(json);
-
-							  stats.forEach(stat => {
-								data.add(stat);
-							  });
-
-							  var options = {
-								width:  '100%',
-								height: '100%',
-								axisColor: '#eee',
-								style: 'dot-color',
-								showPerspective: true,
-								showLegend: false,
-								xCenter: '50%',
-								yCenter: '50%',
-								showGrid: true,
-								keepAspectRatio: true,
-								verticalRatio: 1,
-								legendLabel: 'distance',
-								cameraPosition: {
-								  horizontal: 0.8,
-								  vertical: 0,
-								  distance: 1.4
-								}
-							  };
-
-							  var container = document.getElementById('graph');
-							  graph = new vis.Graph3d(container, data, options);
-							  graph.on('click', onclick);
-							}
-						  </script>
-
-						<body onload="drawVisualization()" style="background-color: #333">
-							<div id="graph"></div>
-						</body>
-					` }}
+					startInLoadingState={true}
+					renderLoading={() => <View style={{flex: 1000, alignItems: 'center', justifyContent: 'center'}}>
+						<ActivityIndicator size={'large'} color={THEME.primary} />
+						<Text style={{marginTop: 10, color: THEME.primary}}>{I18n.t('state.loading')}</Text>
+					</View>}
+					source={graphHTML}
 				/>
 			</View>
 		);

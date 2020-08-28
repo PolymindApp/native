@@ -82,7 +82,7 @@ export default class StatsScreen extends React.Component {
 			(function() {
 				let json = '` + JSON.stringify(data) + `';
 				let data = JSON.parse(json);
-				init(data, ` + Platform.isAndroid + `, ` + focusOn + `);
+				init(data, ` + (Platform.OS === 'android') + `, ` + focusOn + `);
 			})();
 		`);
 	}
@@ -178,6 +178,11 @@ export default class StatsScreen extends React.Component {
 					domStorageEnabled={true}
 					javaScriptEnabled={true}
 					scrollEnabled={false}
+					startInLoadingState={true}
+					renderLoading={() => <View style={{flex: 1000, alignItems: 'center', justifyContent: 'center'}}>
+						<ActivityIndicator size={'large'} color={THEME.primary} />
+						<Text style={{marginTop: 10, color: THEME.primary}}>{I18n.t('state.loading')}</Text>
+					</View>}
 					source={graphHTML}
 				/>
 			</View>

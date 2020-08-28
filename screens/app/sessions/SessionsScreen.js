@@ -309,24 +309,24 @@ export default class SessionsScreen extends React.Component {
 												</View>
 											</View>
 											<View style={styles.dateItemRight}>
-													{/*<TouchableOpacity onPress={() => {navigation.push('SessionsStats', { session })}} key={sessionIdx}>*/}
 												{date.items.map((session, sessionIdx) => (
-														<Card containerStyle={{marginBottom: sessionIdx < date.items.length - 1 ? -10 : 0}} key={sessionIdx}>
-															<View style={{marginBottom: 5}}>
-																<Text style={{fontWeight: 'bold'}}>{session.title}</Text>
-															</View>
-															<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-																<Text>{Time.duration(session.durationInSeconds, false)}</Text>
-																<Text style={styles.fromTo}>{session.startTime + ' - ' + session.endTime}</Text>
-															</View>
-															<View style={{flex: 1, flexDirection: 'row', marginHorizontal: -15, marginBottom: -15, marginTop: 15}}>
-																<View style={{backgroundColor: THEME.success, height: 3, flex: session.statusPercentages.easy}} />
-																<View style={{backgroundColor: THEME.warning, height: 3, flex: session.statusPercentages.unsure}} />
-																<View style={{backgroundColor: THEME.error, height: 3, flex: session.statusPercentages.hard}} />
-															</View>
-														</Card>
+													<TouchableOpacity onPress={() => {navigation.push('SessionsStats', { session })}} key={sessionIdx}>
+															<Card containerStyle={{marginBottom: sessionIdx < date.items.length - 1 ? -10 : 0}} key={sessionIdx}>
+																<View style={{marginBottom: 5}}>
+																	<Text style={{fontWeight: 'bold'}}>{session.title}</Text>
+																</View>
+																<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+																	<Text>{Time.duration(session.durationInSeconds, false)}</Text>
+																	<Text style={styles.fromTo}>{session.startTime + ' - ' + session.endTime}</Text>
+																</View>
+																<View style={{flex: 1, flexDirection: 'row', marginHorizontal: -15, marginBottom: -15, marginTop: 15}}>
+																	<View style={{backgroundColor: THEME.success, height: 3, flex: session.statusPercentages.easy}} />
+																	<View style={{backgroundColor: THEME.warning, height: 3, flex: session.statusPercentages.unsure}} />
+																	<View style={{backgroundColor: THEME.error, height: 3, flex: session.statusPercentages.hard}} />
+																</View>
+															</Card>
+													</TouchableOpacity>
 												))}
-													{/*</TouchableOpacity>*/}
 											</View>
 										</View>))}
 								</View>))}

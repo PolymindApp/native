@@ -84,7 +84,7 @@ export default class NotesScreen extends React.Component {
 		let images = [];
 		dataset.rows.reverse().forEach(row => {
 			if (images.length < 5 && row.image?.private_hash) {
-				images.push($polymind.getThumbnailByPrivateHash(row.image.private_hash, 'avatar'));
+				images.push({ uri: $polymind.getThumbnailByPrivateHash(row.image.private_hash, 'avatar') });
 			}
 		});
 		if (images.length === 0) {

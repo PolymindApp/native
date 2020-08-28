@@ -260,6 +260,15 @@
 		},
 		"speed": "Delay between questions:",
 		"speedSeconds": "{{seconds}} seconds",
+		"stats": {
+			"noFilteredItemDesc": "Nothing found in the range selected",
+			"noFilteredItemTitle": "No item",
+			"title": {
+				"one": "One card reviewed on {{date}}",
+				"other": "{{count}} cards reviewed on {{date}}",
+				"zero": "No card reviewed on {{date}}"
+			}
+		},
 		"types": {
 			"autoAssertiveDesc": "Notes are showed and pronounced automatically, but you are obliged to answer.",
 			"autoAssertiveTitle": "Automatic Assertive",

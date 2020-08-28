@@ -6572,11 +6572,6 @@ react-native-appearance@~0.3.3:
     invariant "^2.2.4"
     use-subscription "^1.0.0"
 
-react-native-drag-sort@^2.3.7:
-  version "2.3.7"
-  resolved "https://registry.yarnpkg.com/react-native-drag-sort/-/react-native-drag-sort-2.3.7.tgz#20608ad41df4a82248d8f3503a40fcaeba275d79"
-  integrity sha512-p6WmyKgKf93MzsWBtQWyO6n1Kg1Z9ihSSLEr2EdpGjddnOP0bKzuosm6+zyw2xd4AJwAaCjl2nGZGFYbUu2czQ==
-
 react-native-elements@^2.0.1:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/react-native-elements/-/react-native-elements-2.0.4.tgz#ea5a6bb34cabd48dcd6c6546e4737d2075e40ee3"
