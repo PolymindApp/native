@@ -106,6 +106,8 @@ const styles = StyleSheet.create({
 		color: 'white',
 		fontWeight: 'bold',
 		textAlign: 'center',
+		fontFamily: 'geomanist',
+		marginTop: 10,
 	},
 	view: {
 		marginHorizontal: 30,

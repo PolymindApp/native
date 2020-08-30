@@ -246,7 +246,7 @@ export default class SessionsScreen extends React.Component {
 				>
 					<View style={{padding: 10, flex: 1, justifyContent: 'flex-end'}}>
 						<View style={{flex: 1}}>
-							<Text style={{marginBottom: 10, textAlign: 'center'}} h4>
+							<Text style={{marginBottom: 10, textAlign: 'center', fontFamily: 'geomanist'}} h4>
 								{I18n.t('session.drawerSelectList')}
 							</Text>
 							<ScrollView style={{flex: 1}} keyboardShouldPersistTaps={'handled'}>
@@ -296,8 +296,8 @@ export default class SessionsScreen extends React.Component {
 								<View key={year.year + month.month}>
 
 									<View style={{paddingVertical: 20, paddingTop: monthIdx === 0 ? 0 : 20}}>
-										{monthIdx === 0 && years.length > 0 && (<Text style={{color: THEME.primary}} h2>{year.year}</Text>)}
-										<Text style={{color: THEME.primary, fontWeight: '200'}} h3>{month.month}</Text>
+										{monthIdx === 0 && years.length > 0 && (<Text style={{color: THEME.primary, fontFamily: 'open-sans'}} h2>{year.year}</Text>)}
+										<Text style={{color: THEME.primary, fontWeight: '100', fontFamily: 'open-sans-light' }} h3>{month.month}</Text>
 									</View>
 
 									{month.days.map((date, dateIdx) => (

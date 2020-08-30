@@ -12,9 +12,16 @@ import { AppContext } from './contexts';
 import AppNavigator from './screens/AppNavigator';
 import RestrictedNavigator from "./screens/RestrictedNavigator";
 import WelcomeScreen from "./screens/app/welcome/WelcomeScreen";
-import * as StoreReview from "expo-store-review";
 const Stack = createStackNavigator();
 const navigationRef = React.createRef();
+import * as Font from 'expo-font';
+
+Font.loadAsync({
+	'geomanist': require('./assets/fonts/Geomanist.ttf'),
+	'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+	'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
+	'open-sans-light': require('./assets/fonts/OpenSans-Light.ttf'),
+});
 
 const themePaper = {
 	...DefaultTheme,

@@ -8,6 +8,7 @@ export default class WelcomeScreen extends React.Component {
 
 	render() {
 		const { navigation } = this.props;
+
 		return (
 			<View style={styles.container}>
 
@@ -61,7 +62,8 @@ const styles = StyleSheet.create({
 		color: '#1B8E8A',
 		marginLeft: 15,
 		fontWeight: '200',
-		fontSize: 40,
+		fontSize: 30,
+		fontFamily: 'geomanist',
 	},
 	centeredText: {
 		textAlign: 'center',

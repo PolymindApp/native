@@ -116,6 +116,7 @@ export default class ProfileScreen extends React.Component {
 						}}
 						delayPressIn={0}
 						title={ this.getCompleteName() }
+						titleStyle={{ fontFamily: 'geomanist' }}
 						subtitle={ I18n.t('profile.role.' + this.state.me.role.name.toLowerCase()) }
 						containerStyle={{backgroundColor: 'white'}}
 						onPress={() => this.setAvatar()}

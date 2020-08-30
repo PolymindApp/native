@@ -32,7 +32,7 @@
     "expo-constants": "~9.1.1",
     "expo-facebook": "~8.2.1",
     "expo-file-system": "~9.0.1",
-    "expo-font": "~8.2.1",
+    "expo-font": "^8.2.2",
     "expo-google-app-auth": "^8.1.0",
     "expo-google-sign-in": "~8.2.1",
     "expo-image-manipulator": "~8.2.1",

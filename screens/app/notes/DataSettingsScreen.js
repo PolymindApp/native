@@ -161,7 +161,7 @@ export default class DataSettingsScreen extends React.Component {
 									<Text style={{flex: 1, flexWrap: 'wrap'}}>{I18n.t('dataset.settings.noColumnWarn')}</Text>
 								</View>
 							) : (
-								<View style={{marginTop: 10, marginHorizontal: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
+								<View style={{marginHorizontal: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
 									{dataset.columns.map((column, columnIdx) => (
 										<ListItem
 											key={column.guid}
@@ -198,7 +198,7 @@ export default class DataSettingsScreen extends React.Component {
 							<View style={{marginVertical: 10, marginTop: 15}}>
 								<List.Subheader>{I18n.t('dataset.settings.optional')}</List.Subheader>
 
-								<View style={{margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
+								<View style={{margin: 10, marginTop: 0, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
 									<ListItem
 										title={I18n.t('dataset.settings.includeImage')}
 										checkmark={dataset.include_image}
