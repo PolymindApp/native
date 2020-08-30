@@ -97,6 +97,8 @@ export default class SocialLogin extends React.Component {
 
 	render() {
 
+		const { style, ...rest } = this.props;
+
 		if (this.state.logging) {
 			return (
 				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10}}>
@@ -106,7 +108,7 @@ export default class SocialLogin extends React.Component {
 		}
 
 		return (
-			<View style={{flexDirection: 'row', justifyContent: 'center'}}>
+			<View style={[{flexDirection: 'row', justifyContent: 'center'}, style]} {...rest}>
 				{Platform.OS === 'ios' && majorVersion >= 13 && <SocialIcon type={'apple'} style={{backgroundColor: '#1c1c1e'}} onPress={() => this.socialLogin('apple')} />}
 				<SocialIcon type={'google'} onPress={() => this.socialLogin('google')} />
 				{/*<SocialIcon type={'facebook'} onPress={() => this.socialLogin('facebook')} />*/}

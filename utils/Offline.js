@@ -70,7 +70,6 @@ export default class Offline {
 
 			if (downloadResult.status !== 200) {
 				await FileSystem.deleteAsync(uri);
-				console.log(downloadResult);
 				throw new Error('error while downloading file');
 			}
 		}

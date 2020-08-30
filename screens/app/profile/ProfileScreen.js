@@ -9,9 +9,7 @@ import I18n from '../../../locales/i18n';
 import {Button, List} from "react-native-paper";
 
 const $polymind = new PolymindSDK();
-const sections = [
-	{ title: I18n.t('profile.informations'), icon: 'card-bulleted-outline', name: 'ProfileInformations' },
-];
+
 const supports = [
 	{ title: I18n.t('profile.contact'), icon: 'email', name: 'ProfileContact', params: { path: '/contact' } },
 	{ title: I18n.t('profile.tools'), icon: 'toolbox', name: 'ProfileTools' },
@@ -54,6 +52,17 @@ export default class ProfileScreen extends React.Component {
 		return this.state.me.screen_name || (this.state.me.first_name + ' ' + this.state.me.last_name).trim() || this.state.me.email || '';
 	}
 
+
+
+	componentDidMount() {
+		this.load();
+		let thumbnail = preview;
+		if (global.user.avatar && global.user.avatar.private_hash) {
+			thumbnail = { uri : $polymind.getThumbnailByPrivateHash(global.user.avatar.private_hash, 'avatar') }
+		}
+		this.setState({ me: global.user, thumbnail, loading: false });
+	}
+
 	async setAvatar() {
 		if (Constants.platform.ios) {
 			const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
@@ -82,15 +91,6 @@ export default class ProfileScreen extends React.Component {
 		}
 	}
 
-	componentDidMount() {
-		this.load();
-		let thumbnail = preview;
-		if (global.user.avatar && global.user.avatar.private_hash) {
-			thumbnail = { uri : $polymind.getThumbnailByPrivateHash(global.user.avatar.private_hash, 'avatar') }
-		}
-		this.setState({ me: global.user, thumbnail, loading: false });
-	}
-
 	render() {
 
 		const { navigation } = this.props;
@@ -113,23 +113,15 @@ export default class ProfileScreen extends React.Component {
 							source: this.state.thumbnail,
 							showAccessory: true,
 							size: 'large',
+							onPress: () => this.setAvatar(),
 						}}
 						delayPressIn={0}
 						title={ this.getCompleteName() }
 						titleStyle={{ fontFamily: 'geomanist' }}
 						subtitle={ I18n.t('profile.role.' + this.state.me.role.name.toLowerCase()) }
 						containerStyle={{backgroundColor: 'white'}}
-						onPress={() => this.setAvatar()}
+						onPress={() => navigation.push('ProfileInformations', { user: this.state.me, profileContext: this })}
 					/>
-
-					<View style={{marginTop: 15}}>
-						<List.Subheader>{I18n.t('profile.myInfoSection')}</List.Subheader>
-						<View style={{marginHorizontal: 10, padding: 10, backgroundColor: 'white', borderRadius: 10}}>
-							{sections.map((section, sectionIdx) => (
-								<ListItem key={sectionIdx} title={section.title} leftIcon={<Icon name={section.icon} />} chevron delayPressIn={0} onPress={() => navigation.push(section.name, { user: this.state.me, profileContext: this })} topDivider={sectionIdx !== 0} />
-							))}
-						</View>
-					</View>
 
 					<View style={{marginTop: 15}}>
 						<List.Subheader>{I18n.t('profile.legalSection')}</List.Subheader>

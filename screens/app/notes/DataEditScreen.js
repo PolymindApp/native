@@ -1,7 +1,7 @@
 import React from 'react'
 import {Alert, ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View, Modal} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Thumbnail, Color, TextToSpeechService, File, Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, GoogleService } from '@polymind/sdk-js';
+import { Thumbnail, Color, TextToSpeechService, Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, GoogleService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
 import {Divider, Icon, Input, Text} from "react-native-elements";
 import {Button, IconButton} from "react-native-paper";
@@ -224,9 +224,9 @@ export default class DataEditScreen extends React.Component {
 							const reader = new FileReader();
 							reader.readAsDataURL(blob);
 							reader.onloadend = function() {
-								const name = text + '_' + locale;
+								const name = Helpers.slug(text + '_' + locale);
 								const base64 = reader.result;
-								Offline.cacheBase64(base64);
+								Offline.cacheBase64(name, base64);
 							}
 						});
 					}).catch(err => {
@@ -726,8 +726,8 @@ export default class DataEditScreen extends React.Component {
 	}
 
 	playVoice(text, locale) {
-		const name = (text + '_' + locale).replace(/ /g, '+');
 
+		const name = Helpers.slug(text + '_' + locale);
 		if (playVoiceCache[name]) {
 			Sound.fromBase64(name, playVoiceCache[name], {
 				shouldPlay: true,
@@ -741,6 +741,7 @@ export default class DataEditScreen extends React.Component {
 			reader.onloadend = function() {
 				const base64 = reader.result;
 				playVoiceCache[name] = base64;
+
 				Sound.fromBase64(name, base64, {
 					shouldPlay: true,
 				});

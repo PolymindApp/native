@@ -275,7 +275,7 @@ export default class StatsScreen extends React.Component {
 			case 'read':
 				const locale = Locale.abbrToLocale(data.settings.lang);
 				const text = data.text.toLowerCase().replace(/\s{2,}/g, ' ');
-				const voice = memory.voices.find(voice => voice.locale === locale && voice.text === text);
+				const voice = memory.voices.find(voice => voice.locale === locale && voice.text.toLowerCase() === text);
 
 				if (playbackVoice && !playbackVoice.completed) {
 					await playbackVoice.sound.stopAsync().catch(err => console.log(err));

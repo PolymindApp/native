@@ -28,6 +28,7 @@ export default class Sound {
 	}
 
 	static async getAudio(filename) {
+
 		const uri = FileSystem.cacheDirectory + filename;
 		const sound = new Audio.Sound();
 

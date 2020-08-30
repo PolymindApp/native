@@ -1,10 +1,12 @@
 import React from 'react'
-import {Platform, StyleSheet, Text, View, Keyboard} from 'react-native';
+import {Platform, StyleSheet, Text, View, Keyboard, ActivityIndicator} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import PolymindSDK, { THEME, User, Helpers, UserService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
-import {Divider, Input} from "react-native-elements";
+import {Divider, Input, ListItem} from "react-native-elements";
 import {Button} from "react-native-paper";
+import Constants from "expo-constants";
+import * as ImagePicker from "expo-image-picker";
 
 const $polymind = new PolymindSDK();
 const refInputs = [
@@ -55,6 +57,7 @@ export default class InformationsScreen extends React.Component {
 		return (
 			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
+
 					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
 						<Input
 							label={I18n.t('field.user.screen_name')}
