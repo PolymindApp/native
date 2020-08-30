@@ -2,7 +2,7 @@ import React from 'react';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {AppState, ActivityIndicator, View, Share, Alert} from 'react-native';
-import PolymindSDK, { THEME, SessionStructureService, ComponentService, Component, Locale } from '@polymind/sdk-js';
+import PolymindSDK, { THEME, SessionStructureService, ComponentService, Component, Locale, SessionService } from '@polymind/sdk-js';
 import {Text} from "react-native-elements";
 import I18n from "../../../locales/i18n";
 import { WebView } from 'react-native-webview';
@@ -11,6 +11,7 @@ import {Audio} from "expo-av";
 import Offline from '../../../utils/Offline';
 import Sound from '../../../utils/Sound';
 import ContextualOptions from "../../../components/ContextualOptions";
+import * as StoreReview from 'expo-store-review';
 
 const memory = {
 	sounds: {},
@@ -83,6 +84,8 @@ export default class StatsScreen extends React.Component {
 				const playerUrl = $polymind.playerUrl + '/session/' + hash + '?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2) + '&autoplay=1';
 				const shareUrl = $polymind.playerUrl + '/session/' + hash;
 
+				console.log(playerUrl);
+
 				onReady();
 
 				this.setState({ playerUrl, shareUrl, generating: false });
@@ -112,6 +115,8 @@ export default class StatsScreen extends React.Component {
 						.then(session => {
 							const playerUrl = $polymind.playerUrl + '/session/' + session.hash + '?native=1&platform=' + Platform.OS + '&locale=' + I18n.locale.substring(0, 2) + '&autoplay=1';
 							const shareUrl = $polymind.playerUrl + '/session/' + session.hash;
+
+							console.log(playerUrl);
 
 							onReady();
 
@@ -325,6 +330,18 @@ export default class StatsScreen extends React.Component {
 				break;
 			case 'back':
 				clearTimeout(terminateBackTimeout);
+
+				/**
+				 * Ask the user to review the app after 20 sessions..
+				 */
+				SessionService.total(global.user.id).then(total => {
+					if (total === 20) {
+						if (StoreReview.isAvailableAsync()) {
+							StoreReview.requestReview(); // Will not show if asked more than 3 times in a year or if disable in user's settings
+						}
+					}
+				});
+
 				this.goBack();
 				break;
 		}

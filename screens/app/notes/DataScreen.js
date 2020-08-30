@@ -7,6 +7,8 @@ import ContextualOptions from "../../../components/ContextualOptions";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import DataDataScreen from "./DataDataScreen";
 import DataSettingsScreen from "./DataSettingsScreen";
+import {HeaderBackButton} from "@react-navigation/stack";
+import BackDiffCatchButton from "../../../components/BackDiffCatchButton";
 
 const Tab = createMaterialTopTabNavigator();
 const $polymind = new PolymindSDK();
@@ -121,8 +123,12 @@ export default class DataScreen extends React.Component {
 		const isValid = this.isValid(dataset);
 
 		if (this.state.loaded) {
+
 			navigation.setOptions({
 				title: dataset.id ? dataset.name : I18n.t('title.newList'),
+				headerLeft: () => (
+					<BackDiffCatchButton label={I18n.t('title.notes')} hasDifferences={() => this.hasDifferences(dataset)} callback={() => navigation.pop()} />
+				),
 				headerRight: isValid ? () => (
 					<View style={{marginRight: 10, flexDirection: 'row'}}>
 						<ContextualOptions items={this.optionItems} disabled={!dataset.id} />

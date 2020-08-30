@@ -6,6 +6,7 @@ import I18n from "../../../locales/i18n";
 import {Divider, Icon, Input, ListItem} from "react-native-elements";
 import { THEME, DatasetColumn, DatasetService, DatasetColumnService, Dataset, Helpers } from '@polymind/sdk-js';
 import IconSelector from "../../../components/IconSelector";
+import Flag from "../../../components/Flag";
 
 const refInputs = [
 	React.createRef(),
@@ -137,7 +138,7 @@ export default class DataSettingsScreen extends React.Component {
 							<View style={{marginHorizontal: 10, borderRadius: 10, padding: 5, paddingTop: 15, backgroundColor: 'white'}}>
 								<Input
 									clearButtonMode={'always'}
-									autoFocus={!dataset.id}
+									// autoFocus={!dataset.id}
 									label={I18n.t('field.title')}
 									placeholder={I18n.t('field.typeHerePlaceholder')}
 									inputStyle={{color:THEME.primary}}
@@ -165,11 +166,21 @@ export default class DataSettingsScreen extends React.Component {
 										<ListItem
 											key={column.guid}
 											title={column.name}
-											titleStyle={{color:THEME.primary}}
 											onPress={() => navigation.push('NotesColumnEdit', { ...route.params, column, datasetSettingsContext: this })}
 											delayPressIn={0}
 											rightElement={() => (
-												<Text style={{opacity: 0.3}}>{column.lang.toUpperCase()}</Text>
+												<View>
+													{column.lang.length === 0
+														? (
+															<Icon name={'alert'} color={THEME.warning} />
+														)
+														: (
+															<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+																<Text style={{ marginRight: 5, color: THEME.primary, fontWeight: 'bold' }}>{column.lang.toUpperCase()}</Text>
+																<Flag lang={column.lang.toLowerCase()} />
+															</View>
+														)}
+												</View>
 											)}
 											topDivider={columnIdx > 0}
 											chevron
@@ -178,9 +189,9 @@ export default class DataSettingsScreen extends React.Component {
 
 									<Text style={[styles.desc, { marginTop: 15 }]}>{I18n.t('dataSettings.columnsDesc')}</Text>
 
-									<View style={{marginTop: 10}}>
-										<Button mode={'outlined'} onPress={() => this.handleAddColumn()}>{I18n.t('btn.addColumn')}</Button>
-									</View>
+									{/*<View style={{marginTop: 10}}>*/}
+									{/*	<Button mode={'outlined'} onPress={() => this.handleAddColumn()}>{I18n.t('btn.addColumn')}</Button>*/}
+									{/*</View>*/}
 								</View>
 							)}
 

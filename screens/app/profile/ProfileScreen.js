@@ -2,7 +2,7 @@ import React from 'react';
 import {ActivityIndicator, StyleSheet, View, Linking} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import {Icon, ListItem, SocialIcon} from 'react-native-elements';
-import PolymindSDK, { User, THEME, FileService, UserService } from "@polymind/sdk-js";
+import PolymindSDK, { SessionService, User, THEME, FileService, UserService } from "@polymind/sdk-js";
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import I18n from '../../../locales/i18n';
@@ -24,6 +24,7 @@ const pages = [
 	{ title: I18n.t('legal.privacy'), name: 'ProfilePage', props: { slug: 'privacy' } },
 ];
 
+
 const preview = require('../../../assets/images/icon.png');
 
 export default class ProfileScreen extends React.Component {
@@ -32,7 +33,7 @@ export default class ProfileScreen extends React.Component {
 		uploading: false,
 		loading: true,
 		thumbnail: preview,
-		me: new User(),
+		me: new User(global.user),
 	};
 
 	load() {

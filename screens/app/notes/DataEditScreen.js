@@ -1,7 +1,7 @@
 import React from 'react'
 import {Alert, ActivityIndicator, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View, Modal} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Thumbnail, Hash, Color, TextToSpeechService, File, Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, TranslateService, GoogleService } from '@polymind/sdk-js';
+import { Thumbnail, Color, TextToSpeechService, File, Locale, FileService, THEME, Helpers, Dataset, DatasetRow, DatasetRowService, DatasetCell, DatasetService, SpellCheckService, GoogleService } from '@polymind/sdk-js';
 import I18n from '../../../locales/i18n';
 import {Divider, Icon, Input, Text} from "react-native-elements";
 import {Button, IconButton} from "react-native-paper";
@@ -13,7 +13,11 @@ import { Camera } from 'expo-camera';
 import { Linking } from "expo";
 import * as ImageManipulator from "expo-image-manipulator";
 import Offline from "../../../utils/Offline";
+import BackDiffCatchButton from "../../../components/BackDiffCatchButton";
+import Flag from "../../../components/Flag";
+import Sound from "../../../utils/Sound";
 
+let playVoiceCache = {};
 let checkServiceTimeout;
 let lastCheckServiceFieldContent = '';
 
@@ -217,8 +221,13 @@ export default class DataEditScreen extends React.Component {
 						voices.success.map(voice => TextToSpeechService.getDataStream(voice.text, voice.locale))
 					).then(responses => {
 						responses.forEach((data, idx) => {
-							const base64 = File.btoa(data);
-							Offline.cacheBase64(base64);
+							const reader = new FileReader();
+							reader.readAsDataURL(blob);
+							reader.onloadend = function() {
+								const name = text + '_' + locale;
+								const base64 = reader.result;
+								Offline.cacheBase64(base64);
+							}
 						});
 					}).catch(err => {
 						console.log(err);
@@ -716,6 +725,29 @@ export default class DataEditScreen extends React.Component {
 		this.setState({ tags: this.state.tags });
 	}
 
+	playVoice(text, locale) {
+		const name = (text + '_' + locale).replace(/ /g, '+');
+
+		if (playVoiceCache[name]) {
+			Sound.fromBase64(name, playVoiceCache[name], {
+				shouldPlay: true,
+			});
+			return;
+		}
+
+		TextToSpeechService.getDataStream(text, Locale.abbrToLocale(locale)).then(blob => {
+			const reader = new FileReader();
+			reader.readAsDataURL(blob);
+			reader.onloadend = function() {
+				const base64 = reader.result;
+				playVoiceCache[name] = base64;
+				Sound.fromBase64(name, base64, {
+					shouldPlay: true,
+				});
+			}
+		});
+	}
+
 	render() {
 		const { navigation, route } = this.props;
 		const { rowIdx } = route.params;
@@ -735,6 +767,9 @@ export default class DataEditScreen extends React.Component {
 			title: row.id
 				? I18n.t('title.notesDataEdit', { index: rowIdx + 1, total: dataset.rows.length })
 				: I18n.t('title.notesDataEditNew'),
+			headerLeft: () => (
+				<BackDiffCatchButton label={dataset.name} hasDifferences={() => this.hasDifferences()} callback={() => navigation.pop()} />
+			),
 			headerRight: row.id ? () => (
 				<View style={{marginRight: 10, flexDirection: 'row'}}>
 					<ContextualOptions items={this.optionItems} />
@@ -791,13 +826,16 @@ export default class DataEditScreen extends React.Component {
 											clearButtonMode={'always'}
 											autoFocus={this.state.autofocus && fieldIdx === 0}
 											inputContainerStyle={{borderBottomWidth: 0}}
+											leftIcon={() => (
+												<IconButton style={{marginLeft: 0}} icon={'voice'} disabled={this.state.fields[fieldIdx].trim().length === 0} onPress={() => this.playVoice(this.state.fields[fieldIdx], dataset.columns[fieldIdx].lang)} />
+											)}
 											label={
-												<View style={{flexDirection: 'row', alignItems: 'center'}}>
-													<Text style={{flex: 1}}>{dataset.columns[fieldIdx].name}</Text>
-													<Text style={{opacity: 0.3}}>{dataset.columns[fieldIdx].lang.toUpperCase()}</Text>
+												<View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+													<Flag lang={dataset.columns[fieldIdx].lang} />
+													<Text style={{flex: 1, marginLeft: 5}}>{dataset.columns[fieldIdx].name}</Text>
 												</View>
 											}
-											placeholder={I18n.t('field.typeHerePlaceholder')}
+											placeholder={I18n.t('field.typeHerePlaceholder', { locale: dataset.columns[fieldIdx].lang })}
 											inputStyle={{color:THEME.primary}}
 											defaultValue={row.cells[fieldIdx].text}
 											value={this.state.fields[fieldIdx]}

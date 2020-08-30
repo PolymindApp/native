@@ -1,5 +1,9 @@
 {
 	"alert": {
+		"archiveSessionDesc": "Are you sure you wish to archive this session? It will be hidden from your session list.",
+		"archiveSessionTitle": "Archive session",
+		"backDiffDesc": "If you continue, your changes will be lost. Are you sure you wish to proceed?",
+		"backDiffTitle": "Changes unsaved",
 		"backSessionDesc": "Going back will terminate your session. Do you wish to proceed?",
 		"backSessionTitle": "Terminate Session?",
 		"clearCacheDesc": "If you are experiencing issue, such as the app randomly crashing while initiating session, you can try clearing your cache.",
@@ -18,6 +22,7 @@
 		"addList": "Add a list",
 		"addMore": "Add more...",
 		"addNote": "Add note",
+		"archive": "Archive",
 		"back": "Back",
 		"cancel": "Cancel",
 		"clearCache": "Clear cache",
@@ -115,6 +120,7 @@
 		"name": "Name",
 		"passwordPlaceholder": "Password",
 		"question": "Question",
+		"selectPlaceholder": "- Select -",
 		"settings": {
 			"darkMode": "Dark mode"
 		},
@@ -285,6 +291,12 @@
 		"loading": "Loading..",
 		"saving": "Saving...",
 		"uploading": "Uploading.."
+	},
+	"tags": {
+		"easy": "Easy",
+		"hard": "Hard",
+		"unsure": "Unsure",
+		"viewed": "Viewed"
 	},
 	"title": {
 		"contact": "Get in touch",

@@ -1080,10 +1080,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@directus/sdk-js@^6.2":
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/@directus/sdk-js/-/sdk-js-6.2.1.tgz#bc9a130b1e63bcfde48cebd71f13b1675bca4627"
-  integrity sha512-U/ay0npA7EqfY6w1zEsYVvu1I/dG/4lk/Np5OxV3oCkhmswnmgUzd80pFtasN73UXysRqPcv2BVxQIIvQUN4SA==
+"@directus/sdk-js@^6.3":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@directus/sdk-js/-/sdk-js-6.3.0.tgz#0f9c4a4c895bbd534604c6f4160736105ce7cdb1"
+  integrity sha512-wUDrjaJJS9++7QTfgAF636aEoAL0k8VhjfpQNbbgXGcm1jU29Z9UqIn5kn9PHIrfR/+1NbZj/M/W+I0lIFTcdA==
   dependencies:
     axios "^0.19.0"
     base-64 "^0.1.0"
@@ -1461,7 +1461,7 @@
   version "0.1.9-beta"
   dependencies:
     "@babel/polyfill" "^7.2.5"
-    "@directus/sdk-js" "^6.2"
+    "@directus/sdk-js" "^6.3"
     aws-sdk "^2.702.0"
     hex-to-rgba "^2.0.1"
     moment "^2.24.0"

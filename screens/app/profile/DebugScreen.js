@@ -12,7 +12,7 @@ export default class DebugScreen extends React.Component {
 
 	requestReview() {
 		if (StoreReview.isAvailableAsync()) {
-			StoreReview.requestReview();
+			StoreReview.requestReview(); // Will not show if asked more than 3 times in a year or if disable in user's settings
 		}
 	};
 

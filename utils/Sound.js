@@ -14,10 +14,10 @@ const silences = [
 
 export default class Sound {
 
-	static async fromBase64(name, content = '', initialStatus = {}) {
+	static async fromBase64(name, base64 = '', initialStatus = {}) {
 
 		const uri = FileSystem.cacheDirectory + name + '.mp3';
-		await FileSystem.writeAsStringAsync(uri, "data:audio/mpeg;base64," + content, {
+		await FileSystem.writeAsStringAsync(uri, base64, {
 			encoding: FileSystem.EncodingType.Base64,
 		});
 

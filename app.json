@@ -24,6 +24,7 @@
       "**/*"
     ],
 	"android": {
+	  "playStoreUrl": "https://play.google.com/store/apps/details?id=com.polymind.native",
 	  "package": "com.polymind.native",
 	  "permissions": ["CAMERA"],
 	  "versionCode": 3,
@@ -46,6 +47,7 @@
 	  ]
 	},
     "ios": {
+	  "appStoreUrl": "https://apps.apple.com/us/app/id1509961629",
 	  "bundleIdentifier": "com.polymind.native",
 	  "buildNumber": "1.0.7",
       "supportsTablet": false,
@@ -57,6 +59,7 @@
 		}
 	  },
 	  "infoPlist": {
+		"NSCameraUsageDescription": "This app uses the camera to let user put a photo in his profile page and assign pictures to cards and notes.",
 		"ITSAppUsesNonExemptEncryption": false,
 		"CFBundleAllowMixedLocalizations": true,
 		"UIBackgroundModes": [

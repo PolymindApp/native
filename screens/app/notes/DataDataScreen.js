@@ -137,8 +137,11 @@ export default class DataDataScreen extends React.Component {
 		});
 
 		if (hasTags) {
-			data.header.push(<Icon name={'tag-multiple'} />);
-			data.width.push(50);
+			data.header.push(<View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 2.5 }}>
+				<Icon style={{ alignSelf: 'flex-start' }} name={'tag-multiple'} />
+				<Text>{I18n.t('dataset.data.edit.tags')}</Text>
+			</View>);
+			data.width.push(150);
 		}
 
 		this.filteredRows().forEach((row, rowIdx) => {
@@ -156,12 +159,18 @@ export default class DataDataScreen extends React.Component {
 			dataset.columns.forEach((column, columnIdx) => {
 				item.push(row.cells[columnIdx].text);
 			});
-			item.push(row.tags.map(tag => <View style={{
-				borderRadius: 100,
-				backgroundColor: 'red',
-				width: 10,
-				height: 10,
-			}}></View>));
+			item.push(<View style={{ alignSelf: 'flex-start', flexDirection: 'row', flexWrap: 'wrap', padding: 2.5 }}>
+				{row.tags.map(tag => <View style={{
+					borderRadius: 100,
+					backgroundColor: THEME.tags[tag].color,
+					paddingHorizontal: 5,
+					margin: 2.5,
+				}}>
+					<Text style={{ color: 'white' }} numberOfLines={1} lineBreakMode={'tail'}>
+						{tag}
+					</Text>
+				</View>)}
+			</View>);
 			data.rows.push(item);
 		});
 

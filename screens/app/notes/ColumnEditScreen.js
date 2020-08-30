@@ -6,6 +6,8 @@ import I18n from '../../../locales/i18n';
 import {Divider, Input, Text} from "react-native-elements";
 import {Button} from 'react-native-paper';
 import ContextualOptions from "../../../components/ContextualOptions";
+import Flag from "../../../components/Flag";
+import BackDiffCatchButton from "../../../components/BackDiffCatchButton";
 
 const $polymind = new PolymindSDK();
 const refInputs = [
@@ -108,6 +110,9 @@ export default class ColumnEditScreen extends React.Component {
 
 		navigation.setOptions({
 			title: column.id ? column.name : I18n.t('title.newColumn'),
+			headerLeft: () => (
+				<BackDiffCatchButton label={dataset.name} hasDifferences={() => this.hasDifferences()} callback={() => navigation.pop()} />
+			),
 			headerRight: dataset.columns.length > 1 ? () => (
 				<View style={{marginRight: 10}}>
 					<ContextualOptions items={this.optionItems} />
@@ -115,35 +120,41 @@ export default class ColumnEditScreen extends React.Component {
 			) : null
 		});
 
-		const tmpColumn = new DatasetColumn(this.state.column)
-		const canApply = !tmpColumn.isValid() || !this.hasDifferences() || this.state.saving;
+		const tmpColumn = new DatasetColumn(this.state.column);
+		const canApply = tmpColumn.isValid() && this.hasDifferences() && !this.state.saving;
+
+		console.log(tmpColumn.isValid(), this.hasDifferences(), !this.state.saving);
 
 		return (
 			<View style={{flex: 1, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0, 0, 0, 0.075)'}}>
 
 				<ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
-					<View style={{margin: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white'}}>
-						<Input
-							clearButtonMode={'always'}
-							label={I18n.t('field.title')}
-							placeholder={I18n.t('field.typeHerePlaceholder')}
-							inputStyle={{color:THEME.primary}}
-							inputContainerStyle={{borderBottomWidth: 0}}
-							defaultValue={this.state.column.name}
-							onChangeText={value => this.setState({ column: {...this.state.column, name: value}})}
-							returnKeyType = {"done"}
-							renderErrorMessage={false}
-							autoFocus={this.state.autofocus}
-							ref={ref => { refInputs[0] = ref }}
-							// onSubmitEditing={() => refInputs[1].focus()}
-						/>
-						<Text style={styles.desc}>{I18n.t('dataSettingsColumn.titleDesc')}</Text>
-					</View>
+					{/*<View style={{margin: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white'}}>*/}
+					{/*	<Input*/}
+					{/*		clearButtonMode={'always'}*/}
+					{/*		label={I18n.t('field.title')}*/}
+					{/*		placeholder={I18n.t('field.typeHerePlaceholder')}*/}
+					{/*		inputStyle={{color:THEME.primary}}*/}
+					{/*		inputContainerStyle={{borderBottomWidth: 0}}*/}
+					{/*		defaultValue={this.state.column.name}*/}
+					{/*		onChangeText={value => this.setState({ column: {...this.state.column, name: value}})}*/}
+					{/*		returnKeyType = {"done"}*/}
+					{/*		renderErrorMessage={false}*/}
+					{/*		autoFocus={this.state.autofocus}*/}
+					{/*		ref={ref => { refInputs[0] = ref }}*/}
+					{/*		// onSubmitEditing={() => refInputs[1].focus()}*/}
+					{/*	/>*/}
+					{/*	<Text style={styles.desc}>{I18n.t('dataSettingsColumn.titleDesc')}</Text>*/}
+					{/*</View>*/}
 					<View style={{margin: 10, borderRadius: 10, padding: 5, paddingVertical: 15, backgroundColor: 'white'}}>
 
-						<Text style={{padding: 10, fontWeight: 'bold', fontSize: 16, color: '#999'}}>
-							{I18n.t('field.columnLanguage')}
-						</Text>
+
+						<View style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}>
+							<Flag lang={this.state.column.lang} />
+							<Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 16, color: '#999'}}>
+								{I18n.t('field.columnLanguage')}
+							</Text>
+						</View>
 
 						<Text style={styles.desc}>
 							{I18n.t('field.columnLanguageDesc')}
@@ -155,17 +166,17 @@ export default class ColumnEditScreen extends React.Component {
 							onValueChange={value => this.setState({ column: {...this.state.column, lang: value}})}
 							ref={ref => { refInputs[1] = ref }}
 						>
+							<Picker.Item key={null} label={I18n.t('field.selectPlaceholder')} value={''} />
 							{supportedLanguages.map(item => (
 								<Picker.Item key={item.value} label={item.text} value={item.value} />
 							))}
 						</Picker>
-
 					</View>
 				</ScrollView>
 
 				<View style={{flex: 0, marginHorizontal: 10, marginBottom: 10}}>
 					<Divider style={{marginBottom: 10}} />
-					<Button mode="contained" onPress={() => this.save()} disabled={canApply} loading={this.state.saving}>
+					<Button mode="contained" onPress={() => this.save()} disabled={!canApply} loading={this.state.saving}>
 						{!this.isGuidAlreadyExists(column.guid)
 							? I18n.t('btn.add')
 							: I18n.t('btn.update')}

@@ -1,5 +1,9 @@
 {
 	"alert": {
+		"archiveSessionDesc": "Voulez-vous vraiment archiver cette session? Il sera masqué de votre liste de sessions.",
+		"archiveSessionTitle": "Archiver la session",
+		"backDiffDesc": "Si vous continuez, vos modifications seront perdues. Êtes-vous sûr de vouloir continuer?",
+		"backDiffTitle": "Modifications non enregistrées",
 		"backSessionDesc": "Le retour mettra fin à votre session. Voulez-vous continuer?",
 		"backSessionTitle": "Mettre fin à la session?",
 		"clearCacheDesc": "Si vous rencontrez un problème, tel que l'application se bloquant de manière aléatoire lors du lancement de la session, vous pouvez essayer de vider votre cache.",
@@ -18,6 +22,7 @@
 		"addList": "Ajouter une liste",
 		"addMore": "Ajoutez plus...",
 		"addNote": "Ajoutez une note",
+		"archive": "Archiver",
 		"back": "Retour",
 		"cancel": "Annuler",
 		"clearCache": "Vider le cache",
@@ -115,6 +120,7 @@
 		"name": "Nom",
 		"passwordPlaceholder": "Mot de passe",
 		"question": "Question",
+		"selectPlaceholder": "- Sélectionnez -",
 		"settings": {
 			"darkMode": "Mode sombre"
 		},
@@ -285,6 +291,12 @@
 		"loading": "Chargement..",
 		"saving": "Enregistrement...",
 		"uploading": "Téléchargement.."
+	},
+	"tags": {
+		"easy": "Facile",
+		"hard": "Difficile",
+		"unsure": "Incertain",
+		"viewed": "Vu"
 	},
 	"title": {
 		"contact": "Nous contacter",

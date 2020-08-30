@@ -97,7 +97,7 @@
 </style>
 <script type="text/javascript">
 
-	let dataset = null;
+	let dataset = new vis.DataSet();
 	let graph = null;
 	let visibles = [];
 	let isNativeAndroid = false;
@@ -120,7 +120,7 @@
 
 	function init(data, isAndroid) {
 		isNativeAndroid = isAndroid;
-		dataset = new vis.DataSet();
+		dataset.clear();
 		data.data.forEach(item => {
 			dataset.add(item);
 		});

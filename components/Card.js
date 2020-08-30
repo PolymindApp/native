@@ -12,6 +12,8 @@ export default class Card extends React.Component {
 			<TouchableOpacity style={styles.container} {...rest}>
 				{images.items.length > 0 && <Image
 					style={{
+						borderTopLeftRadius: 5,
+						borderTopRightRadius: 5,
 						width: images.width,
 						height: images.height,
 					}}

@@ -66,6 +66,8 @@ export default class InformationsScreen extends React.Component {
 							renderErrorMessage={false}
 							ref={ref => { refInputs[0] = ref }}
 							onSubmitEditing={() => refInputs[1].focus()}
+							clearButtonMode={'always'}
+							placeholder={I18n.t('field.typeHerePlaceholder')}
 						/>
 
 						<Text style={styles.desc}>{I18n.t('profile.information.completeNameDesc')}</Text>
@@ -73,31 +75,36 @@ export default class InformationsScreen extends React.Component {
 					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
 						<Input
 							label={I18n.t('field.user.biography')}
-							inputStyle={{color:THEME.primary}}
+							inputStyle={{color:THEME.primary, minHeight: 100}}
 							inputContainerStyle={{borderBottomWidth: 0}}
 							defaultValue={this.state.user.biography}
 							onChangeText={value => this.setState({ user: {...this.state.user, biography: value}})}
 							multiline={true}
+							numberOfLines={4}
 							returnKeyType = {"next"}
 							renderErrorMessage={false}
 							ref={ref => { refInputs[1] = ref }}
+							clearButtonMode={'always'}
+							placeholder={I18n.t('field.typeHerePlaceholder')}
 						/>
 
 						<Text style={styles.desc}>{I18n.t('profile.information.biographyDesc')}</Text>
 					</View>
-					<View style={{marginHorizontal: 10, marginTop: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
+					<View style={{marginHorizontal: 10, marginVertical: 15, borderRadius: 10, padding: 5, paddingTop: 15, paddingBottom: 0, backgroundColor: 'white'}}>
 						<Input
 							label={I18n.t('field.user.quote')}
-							inputStyle={{color:THEME.primary}}
+							inputStyle={{color:THEME.primary, minHeight: 60}}
 							inputContainerStyle={{borderBottomWidth: 0}}
 							defaultValue={this.state.user.quote}
 							onChangeText={value => this.setState({ user: {...this.state.user, quote: value}})}
 							multiline={true}
 							numberOfLines={2}
 							returnKeyType = {"done"}
+							placeholder={I18n.t('field.typeHerePlaceholder')}
 							renderErrorMessage={false}
 							ref={ref => { refInputs[2] = ref }}
 							onSubmitEditing={Keyboard.dismiss}
+							clearButtonMode={'always'}
 						/>
 
 						<Text style={styles.desc}>{I18n.t('profile.information.quoteDesc')}</Text>

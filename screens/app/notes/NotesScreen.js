@@ -51,10 +51,8 @@ export default class NotesScreen extends React.Component {
 			dataset: new Dataset({
 				columns: [new DatasetColumn({
 					name: I18n.t('field.question'),
-					lang: locale
 				}), new DatasetColumn({
 					name: I18n.t('field.answer'),
-					lang: locale
 				})]
 			}),
 			datasetIdx: datasets.length,
@@ -82,11 +80,13 @@ export default class NotesScreen extends React.Component {
 
 	getImages(dataset) {
 		let images = [];
-		dataset.rows.reverse().forEach(row => {
+		dataset.rows.reverse();
+		dataset.rows.forEach(row => {
 			if (images.length < 5 && row.image?.private_hash) {
 				images.push({ uri: $polymind.getThumbnailByPrivateHash(row.image.private_hash, 'avatar') });
 			}
 		});
+		dataset.rows.reverse();
 		if (images.length === 0) {
 			images.push(placeholder);
 		}
@@ -98,7 +98,7 @@ export default class NotesScreen extends React.Component {
 		let total = 0;
 		dataset.rows.forEach(row => {
 			row.tags.forEach(tag => {
-				let index = tags.indexOf(tag);
+				let index = tags.findIndex(item => item.name === tag);
 				if (index === -1) {
 					const color = (THEME.tags[tag] && THEME.tags[tag].color) || ('#' + Color.stringToHex(tag));
 					const dark = (THEME.tags[tag] && THEME.tags[tag].dark )|| Color.isDark(color);
@@ -221,7 +221,7 @@ export default class NotesScreen extends React.Component {
 									{/*TAGS PERCENTAGE*/}
 									<View style={{flex: 1, flexDirection: 'row', height: 3, backgroundColor: '#ccc'}}>
 										{this.getTags(dataset).map(tag => (
-											<View style={{backgroundColor: tag.color, height: 3, flex: (100 / tag.percent)}} />
+											<View style={{backgroundColor: tag.color, height: 3, flex: tag.percent}} />
 										))}
 									</View>
 

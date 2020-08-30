@@ -12,11 +12,9 @@ import { AppContext } from './contexts';
 import AppNavigator from './screens/AppNavigator';
 import RestrictedNavigator from "./screens/RestrictedNavigator";
 import WelcomeScreen from "./screens/app/welcome/WelcomeScreen";
-
+import * as StoreReview from "expo-store-review";
 const Stack = createStackNavigator();
 const navigationRef = React.createRef();
-
-console.log(THEME);
 
 const themePaper = {
 	...DefaultTheme,
@@ -59,7 +57,7 @@ export default class App extends React.Component {
 			this.setState({ isSignedIn: bool });
 
 			if (bool) {
-				console.log('signed-in', global.user.settings.native.welcomeScreen);
+				console.log('signed-in');
 				navigationRef?.current?.navigate(global.user.settings.native.welcomeScreen ? 'App' : 'Welcome');
 			} else {
 				console.log('signed-out');
@@ -78,7 +76,6 @@ export default class App extends React.Component {
 		$polymind.me().then(user => {
 			isSignedIn = true;
 			global.user = user;
-			console.log('logged in', global.user.settings.native.welcomeScreen);
 			navigationRef?.current?.navigate(global.user.settings.native.welcomeScreen ? 'App' : 'Welcome');
 		})
 			.catch(err => console.log('not logged in'))
