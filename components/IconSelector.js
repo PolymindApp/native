@@ -64,7 +64,7 @@ export default class IconSelector extends React.Component {
 					}}
 				>
 					<View style={{padding: 10, flex: 1, justifyContent: 'flex-end'}}>
-						<Text style={{marginBottom: 10}} h4>
+						<Text style={{marginBottom: 10, textAlign: 'center', fontFamily: 'geomanist'}} h4>
 							{I18n.t('iconSelector.chooseIcon')}
 						</Text>
 						<SearchBar

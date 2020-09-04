@@ -166,12 +166,10 @@ export default class StatsScreen extends React.Component {
 					/>
 				),
 				headerRight: () => (
-					<View style={{marginRight: 10, flexDirection: 'row'}}>
-						<ContextualOptions items={this.optionItems}
-										   onOpen={() => this.sendMessage('native_pause')}
-										   onClose={() => this.sendMessage('native_play')}
-						/>
-					</View>
+					<ContextualOptions items={this.optionItems}
+									   onOpen={() => this.sendMessage('native_pause')}
+									   onClose={() => this.sendMessage('native_play')}
+					/>
 				)
 			});
 

@@ -114,9 +114,7 @@ export default class ColumnEditScreen extends React.Component {
 				<BackDiffCatchButton label={dataset.name} hasDifferences={() => this.hasDifferences()} callback={() => navigation.pop()} />
 			),
 			headerRight: dataset.columns.length > 1 ? () => (
-				<View style={{marginRight: 10}}>
-					<ContextualOptions items={this.optionItems} />
-				</View>
+				<ContextualOptions items={this.optionItems} />
 			) : null
 		});
 

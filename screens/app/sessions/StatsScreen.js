@@ -162,9 +162,7 @@ export default class StatsScreen extends React.Component {
 		navigation.setOptions({
 			title: session.title,
 			headerRight: () => (
-				<View style={{marginRight: 10, flexDirection: 'row'}}>
-					<ContextualOptions items={this.optionItems} />
-				</View>
+				<ContextualOptions items={this.optionItems} />
 			),
 		});
 

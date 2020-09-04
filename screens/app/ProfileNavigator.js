@@ -45,12 +45,12 @@ export default class ProfileNavigator extends React.Component {
 				<Stack.Screen name="Profile" component={ProfileScreen} options={{
 					title: I18n.t('title.profile'),
 					headerRight: () => (
-						<View style={{marginRight: 10}}>
+						<View>
 							{Platform.select({
-								ios: (<TouchableOpacity onPress={() => this.logout()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+								ios: (<TouchableOpacity style={{marginRight: 10}} onPress={() => this.logout()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
 									<Text style={{color: 'white'}}>{I18n.t('btn.signOut')}</Text>
 								</TouchableOpacity>),
-								default: (<Button onPress={() => this.logout()} icon="logout-variant" color={'white'}>
+								default: (<Button style={{marginRight: 5}} onPress={() => this.logout()} icon="logout-variant" color={'white'}>
 									{I18n.t('btn.signOut')}
 								</Button>)
 							})}

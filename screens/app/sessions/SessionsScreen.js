@@ -35,9 +35,9 @@ export default class SessionsScreen extends React.Component {
 					tags: [],
 				},
 				component: {
-					mode: 'linearAssertive',
+					mode: 'manual',
 					speed: 10,
-					range: 20,
+					range: 0,
 					readQuestion: true,
 					readAnswer: true,
 				},

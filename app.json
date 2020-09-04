@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.9",
+    "version": "1.0.10",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "polymind",
@@ -27,7 +27,7 @@
 	  "playStoreUrl": "https://play.google.com/store/apps/details?id=com.polymind.native",
 	  "package": "com.polymind.native",
 	  "permissions": ["CAMERA"],
-	  "versionCode": 4,
+	  "versionCode": 5,
 	  "intentFilters": [
 		{
 		  "action": "VIEW",
@@ -49,7 +49,7 @@
     "ios": {
 	  "appStoreUrl": "https://apps.apple.com/us/app/id1509961629",
 	  "bundleIdentifier": "com.polymind.native",
-	  "buildNumber": "1.0.9",
+	  "buildNumber": "1.0.10",
       "supportsTablet": false,
 	  "associatedDomains": ["polymind.app"],
 	  "usesAppleSignIn": true,

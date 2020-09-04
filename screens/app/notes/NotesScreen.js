@@ -152,12 +152,12 @@ export default class NotesScreen extends React.Component {
 			// 	</TouchableOpacity>
 			// ),
 			headerRight: () => datasets.length > 0 && (
-				<View style={{marginRight: 10}}>
+				<View>
 					{Platform.select({
-						ios: (<TouchableOpacity onPress={() => this.handleAdd()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
+						ios: (<TouchableOpacity style={{marginRight: 10}} onPress={() => this.handleAdd()} hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}>
 							<Text style={{color: 'white'}}>{I18n.t('btn.add')}</Text>
 						</TouchableOpacity>),
-						default: (<Button onPress={() => this.handleAdd()} icon="plus" color={'white'}>{I18n.t('btn.add')}</Button>)
+						default: (<Button style={{marginRight: 5}} onPress={() => this.handleAdd()} icon="plus" color={'white'}>{I18n.t('btn.add')}</Button>)
 					})}
 				</View>
 			),

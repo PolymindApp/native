@@ -130,9 +130,7 @@ export default class DataScreen extends React.Component {
 					<BackDiffCatchButton label={I18n.t('title.notes')} hasDifferences={() => this.hasDifferences(dataset)} callback={() => navigation.pop()} />
 				),
 				headerRight: isValid ? () => (
-					<View style={{marginRight: 10, flexDirection: 'row'}}>
-						<ContextualOptions items={this.optionItems} disabled={!dataset.id} />
-					</View>
+					<ContextualOptions items={this.optionItems} disabled={!dataset.id} />
 				) : null
 			});
 		}

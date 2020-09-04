@@ -35,7 +35,7 @@ export default class ContextualOptions extends React.Component {
 
 		return Platform.select({
 			ios: (
-				<TouchableOpacity hitSlop={{top: 20, left: 20, bottom: 20, right: 20}} style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => this.showIOSOptions(items)} disabled={disabled}>
+				<TouchableOpacity hitSlop={{top: 20, left: 20, bottom: 20, right: 20}} style={{flexDirection: 'row', alignItems: 'center', marginRight: 10, }} onPress={() => this.showIOSOptions(items)} disabled={disabled}>
 					<Text style={{color: 'white'}}>{I18n.t('btn.options')}</Text>
 				</TouchableOpacity>
 			),

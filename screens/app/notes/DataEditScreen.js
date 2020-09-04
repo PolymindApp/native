@@ -769,12 +769,10 @@ export default class DataEditScreen extends React.Component {
 				? I18n.t('title.notesDataEdit', { index: rowIdx + 1, total: dataset.rows.length })
 				: I18n.t('title.notesDataEditNew'),
 			headerLeft: () => (
-				<BackDiffCatchButton label={dataset.name} hasDifferences={() => this.hasDifferences()} callback={() => navigation.pop()} />
+				<BackDiffCatchButton label={I18n.t('btn.back')} hasDifferences={() => this.hasDifferences()} callback={() => navigation.pop()} />
 			),
 			headerRight: row.id ? () => (
-				<View style={{marginRight: 10, flexDirection: 'row'}}>
-					<ContextualOptions items={this.optionItems} />
-				</View>
+				<ContextualOptions items={this.optionItems} />
 			) : null
 		});
 
@@ -901,7 +899,7 @@ export default class DataEditScreen extends React.Component {
 							{/*IMAGES*/}
 							{dataset.include_image ? <View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, backgroundColor: 'white', marginBottom: 10 }}>
 								<View style={{flexDirection: 'row', alignItems: 'center'}}>
-									<Icon name={'image'} color={THEME.primary} style={{marginRight: 5}} />
+									<Icon name={'image'} style={{marginRight: 5}} color={'rgba(0, 0, 0, 0.5)'} />
 									<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.image')}</Text>
 								</View>
 
@@ -923,7 +921,7 @@ export default class DataEditScreen extends React.Component {
 									returnKeyType={'done'}
 									value={this.state.searchImageQuery}
 									renderErrorMessage={false}
-									leftIcon={() => this.state.fetchingCustom ? <ActivityIndicator color={THEME.primary} /> : <Icon name={'image-search'} style={{opacity: 0.333}} />}
+									leftIcon={() => this.state.fetchingCustom ? <ActivityIndicator color={THEME.primary} /> : <Icon name={'magnify'} style={{opacity: 0.333}} />}
 									onChangeText={value => this.setState({ searchImageQuery: value })}
 									onSubmitEditing={event => this.fetchImages(this.state.searchImageQuery, undefined, true, true)}
 								/>
@@ -968,7 +966,7 @@ export default class DataEditScreen extends React.Component {
 							<View style={{marginHorizontal: 10, borderRadius: 10, padding: 10, paddingBottom: 7.5, backgroundColor: 'white', marginBottom: 25 }}>
 
 								<View style={{flexDirection: 'row', alignItems: 'center'}}>
-									<Icon name={'tag-multiple'} color={THEME.primary} style={{marginRight: 5}} />
+									<Icon name={'tag-multiple'} style={{marginRight: 5}} color={'rgba(0, 0, 0, 0.5)'} />
 									<Text style={{flex: 1}}>{I18n.t('dataset.data.edit.tags')}</Text>
 								</View>
 
