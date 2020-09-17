@@ -1,0 +1,327 @@
+{
+	"alert": {
+		"archiveSessionDesc": "Sei sicuro di voler archiviare questa sessione? Sarà nascosto dall'elenco delle sessioni.",
+		"archiveSessionTitle": "Archivia la sessione",
+		"backDiffDesc": "Se continui, le modifiche andranno perse. Sei sicuro di voler procedere?",
+		"backDiffTitle": "Modifiche non salvate",
+		"backSessionDesc": "Il ritorno terminerà la sessione. Vuoi procedere?",
+		"backSessionTitle": "Terminare la sessione?",
+		"clearCacheDesc": "Se riscontri problemi, come l'app che si arresta in modo casuale durante l'avvio della sessione, puoi provare a svuotare la cache.",
+		"clearCacheTitle": "Cancellare cache",
+		"deleteDatasetDesc": "Tutte le note dell'elenco \"{{name}}\" verranno eliminate. Vuoi procedere?",
+		"deleteDatasetTitle": "Elimina note",
+		"listenTitle": "Senta",
+		"signOutDesc": "La sessione verrà chiusa. Vuoi procedere?",
+		"signOutTitle": "Disconnettersi",
+		"uploadFromUrlErrorDesc": "Impossibile recuperare l'immagine dal server remoto. Puoi riprovare o scegliere un'altra immagine.",
+		"uploadFromUrlErrorTitle": "Errore di connessione"
+	},
+	"btn": {
+		"add": "Aggiungere",
+		"addColumn": "Aggiungere",
+		"addList": "Aggiungere una lista",
+		"addMore": "Aggiungere più...",
+		"addNote": "Aggiungere nota",
+		"archive": "Archiviare",
+		"back": "Indietro",
+		"cancel": "Annullare",
+		"clearCache": "Cancellare cache",
+		"continue": "Continuare",
+		"delete": "Eliminare",
+		"edit": "Modificare",
+		"fetchMore": "Prendi di più",
+		"filters": "Filtri",
+		"grant": "Concedere",
+		"help": "Aiuta",
+		"loadMore": "Caricare di più",
+		"newNotes": "Aggiunge note",
+		"newSession": "Iniziare una sessione",
+		"next": "Prossimo",
+		"ok": "OK",
+		"options": "Opzioni",
+		"ready": "Pronto",
+		"resendActivation": "Rinviare",
+		"resetPassword": "Resettare",
+		"restart": "Ricominciare",
+		"save": "Salvare",
+		"share": "Condividere",
+		"signIn": "Connettersi",
+		"signOut": "Uscire",
+		"skip": "Saltare",
+		"start": "Iniziare",
+		"startSession": "Iniziare sessione",
+		"takePhoto": "Fare foto",
+		"terminate": "Terminare",
+		"tryAgain": "Riprovare",
+		"update": "Attualizzare",
+		"upload": "Caricare"
+	},
+	"dataSettings": {
+		"columnsDesc": "Le colonne sono i dati che puoi esercitarti e alternare durante le tue sessioni. Ad esempio, potresti creare un elenco in due (2) lingue o più o solo una (1) se non hai bisogno di una risposta. Assicurati di impostare la loro lingua di conseguenza.",
+		"iconDesc": "Per aiutarti a riconoscere i tuoi elenchi molto più facilmente, puoi assegnare loro un'icona.",
+		"imageDesc": "Se desideri migliorare la tua esperienza di apprendimento con le immagini, seleziona questa casella. Se selezionato, Polymind suggerirà automaticamente le immagini mentre inserisci nuove carte e le visualizzerà in background durante la sessione.",
+		"titleDesc": "Assegna un nome all'elenco in base alle tue necessità. Es: \"Conversazione di base in francese\""
+	},
+	"dataSettingsColumn": {
+		"titleDesc": "Potrebbe essere il nome della lingua o un titolo generico come \"Domanda\" o \"Risposta\"."
+	},
+	"dataset": {
+		"data": {
+			"edit": {
+				"didYouMean": "Intendevi:",
+				"image": "Immagine",
+				"imageChooseDesc": "Scegli un'immagine che corrisponda alla tua idea:",
+				"imageDesc": "Abbiamo cercato \"{{terms}}\" per te su Google Immagini. Se ottieni risultati strani, prova a cercare utilizzando il campo sopra. Tieni presente che le query in inglese tendono a ottenere risultati migliori.",
+				"noImageFound": "Nessuna immagine trovata in base ai criteri di ricerca.",
+				"possibleTranslation": "Traduzione:",
+				"removeImageDesc": "Sei sicuro di voler rimuovere l'immagine da questa nota?",
+				"removeImageTitle": "Rimuovere l'immagine",
+				"tags": "Etichette",
+				"tagsDesc": "Ciò ti consente di filtrare le schede in base ai etichette durante le sessioni."
+			}
+		},
+		"settings": {
+			"columns": "Colonne",
+			"general": "Generale",
+			"includeImage": "Includere immagine",
+			"isPrivate": "Privato",
+			"noColumnWarn": "Deve almeno aggiungere una colonna alle suoi note.",
+			"optional": "Opzionale",
+			"others": "Altri"
+		}
+	},
+	"error": {
+		"badTokenDesc": "Il collegamento utilizzato contiene un gettone non valido o scaduto.",
+		"badTokenTitle": "Gettone errato",
+		"invalidCredentialsDesc": "Verifica le informazioni di accesso e riprova.",
+		"invalidCredentialsTitle": "Credenziali non valide",
+		"noData": "Nessun dato disponibile",
+		"tokenExpiredDesc": "Riprova compilando nuovamente il modulo password dimenticata.",
+		"tokenExpiredTitle": "Gettone scaduto",
+		"unknownDesc": "Qualcosa è andato storto durante la comunicazione con il server.",
+		"unknownTitle": "Errore sconosciuto",
+		"userAlreadyExistDesc": "Forse hai dimenticato di avere già un account?",
+		"userAlreadyExistTitle": "L'utente esiste già",
+		"userInactiveDesc": "Questo account non è stato ancora attivato. Desideri inviare nuovamente un link di attivazione?",
+		"userInactiveTitle": "Utente inattivo",
+		"userNotFoundDesc": "Nessun utente con email {{email}} trovato.",
+		"userNotFoundTitle": "Utente non trovato"
+	},
+	"field": {
+		"answer": "Risposta",
+		"columnLanguage": "Linguaggio",
+		"columnLanguageDesc": "Durante la tua sessione, una voce sintetica leggerà le tue voci. È importante definire correttamente la lingua di questa colonna per ottenere una corretta esperienza audio.",
+		"columnName": "Nome",
+		"confirmationPlaceholder": "Conferma la tua password",
+		"dataPlaceholder": "Valore",
+		"description": "Descrizione",
+		"emailPlaceholder": "Indirizzo email",
+		"icon": "Icona",
+		"name": "Nome",
+		"passwordPlaceholder": "Password",
+		"question": "Domanda",
+		"selectPlaceholder": "- Selezionare -",
+		"settings": {
+			"darkMode": "Modalità scura"
+		},
+		"tagPlaceholder": "Digita e premi conferma qui...",
+		"title": "Titolo",
+		"typeHerePlaceholder": "Digitare qui...",
+		"user": {
+			"biography": "Biografia",
+			"quote": "Citazione",
+			"screen_name": "Nome completo"
+		}
+	},
+	"header": {
+		"back": "indietro"
+	},
+	"iconSelector": {
+		"chooseIcon": "Sceglie una icona:",
+		"none": "Nessuna icona ancora"
+	},
+	"input": {
+		"filter": "Filtro...",
+		"searchCloud": "Cerca su Google Immagine..."
+	},
+	"language": {
+		"cmn": "Cinese",
+		"cy": "Gallese",
+		"da": "Danese",
+		"de": "Tedesco",
+		"en": "Inglese",
+		"es": "Spagnolo",
+		"fr": "Francese",
+		"hi": "Hindi",
+		"is": "Islandese",
+		"it": "Italiano",
+		"ja": "Giapponese",
+		"ko": "Coreano",
+		"nb": "Norvegese",
+		"nl": "Olandese",
+		"pl": "Polacco",
+		"pt": "Portoghese",
+		"ro": "Rumeno",
+		"ru": "Russo",
+		"sv": "Svedese",
+		"tr": "Turco"
+	},
+	"legal": {
+		"privacy": "Informativa sulla privacy",
+		"terms": "Termini e condizioni"
+	},
+	"navigation": {
+		"cards": "Carte",
+		"dictionary": "Dizionario",
+		"notes": "Note",
+		"profile": "Profilo",
+		"sessions": "Sessione"
+	},
+	"notes": {
+		"emptyDesc": "È necessario un elenco di note per iniziare una sessione.",
+		"emptyTitle": "Nessuna lista",
+		"totalRows": {
+			"one": "Una carta",
+			"other": "{{count}} carte",
+			"zero": "Nessun dato ancora"
+		}
+	},
+	"permission": {
+		"manualCameraActivationDesc": "Deve concedere l'accesso alla videocamera manualmente se desideri utilizzarlo in questa applicazione.",
+		"manualCameraActivationTitle": "Fotocamera non consentita"
+	},
+	"profile": {
+		"activities": "Attività",
+		"clearCacheDesc": "In caso di problemi, svuotare la cache potrebbe essere una soluzione.",
+		"contact": "Contattaci",
+		"debug": "Mettere a punto",
+		"developers": "Sviluppatori",
+		"information": {
+			"biographyDesc": "Una breve descrizione di te stesso. Cosa stai imparando? Quali sono i tuoi obiettivi?",
+			"completeNameDesc": "Il nome che desideri venga visualizzato quando le persone guardano il tuo profilo.",
+			"quoteDesc": "Qualcosa che ha senso per te."
+		},
+		"informations": "Informazioni",
+		"legalSection": "Legale",
+		"myInfoSection": "I miei informazione",
+		"parameters": "Impostazioni",
+		"role": {
+			"administrator": "Amministratore",
+			"member": "Membro"
+		},
+		"socialSection": "Seguici:",
+		"support": "Supporto",
+		"tools": "Utensili"
+	},
+	"restricted": {
+		"accountVerifiedSubtitle": "Ora può accedere al suo account Polymind.",
+		"accountVerifiedTitle": "Account verificato",
+		"backToLogin": "Torna alla pagina di accesso",
+		"forgotPassword": "Ho dimenticato la mia password",
+		"forgotPasswordDesc": "Inserisci il tuo indirizzo e-mail di seguito e ti invieremo le istruzioni per reimpostare la password.",
+		"forgotPasswordSentSubtitle": "Verifica la tua casella di posta per i passaggi da seguire.",
+		"forgotPasswordSentTitle": "Istruzioni inviate",
+		"forgotPasswordTitle": "Ho dimenticato la mia password",
+		"login": "Connessione",
+		"loginTitle": "Accedere all'account",
+		"orLoginUsing": "O accedi usando:",
+		"orRegisterUsing": "O registrati usando:",
+		"register": "Iscriviate",
+		"registerEmailSentSubtitle": "Controlla la tua casella di posta per istruzioni",
+		"registerEmailSentTitle": "Account pronto per la convalida!",
+		"registerTitle": "Crea un account",
+		"resetPasswordDoneSubtitle": "Ora puoi accedere utilizzando le tue nuove credenziali",
+		"resetPasswordDoneTitle": "Password cambiata",
+		"resetPasswordTitle": "Resettare la password",
+		"verifyEmailSentSubtitle": "Controlla la sua casella di posta per ulteriori istruzioni",
+		"verifyEmailSentTitle": "Gettone di verificazione mandato"
+	},
+	"sections": {
+		"data": "Dati",
+		"settings": "Impostazioni"
+	},
+	"session": {
+		"answer": "Risposta:",
+		"chooseFields": "Sceglie i campi che desideri utilizzare:",
+		"chooseSettings": "Prepara le suoi impostazioni:",
+		"chooseType": "Sceglie il tipo di sessione:",
+		"drawerSelectList": "Quale lista vuoi praticare?",
+		"emptyDesc": "Puoi iniziare nuove sessioni di seguito.",
+		"emptyTitle": "Nessuna sessione",
+		"noAnswer": "Nessun campo di risposta",
+		"noDatasetDesc": "Per iniziare le sessioni, è necessario almeno un elenco di note.",
+		"noDatasetTitle": "Nessuna nota",
+		"pronounceAnswerDesc": "Una voce sintetica pronuncerà la risposta per te.",
+		"pronounceAnswerTitle": "Pronunciare la risposta",
+		"pronounceQuestionDesc": "Una voce sintetica pronuncerà la domanda per te.",
+		"pronounceQuestionTitle": "Pronunciare la domanda",
+		"question": "Domanda:",
+		"range": "Gamma di domande",
+		"rangeDesc": "Pone domande per pacchetto di {{range}} elementi.",
+		"rangeUnlimited": "Illimitato",
+		"remainingRows": {
+			"one": "Un'ultima carta da studiare",
+			"other": "{{count}} carte da studiare",
+			"zero": "Niente più tessere da studiare"
+		},
+		"speed": "Ritardo tra le domande:",
+		"speedSeconds": "{{seconds}} secondi",
+		"stats": {
+			"noFilteredItemDesc": "Nessun risultato trovato nell'intervallo selezionato",
+			"noFilteredItemTitle": "Nessun elemento",
+			"title": {
+				"one": "Una carta recensita su {{date}}",
+				"other": "{{count}} schede recensite su {{date}}",
+				"zero": "Nessuna carta esaminata il {{date}}"
+			}
+		},
+		"types": {
+			"autoAssertiveDesc": "Le note vengono mostrate e pronunciate automaticamente, ma sei obbligato a rispondere.",
+			"autoAssertiveTitle": "Automatico assertivo",
+			"autoPassiveDesc": "Le note vengono mostrate e pronunciate automaticamente.",
+			"autoPassiveTitle": "Automatico passivo",
+			"manualDesc": "Rivede e risponde alle domande manualmente.",
+			"manualTitle": "Manuale"
+		}
+	},
+	"state": {
+		"deleting": "Eliminando...",
+		"downloading": "Caricamento..",
+		"generating": "Generazione ...",
+		"loading": "Caricando..",
+		"saving": "Salvataggio...",
+		"uploading": "Caricamento.."
+	},
+	"tags": {
+		"easy": "Facile",
+		"hard": "Difficile",
+		"unsure": "Incerto",
+		"viewed": "Visto"
+	},
+	"title": {
+		"contact": "Contattaci",
+		"debug": "Mettere a punto",
+		"dictionary": "Dizionario",
+		"help": "Aiuta",
+		"loading": "Caricamento...",
+		"newColumn": "Nuova colonna",
+		"newList": "Nuovo elenco",
+		"notes": "Note",
+		"notesDataEdit": "Dati {{index}} di {{total}}",
+		"notesDataEditNew": "Nuovi dati",
+		"profile": "Profilo",
+		"profileActivities": "Attività",
+		"profileInformations": "Informazioni",
+		"profileSettings": "Impostazioni",
+		"sessions": "Sessioni",
+		"tools": "Utensili"
+	},
+	"welcome": {
+		"listenDesc": "Quindi avvia una sessione e lascia che la voce di Polymind ti guidi nel processo di apprendimento.",
+		"listenTitle": "Senta",
+		"noteDesc": "Innanzitutto, inserisci le domande e le risposte che desideri ricordare.",
+		"noteTitle": "Nota",
+		"rememberDesc": "Infine, approfitta della libertà di attenzione! Lavare i piatti, meditare o persino andare in palestra!",
+		"rememberTitle": "Ricordi"
+	}
+}

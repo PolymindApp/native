@@ -115,8 +115,10 @@
 		"confirmationPlaceholder": "Conferma la tua password",
 		"dataPlaceholder": "Valore",
 		"description": "Descrizione",
+		"email": "Indirizzo email",
 		"emailPlaceholder": "Indirizzo email",
 		"icon": "Icona",
+		"message": "Scrivi qui il tuo messaggio...",
 		"name": "Nome",
 		"passwordPlaceholder": "Password",
 		"question": "Domanda",
@@ -142,6 +144,7 @@
 	},
 	"input": {
 		"filter": "Filtro...",
+		"search": "Ricercare...",
 		"searchCloud": "Cerca su Google Immagine..."
 	},
 	"language": {
@@ -175,7 +178,8 @@
 		"dictionary": "Dizionario",
 		"notes": "Note",
 		"profile": "Profilo",
-		"sessions": "Sessione"
+		"sessions": "Sessione",
+		"settings": "Impostazioni"
 	},
 	"notes": {
 		"emptyDesc": "È necessario un elenco di note per iniziare una sessione.",
@@ -299,22 +303,31 @@
 		"viewed": "Visto"
 	},
 	"title": {
+		"about": "A proposito",
 		"contact": "Contattaci",
 		"debug": "Mettere a punto",
 		"dictionary": "Dizionario",
+		"feedback": "Commenti",
 		"help": "Aiuta",
+		"languageSelector": "Scegli una lingua",
 		"loading": "Caricamento...",
 		"newColumn": "Nuova colonna",
 		"newList": "Nuovo elenco",
 		"notes": "Note",
-		"notesDataEdit": "Dati {{index}} di {{total}}",
 		"notesDataEditNew": "Nuovi dati",
+		"privacy": "Politiche sulla privacy",
 		"profile": "Profilo",
 		"profileActivities": "Attività",
 		"profileInformations": "Informazioni",
 		"profileSettings": "Impostazioni",
 		"sessions": "Sessioni",
-		"tools": "Utensili"
+		"settings": "Impostazioni",
+		"terms": "Termini e Condizioni",
+		"tools": "Utensili",
+		"translate": "Tradurre",
+		"translateFrom": "Tradurre da",
+		"translateTo": "Tradurre a",
+		"word": "Dati {{index}} di {{total}}"
 	},
 	"welcome": {
 		"listenDesc": "Quindi avvia una sessione e lascia che la voce di Polymind ti guidi nel processo di apprendimento.",

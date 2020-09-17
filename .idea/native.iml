@@ -19,5 +19,16 @@
     <orderEntry type="module" module-name="www" />
     <orderEntry type="module" module-name="chrome-ext" />
     <orderEntry type="module" module-name="firefox-ext" />
+    <orderEntry type="module" module-name="chrome-ext" />
+    <orderEntry type="module" module-name="client" />
+    <orderEntry type="module" module-name="component-slideshow" />
+    <orderEntry type="module" module-name="component-spaceshooter" />
+    <orderEntry type="module" module-name="directus" />
+    <orderEntry type="module" module-name="firefox-ext" />
+    <orderEntry type="module" module-name="player" />
+    <orderEntry type="module" module-name="sdk-js" />
+    <orderEntry type="module" module-name="sdk-php" />
+    <orderEntry type="module" module-name="www" />
+    <orderEntry type="module" module-name="www" />
   </component>
 </module>

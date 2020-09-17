@@ -1,0 +1,78 @@
+{
+  "expo": {
+    "name": "Polymind",
+    "slug": "polymind",
+	"owner": "dcoulombe",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "version": "1.0.10",
+    "orientation": "default",
+    "icon": "./assets/images/icon.png",
+    "scheme": "polymind",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1B8E8A"
+    },
+	"primaryColor": "#1B8E8A",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+	"android": {
+	  "playStoreUrl": "https://play.google.com/store/apps/details?id=com.polymind.native",
+	  "package": "com.polymind.native",
+	  "permissions": ["CAMERA"],
+	  "versionCode": 5,
+	  "intentFilters": [
+		{
+		  "action": "VIEW",
+		  "autoVerify": true,
+		  "data": [
+			{
+			  "scheme": "https",
+			  "host": "*.polymind.app",
+			  "pathPrefix": "/_universal"
+			}
+		  ],
+		  "category": [
+			"BROWSABLE",
+			"DEFAULT"
+		  ]
+		}
+	  ]
+	},
+    "ios": {
+	  "appStoreUrl": "https://apps.apple.com/us/app/id1509961629",
+	  "bundleIdentifier": "com.polymind.native",
+	  "buildNumber": "1.0.10",
+      "supportsTablet": false,
+	  "associatedDomains": ["polymind.app"],
+	  "usesAppleSignIn": true,
+	  "config": {
+		"googleSignIn": {
+		  "reservedClientId": "com.googleusercontent.apps.285103854117-p5c9kagi2ld9dct6en9qqo1iqo93vok4"
+		}
+	  },
+	  "infoPlist": {
+		"NSCameraUsageDescription": "This app uses the camera to let user put a photo in his profile page and assign pictures to cards and notes.",
+		"NSPhotoLibraryUsageDescription": "This app uses the photo library to let user put a photo in his profile page and assign pictures to cards and notes.",
+		"ITSAppUsesNonExemptEncryption": false,
+		"CFBundleAllowMixedLocalizations": true,
+		"UIBackgroundModes": [
+		  "audio"
+		]
+	  }
+	},
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+	"facebookScheme": "fb2369410626492819",
+	"facebookAppId": "2369410626492819",
+	"facebookDisplayName": "Polymind"
+  }
+}

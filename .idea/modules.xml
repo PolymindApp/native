@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/../client/.idea/client.iml" filepath="$PROJECT_DIR$/../client/.idea/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/../component-slideshow/.idea/component-slideshow.iml" filepath="$PROJECT_DIR$/../component-slideshow/.idea/component-slideshow.iml" />
       <module fileurl="file://$PROJECT_DIR$/../component-spaceshooter/.idea/component-spaceshooter.iml" filepath="$PROJECT_DIR$/../component-spaceshooter/.idea/component-spaceshooter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../directus/.idea/directus.iml" filepath="$PROJECT_DIR$/../directus/.idea/directus.iml" />
       <module fileurl="file://$PROJECT_DIR$/../firefox-ext/.idea/firefox-ext.iml" filepath="$PROJECT_DIR$/../firefox-ext/.idea/firefox-ext.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/native.iml" filepath="$PROJECT_DIR$/.idea/native.iml" />
       <module fileurl="file://$PROJECT_DIR$/../player/.idea/player.iml" filepath="$PROJECT_DIR$/../player/.idea/player.iml" />

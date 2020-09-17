@@ -1,0 +1,327 @@
+{
+	"alert": {
+		"archiveSessionDesc": "Are you sure you wish to archive this session? It will be hidden from your session list.",
+		"archiveSessionTitle": "Archive session",
+		"backDiffDesc": "If you continue, your changes will be lost. Are you sure you wish to proceed?",
+		"backDiffTitle": "Changes unsaved",
+		"backSessionDesc": "Going back will terminate your session. Do you wish to proceed?",
+		"backSessionTitle": "Terminate Session?",
+		"clearCacheDesc": "If you are experiencing issue, such as the app randomly crashing while initiating session, you can try clearing your cache.",
+		"clearCacheTitle": "Clear cache",
+		"deleteDatasetDesc": "All notes of the \"{{name}}\" list will be deleted. Do you wish to proceed?",
+		"deleteDatasetTitle": "Delete notes",
+		"listenTitle": "Listen",
+		"signOutDesc": "Your session will be terminated. Do you wish to proceed?",
+		"signOutTitle": "Sign Out",
+		"uploadFromUrlErrorDesc": "Unable to fetch the image from the remote server. You may try again or choose another image.",
+		"uploadFromUrlErrorTitle": "Connection Error"
+	},
+	"btn": {
+		"add": "Add",
+		"addColumn": "Add",
+		"addList": "Add a list",
+		"addMore": "Add more...",
+		"addNote": "Add note",
+		"archive": "Archive",
+		"back": "Back",
+		"cancel": "Cancel",
+		"clearCache": "Clear cache",
+		"continue": "Continue",
+		"delete": "Delete",
+		"edit": "Edit",
+		"fetchMore": "Fetch more",
+		"filters": "Filters",
+		"grant": "Grant",
+		"help": "Help",
+		"loadMore": "Load more",
+		"newNotes": "Add notes",
+		"newSession": "Start a session",
+		"next": "Next",
+		"ok": "OK",
+		"options": "Options",
+		"ready": "Ready",
+		"resendActivation": "Resend",
+		"resetPassword": "Reset",
+		"restart": "Restart",
+		"save": "Save",
+		"share": "Share",
+		"signIn": "Sign In",
+		"signOut": "Sign Out",
+		"skip": "Skip",
+		"start": "Start",
+		"startSession": "Start session",
+		"takePhoto": "Take photo",
+		"terminate": "Terminate",
+		"tryAgain": "Try again",
+		"update": "Update",
+		"upload": "Upload"
+	},
+	"dataSettings": {
+		"columnsDesc": "The columns are the data you can practice and alternate during your sessions. You could for instance create a list in two (2) languages or more or just one (1) if you don't need an answer. Make sure you set their language accordingly.",
+		"iconDesc": "To help you recognize your lists much easily, you can assign them an icon.",
+		"imageDesc": "If you wish to improve your learning experience with images, check this box. When checked, Polymind will automatically suggest images while you enter new cards and will display them in background during your session.",
+		"titleDesc": "Name your list according to your need. Ex: \"Basic Conversation in French\""
+	},
+	"dataSettingsColumn": {
+		"titleDesc": "It could be the language name or a generic title such as \"Question\" or \"Answer\"."
+	},
+	"dataset": {
+		"data": {
+			"edit": {
+				"didYouMean": "Did you mean:",
+				"image": "Image",
+				"imageChooseDesc": "Choose an image that matches your idea:",
+				"imageDesc": "We searched \"{{terms}}\" for you on Google Images. If you get strange results, try searching using the field above. Note that English queries tend to get better results.",
+				"noImageFound": "No image found based on your search query.",
+				"possibleTranslation": "Translation:",
+				"removeImageDesc": "Are you sure you wish to remove the image from this note?",
+				"removeImageTitle": "Remove Image",
+				"tags": "Tags",
+				"tagsDesc": "This allows you to filter cards by tags during your sessions."
+			}
+		},
+		"settings": {
+			"columns": "Columns",
+			"general": "General",
+			"includeImage": "Include image",
+			"isPrivate": "Private",
+			"noColumnWarn": "You must at least add a column to your notes.",
+			"optional": "Optional",
+			"others": "Others"
+		}
+	},
+	"error": {
+		"badTokenDesc": "The link used contain an invalid or expired token.",
+		"badTokenTitle": "Bad Token",
+		"invalidCredentialsDesc": "Please verify your login information and try again.",
+		"invalidCredentialsTitle": "Invalid credentials",
+		"noData": "No Data Available",
+		"tokenExpiredDesc": "Please retry by filling the forgot password form again.",
+		"tokenExpiredTitle": "Token Expired",
+		"unknownDesc": "Something went wrong while communicating with the server.",
+		"unknownTitle": "Unknown Error",
+		"userAlreadyExistDesc": "Maybe you forgot that you already had an account?",
+		"userAlreadyExistTitle": "User already exists",
+		"userInactiveDesc": "This account hasn't been activated yet. Do you wish to resend an activation link?",
+		"userInactiveTitle": "Inactive User",
+		"userNotFoundDesc": "No user with email {{email}} found.",
+		"userNotFoundTitle": "User not found"
+	},
+	"field": {
+		"answer": "Answer",
+		"columnLanguage": "Language",
+		"columnLanguageDesc": "During your session, a synthetic voice will read your entries. It's important to define this column's language correctly in order to get a proper audio experience.",
+		"columnName": "Name",
+		"confirmationPlaceholder": "Confirm your password",
+		"dataPlaceholder": "Value",
+		"description": "Description",
+		"emailPlaceholder": "Email address",
+		"icon": "Icon",
+		"name": "Name",
+		"passwordPlaceholder": "Password",
+		"question": "Question",
+		"selectPlaceholder": "- Select -",
+		"settings": {
+			"darkMode": "Dark mode"
+		},
+		"tagPlaceholder": "Type and press confirm here...",
+		"title": "Title",
+		"typeHerePlaceholder": "Type here...",
+		"user": {
+			"biography": "Biography",
+			"quote": "Quote",
+			"screen_name": "Complete name"
+		}
+	},
+	"header": {
+		"back": "Back"
+	},
+	"iconSelector": {
+		"chooseIcon": "Choose an icon:",
+		"none": "No icon yet"
+	},
+	"input": {
+		"filter": "Filter...",
+		"searchCloud": "Search on Google Image..."
+	},
+	"language": {
+		"cmn": "Chinese",
+		"cy": "Welsh",
+		"da": "Danish",
+		"de": "German",
+		"en": "English",
+		"es": "Spanish",
+		"fr": "French",
+		"hi": "Hindi",
+		"is": "Icelandic",
+		"it": "Italian",
+		"ja": "Japanese",
+		"ko": "Korean",
+		"nb": "Norwegian",
+		"nl": "Dutch",
+		"pl": "Polish",
+		"pt": "Portuguese",
+		"ro": "Romanian",
+		"ru": "Russian",
+		"sv": "Swedish",
+		"tr": "Turkish"
+	},
+	"legal": {
+		"privacy": "Privacy Policies",
+		"terms": "Terms and Conditions"
+	},
+	"navigation": {
+		"cards": "Cards",
+		"dictionary": "Dictionary",
+		"notes": "Notes",
+		"profile": "Profile",
+		"sessions": "Session"
+	},
+	"notes": {
+		"emptyDesc": "You need list of notes to start a session.",
+		"emptyTitle": "No list yet",
+		"totalRows": {
+			"one": "One card",
+			"other": "{{count}} cards",
+			"zero": "No data yet"
+		}
+	},
+	"permission": {
+		"manualCameraActivationDesc": "You have to grant camera access manually if you wish to use it in this application.",
+		"manualCameraActivationTitle": "Camera Not Allowed"
+	},
+	"profile": {
+		"activities": "Activities",
+		"clearCacheDesc": "If you are experiencing issues, clearing the cache might be a solution.",
+		"contact": "Get in touch",
+		"debug": "Debug",
+		"developers": "Developers",
+		"information": {
+			"biographyDesc": "A brief description of yourself. What are you learning? What are your goals?",
+			"completeNameDesc": "The name you want to be displayed when people watch your profile.",
+			"quoteDesc": "Something that makes sense to you."
+		},
+		"informations": "Information",
+		"legalSection": "Legal",
+		"myInfoSection": "My Info",
+		"parameters": "Parameters",
+		"role": {
+			"administrator": "Administrator",
+			"member": "Member"
+		},
+		"socialSection": "Follow us:",
+		"support": "Support",
+		"tools": "Tools"
+	},
+	"restricted": {
+		"accountVerifiedSubtitle": "You can now access your Polymind account.",
+		"accountVerifiedTitle": "Account Verified",
+		"backToLogin": "Back to login page",
+		"forgotPassword": "I forgot my password",
+		"forgotPasswordDesc": "Enter your email address below and we will send you instructions to reset your password.",
+		"forgotPasswordSentSubtitle": "Verify your mailbox for the steps to follow.",
+		"forgotPasswordSentTitle": "Instructions sent",
+		"forgotPasswordTitle": "Forgot Password",
+		"login": "Login",
+		"loginTitle": "Access your account",
+		"orLoginUsing": "Or sign in using:",
+		"orRegisterUsing": "Or register using:",
+		"register": "Register",
+		"registerEmailSentSubtitle": "Please check your mailbox for instructions",
+		"registerEmailSentTitle": "Account ready to validate!",
+		"registerTitle": "Create an account",
+		"resetPasswordDoneSubtitle": "You can now login using your new credentials",
+		"resetPasswordDoneTitle": "Password Changed",
+		"resetPasswordTitle": "Reset Password",
+		"verifyEmailSentSubtitle": "Check your mailbox for further instructions",
+		"verifyEmailSentTitle": "Verification Token Sent"
+	},
+	"sections": {
+		"data": "Data",
+		"settings": "Settings"
+	},
+	"session": {
+		"answer": "Answer:",
+		"chooseFields": "Choose the fields you wish to use:",
+		"chooseSettings": "Prepare your settings:",
+		"chooseType": "Choose session type:",
+		"drawerSelectList": "Which list do you want to practice?",
+		"emptyDesc": "You can start new sessions below.",
+		"emptyTitle": "No session yet",
+		"noAnswer": "No answer field",
+		"noDatasetDesc": "To start sessions, you need at least one list of notes.",
+		"noDatasetTitle": "No note yet",
+		"pronounceAnswerDesc": "A synthetic voice will pronounce the answer for you.",
+		"pronounceAnswerTitle": "Pronounce answer",
+		"pronounceQuestionDesc": "A synthetic voice will pronounce the question for you.",
+		"pronounceQuestionTitle": "Pronounce question",
+		"question": "Question:",
+		"range": "Range of questions",
+		"rangeDesc": "Ask questions per pack of {{range}} items.",
+		"rangeUnlimited": "Unlimited",
+		"remainingRows": {
+			"one": "One last card to study",
+			"other": "{{count}} cards to study",
+			"zero": "No more card to study"
+		},
+		"speed": "Delay between questions:",
+		"speedSeconds": "{{seconds}} seconds",
+		"stats": {
+			"noFilteredItemDesc": "Nothing found in the range selected",
+			"noFilteredItemTitle": "No item",
+			"title": {
+				"one": "One card reviewed on {{date}}",
+				"other": "{{count}} cards reviewed on {{date}}",
+				"zero": "No card reviewed on {{date}}"
+			}
+		},
+		"types": {
+			"autoAssertiveDesc": "Notes are showed and pronounced automatically, but you are obliged to answer.",
+			"autoAssertiveTitle": "Automatic Assertive",
+			"autoPassiveDesc": "Notes are showed and pronounced automatically.",
+			"autoPassiveTitle": "Automatic Passive",
+			"manualDesc": "Review and answer questions manually.",
+			"manualTitle": "Manual"
+		}
+	},
+	"state": {
+		"deleting": "Deleting...",
+		"downloading": "Downloading..",
+		"generating": "Generating...",
+		"loading": "Loading..",
+		"saving": "Saving...",
+		"uploading": "Uploading.."
+	},
+	"tags": {
+		"easy": "Easy",
+		"hard": "Hard",
+		"unsure": "Unsure",
+		"viewed": "Viewed"
+	},
+	"title": {
+		"contact": "Get in touch",
+		"debug": "Debug",
+		"dictionary": "Dictionary",
+		"help": "Help",
+		"loading": "Loading...",
+		"newColumn": "New Column",
+		"newList": "New List",
+		"notes": "Notes",
+		"notesDataEdit": "Data {{index}} of {{total}}",
+		"notesDataEditNew": "New Data",
+		"profile": "Profile",
+		"profileActivities": "Activities",
+		"profileInformations": "Information",
+		"profileSettings": "Settings",
+		"sessions": "Sessions",
+		"tools": "Tools"
+	},
+	"welcome": {
+		"listenDesc": "Then start a session and let Polymind's voice guide you through your learning process.",
+		"listenTitle": "Listen",
+		"noteDesc": "First, enter the questions and answers you want to remember.",
+		"noteTitle": "Note",
+		"rememberDesc": "Finally, take advantage of the freedom of attention! Do the dishes, medidate or even go to the gym!",
+		"rememberTitle": "Remember"
+	}
+}
