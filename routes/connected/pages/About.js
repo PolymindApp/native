@@ -1,16 +1,57 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
-import { Title, Paragraph } from 'react-native-paper';
+import danny from '../../../assets/images/danny.jpg';
+import FooterAction from '../../../shared/FooterAction';
+import { View, ScrollView, Image } from 'react-native';
+import { Title, Paragraph, Text, Button } from 'react-native-paper';
 import { styles } from '../../../styles';
+import { theme } from '../../../theme';
 
-export default function Terms() {
+export default function Terms({ navigation, route }) {
 	return (
-		<ScrollView contentContainerStyle={[styles.inner]}>
-			<Title>Learn, strategically.</Title>
-			<Paragraph>Polymind is a strategic learning design platform. Supply your databases and assign them to the components provided by the platform in order to plan and energize your learning over a defined period.</Paragraph>
-			<Paragraph>The components are experiences, databases of objectives and strategies of mechanisms which reinforce the assimilation of objective / experience combinations.</Paragraph>
-			<Paragraph>At the end of each session, reports are produced to help you visualize the most frequent difficulties based on the labeling of your data. This categorization by label adds dynamism in addition to allowing the Polymind ecosystem to offer you solutions through a system of prohibited cross-validation. You can use this data collected later to isolate or become aware of specific difficulties.</Paragraph>
-			<Paragraph>In the Polymind universe, there is no path or directive, you are the author of the intellectual journey that you wish to undertake.</Paragraph>
-		</ScrollView>
+		<View style={styles.max}>
+			<ScrollView contentContainerStyle={[styles.inner]}>
+				<View style={[styles.horizontal, styles.pushVertical]}>
+					<Image source={danny} style={[styles.min, {
+						width: 64,
+						height: 64,
+						borderRadius: 64,
+					}]} />
+					<View style={[styles.max, {marginLeft: 10}]}>
+						<Title style={{color: theme.colors.primary}}>For the sole benefit of helping</Title>
+					</View>
+				</View>
+
+				<Paragraph style={styles.pushVertical}>
+					Polymind is designed as a language memorization companion for people with learning difficulties.
+				</Paragraph>
+
+				<Paragraph style={styles.pushVertical}>
+					As for me, I am a software developer from Montreal who likes working on projects that benefits the community. My goal with Polymind is to develop something that will help people understand <Text style={styles.underline}>and</Text> memorize foreign languages.
+				</Paragraph>
+
+				<Paragraph style={styles.pushVertical}>
+					There are so many beautiful people and cultures out there and I wish to everyone the chance to live new experiences thanks to the amazing opportunities that offers the mastery of a new language.
+				</Paragraph>
+
+				<Paragraph style={styles.pushVertical}>
+					All the best,
+				</Paragraph>
+
+				<Paragraph>
+					Danny
+				</Paragraph>
+
+			</ScrollView>
+
+			<FooterAction>
+				<View style={styles.inner}>
+					<Button mode="contained" onPress={() => {
+						navigation.navigate('Feedback');
+					}}>
+						Get in touch
+					</Button>
+				</View>
+			</FooterAction>
+		</View>
 	)
 }

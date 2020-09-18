@@ -1,20 +1,29 @@
 import * as React from 'react';
+import { Platform } from 'react-native';
 import { Appbar } from 'react-native-paper';
 
-const Header = () => {
+const Header = ({ scene, previous, navigation }) => {
 
-	const _goBack = () => console.log('Went back');
-
-	const _handleSearch = () => console.log('Searching');
-
-	const _handleMore = () => console.log('Shown more');
+	const { options } = scene.descriptor;
+	const title =
+		options.headerTitle !== undefined
+			? options.headerTitle
+			: options.title !== undefined
+			? options.title
+			: scene.route.name;
 
 	return (
-		<Appbar.Header>
-			{/*<Appbar.BackAction onPress={_goBack} disabled />*/}
-			<Appbar.Content title="Cards" />
-			<Appbar.Action icon="magnify" onPress={_handleSearch} />
-			<Appbar.Action icon="dots-vertical" onPress={_handleMore} />
+		<Appbar.Header style={{
+			elevation: 0,
+			height: Platform.OS === 'ios' ? 47 : 56,
+		}}>
+			{previous && <Appbar.BackAction
+				onPress={() => navigation.pop()}
+				color={'white'}
+			/>}
+			<Appbar.Content title={title} />
+
+			{options.headerRight && options.headerRight()}
 		</Appbar.Header>
 	);
 };

@@ -22,8 +22,8 @@ export default function Page({ navigation, route }) {
 		<View style={styles.max}>
 			<ScrollView style={styles.max} contentContainerStyle={styles.inner}>
 
-				<Title>Have some inputs?</Title>
-				<Paragraph>We will be more than happy to answer your questions and comments. To do so, please complete and send us this form and we will reply as soon as possible.</Paragraph>
+				<Title>Have some thoughts?</Title>
+				<Paragraph>I will be more than happy to answer your questions and comments. To do so, please complete and send me this form and I will reply as soon as possible.</Paragraph>
 
 				<Divider style={styles.pushVertical} />
 

@@ -11,10 +11,24 @@ import logo from '../../assets/images/polymind-dark.png';
 import db from '../../shared/Database';
 import ProgressBar from 'react-native-progress/Bar';
 import { View, ScrollView, Keyboard, Image, FlatList, LayoutAnimation, UIManager, Text } from 'react-native';
-import { Button, IconButton, Divider, TextInput, FAB, List, Snackbar, Banner, Title, Paragraph, ActivityIndicator } from 'react-native-paper';
+import {
+	Button,
+	IconButton,
+	Divider,
+	TextInput,
+	FAB,
+	List,
+	Snackbar,
+	Banner,
+	Title,
+	Paragraph,
+	ActivityIndicator,
+	Appbar
+} from 'react-native-paper';
 import { styles } from '../../styles';
 import { theme } from "../../theme";
 import { StatusBar } from "expo-status-bar";
+import { useIsFocused } from '@react-navigation/native';
 
 let inputRef = React.createRef();
 let queryTextTimeout;
@@ -27,6 +41,7 @@ export default function Cards({ navigation, route }) {
 
 	const [settingsState, setSettingsState] = React.useContext(SettingsContext);
 	const settings = settingsState.cards;
+	const isFocused = useIsFocused();
 
 	const [querying, setQuerying] = React.useState(false);
 	const [text, setText] = React.useState('');
@@ -251,11 +266,12 @@ export default function Cards({ navigation, route }) {
 	}
 
 	navigation.dangerouslyGetParent().setOptions({
-		headerTitle: () => <View style={[styles.horizontal, {marginRight: -26}]}>
-			<Text style={[styles.title, {color: 'white', marginRight: 10}]}>All cards</Text>
-			<Icon name={'chevron-down'} color={'white'} size={16}></Icon>
-		</View>,
-		headerRight: () => <Contextual items={contextualItems} />
+		headerRight: () => isFocused ? <View style={styles.horizontal}>
+			<IconButton icon="filter-variant" color={'white'} onPress={() => {
+				navigation.push('Filters');
+			}} />
+			<Contextual items={contextualItems} iosIcon={true} />
+		</View> : null
 	});
 
 	if (words === false) {
@@ -311,19 +327,11 @@ export default function Cards({ navigation, route }) {
 				autoFocus={settings.autoFocus}
 			/>
 			{querying && (
-				<ProgressBar width={null} indeterminate={true} color={theme.colors.primary} borderWidth={0} borderRadius={0} height={2} />
+				<ProgressBar style={{marginTop: -2, zIndex: 2}} width={null} indeterminate={true} color={theme.colors.primary} borderWidth={0} borderRadius={0} height={2} />
 			)}
 
 			{((keyboard && text) || text) ? (
 				<View style={[styles.max, styles.sheet2]}>
-
-					{translations.error && (
-						<Warning icon={'alert'} text={'We got no answer from the translation service.'} style={{margin: 10}} rounded={true} />
-					)}
-
-					{spellCheck.error && (
-						<Warning icon={'alert'} text={'We got no answer from the spell check service.'} style={{margin: 10}} rounded={true} />
-					)}
 
 					{translations.data.length > 0 && (
 						<View style={[styles.sheet, styles.min]}>
@@ -357,6 +365,14 @@ export default function Cards({ navigation, route }) {
 								/>
 							</View>
 						</ScrollView>
+					)}
+
+					{translations.error && (
+						<Warning icon={'alert'} text={'We got no answer from the translation service.'} style={{margin: 10}} rounded={true} />
+					)}
+
+					{spellCheck.error && (
+						<Warning icon={'alert'} text={'We got no answer from the spell check service.'} style={{margin: 10}} rounded={true} />
 					)}
 				</View>
 			) : (

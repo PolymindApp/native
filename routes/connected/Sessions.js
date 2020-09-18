@@ -7,7 +7,6 @@ export default function Sessions({ navigation, route }) {
 	return (
 		<View style={[styles.max, styles.inner]}>
 			<Text>Sessions</Text>
-			<Text>Sessions</Text>
 		</View>
 	);
 }

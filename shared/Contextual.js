@@ -30,13 +30,16 @@ export default class Contextual extends React.Component {
 
 	render() {
 
-		const { items, disabled } = this.props;
+		const { items, disabled, iosIcon } = this.props;
 
 		return Platform.select({
-			ios: (
-				<TouchableOpacity hitSlop={{top: 20, left: 20, bottom: 20, right: 20}} style={{flexDirection: 'row', alignItems: 'center', marginRight: 10, }} onPress={() => this.showIOSOptions(items)} disabled={disabled}>
-					<Text style={{color: 'white'}}>{I18n.t('btn.options')}</Text>
-				</TouchableOpacity>
+			ios: (iosIcon === true ? (
+					<IconButton onPress={() => this.showIOSOptions(items)} icon="dots-vertical" color={'white'} disabled={disabled} />
+				) : (
+					<TouchableOpacity hitSlop={{top: 20, left: 20, bottom: 20, right: 20}} style={{flexDirection: 'row', alignItems: 'center', marginRight: 10, }} onPress={() => this.showIOSOptions(items)} disabled={disabled}>
+						<Text style={{color: 'white'}}>{I18n.t('btn.options')}</Text>
+					</TouchableOpacity>
+				)
 			),
 			default: (
 				<Menu

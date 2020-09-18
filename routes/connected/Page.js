@@ -4,16 +4,16 @@ import Privacy from '../../routes/connected/pages/Privacy';
 import About from '../../routes/connected/pages/About';
 import I18n from "../../locales/i18n";
 
-export default function Page({ navigation, route }) {
+export default function Page(props) {
 
-	navigation.setOptions({
-		title: I18n.t('title.' + route.params.slug),
+	props.navigation.setOptions({
+		title: I18n.t('title.' + props.route.params.slug),
 	});
 
-	switch (route.params.slug) {
-		case 'terms': return <Terms />;
-		case 'privacy': return <Privacy />;
-		case 'about': return <About />;
+	switch (props.route.params.slug) {
+		case 'terms': return <Terms {...props} />;
+		case 'privacy': return <Privacy {...props} />;
+		case 'about': return <About {...props} />;
 	}
 
 	return page;

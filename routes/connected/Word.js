@@ -3,7 +3,7 @@ import I18n from "../../locales/i18n";
 import FooterAction from "../../shared/FooterAction";
 import Icon from "../../shared/Icon";
 import db from "../../shared/Database";
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { TextInput, Button, ActivityIndicator } from "react-native-paper";
 import { styles } from "../../styles";
 import { theme } from "../../theme";
@@ -49,6 +49,13 @@ export default function Word({ navigation, route }) {
 			index: index + 1,
 			total: words.length,
 		}),
+		headerRight: () => (
+			<TouchableOpacity hitSlop={{ top: 10, bottom: 10, right: 10, left: 10 }} style={{margin: 10}} onPress={() => {
+				navigation.pop();
+			}}>
+				<Text style={{color: 'white'}}>Cancel</Text>
+			</TouchableOpacity>
+		),
 	});
 
 	const previous = function() {

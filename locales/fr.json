@@ -327,7 +327,7 @@
 		"translate": "Traduire",
 		"translateFrom": "Traduire depuis",
 		"translateTo": "Traduire vers",
-		"word": "Donnée {{index}} de {{total}}"
+		"word": "{{index}} de {{total}}"
 	},
 	"welcome": {
 		"listenDesc": "Ensuite, démarrez une session et laissez la voix de Polymind vous guider à travers votre processus d'apprentissage.",

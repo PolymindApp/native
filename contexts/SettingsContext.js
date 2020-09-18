@@ -29,6 +29,9 @@ const SettingsContextInitialState = {
 		flags: true,
 		autoFocusSearch: false,
 	},
+	filters: {
+
+	},
 };
 
 export { SettingsContextInitialState }

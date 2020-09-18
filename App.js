@@ -1,11 +1,11 @@
 import React from 'react';
 import LanguageSelector from "./shared/LanguageSelector";
+import Filters from "./shared/Filters";
 import Connected from "./routes/Connected";
 import SettingsHierarchy from "./shared/SettingsHierarchy";
 import Page from "./routes/connected/Page";
 import Word from "./routes/connected/Word";
 import Feedback from "./routes/connected/Feedback";
-import I18n from './locales/i18n';
 import SettingsContext, { SettingsContextInitialState } from './contexts/SettingsContext';
 import merge from 'deepmerge';
 import { theme } from './theme';
@@ -56,6 +56,15 @@ export default function App() {
 
 		return null;
 	} else {
+
+		const modalOptions = {
+			cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+			headerStyle: {
+				backgroundColor: 'white',
+			},
+			headerTintColor: theme.colors.primary,
+		};
+
 		return (
 			<PaperProvider theme={theme}>
 				<SettingsContext.Provider value={[settingsState, assignSettingsState]}>
@@ -70,19 +79,15 @@ export default function App() {
 							}}>
 								<Stack.Screen name="Connected" component={Connected} />
 								<Stack.Screen name="LanguageSelector" component={LanguageSelector} options={{
-									title: I18n.t('title.languageSelector'),
-									cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
-									headerStyle: {
-										backgroundColor: 'white',
-									},
-									headerTintColor: theme.colors.primary,
+									...modalOptions,
+								}} />
+								<Stack.Screen name="Filters" component={Filters} options={{
+									...modalOptions,
 								}} />
 								<Stack.Screen name="SettingsHierarchy" component={SettingsHierarchy} />
 								<Stack.Screen name="Page" component={Page} />
 								<Stack.Screen name="Word" component={Word} />
-								<Stack.Screen name="Feedback" component={Feedback} options={{
-									title: I18n.t('title.feedback'),
-								}} />
+								<Stack.Screen name="Feedback" component={Feedback} />
 							</Stack.Navigator>
 						</NavigationContainer>
 					</TouchableWithoutFeedback>

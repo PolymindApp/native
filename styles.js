@@ -46,6 +46,9 @@ export const styles = StyleSheet.create({
 	small: {
 		fontSize: 10,
 	},
+	underline: {
+		textDecorationLine: 'underline',
+	},
 	fab: {
 		position: 'absolute',
 		margin: 16,
