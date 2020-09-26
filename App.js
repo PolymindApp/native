@@ -1,7 +1,9 @@
 import React from 'react';
-import LanguageSelector from "./shared/LanguageSelector";
-import Filters from "./shared/Filters";
+import LanguageSelector from "./routes/shared/LanguageSelector";
+import Filters from "./routes/shared/Filters";
+import BulkEdit from "./routes/shared/BulkEdit";
 import Connected from "./routes/Connected";
+import Session from "./routes/connected/Session";
 import SettingsHierarchy from "./shared/SettingsHierarchy";
 import Page from "./routes/connected/Page";
 import Word from "./routes/connected/Word";
@@ -51,6 +53,8 @@ export default function App() {
 				} catch(e) {
 					console.log('async.getItem.error', e);
 				}
+			} else {
+				setLoaded(true);
 			}
 		});
 
@@ -78,10 +82,14 @@ export default function App() {
 								cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
 							}}>
 								<Stack.Screen name="Connected" component={Connected} />
+								<Stack.Screen name="Session" component={Session} />
 								<Stack.Screen name="LanguageSelector" component={LanguageSelector} options={{
 									...modalOptions,
 								}} />
 								<Stack.Screen name="Filters" component={Filters} options={{
+									...modalOptions,
+								}} />
+								<Stack.Screen name="BulkEdit" component={BulkEdit} options={{
 									...modalOptions,
 								}} />
 								<Stack.Screen name="SettingsHierarchy" component={SettingsHierarchy} />

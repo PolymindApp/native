@@ -1,6 +1,11 @@
 import { StyleSheet, Dimensions } from "react-native";
 import { theme } from './theme';
 
+export const small = 10;
+export const medium = 15;
+export const large = 20;
+export const xlarge = 30;
+
 export const styles = StyleSheet.create({
 	container: {
 		flex: 1,
@@ -12,6 +17,9 @@ export const styles = StyleSheet.create({
 	vertical: {
 		flexDirection: 'column',
 		justifyContent: 'center',
+	},
+	wrap: {
+		flexWrap: 'wrap',
 	},
 	middle: {
 		alignItems: 'center',
@@ -84,4 +92,8 @@ export const styles = StyleSheet.create({
 		shadowRadius: 2,
 		elevation: 2,
 	},
+	link: {
+		color: 'blue',
+		textDecorationLine: 'underline',
+	}
 });

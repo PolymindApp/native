@@ -110,4 +110,25 @@ export default class Services {
 		return fetch(baseUrl + '/voice/stream?text=' + encodeURIComponent(text) + '&locale=' + polly.locale + '&voice=' + polly.voice)
 			.then(response => response.blob());
 	}
+
+	/**
+	 * @param type
+	 * @param from
+	 * @param subject
+	 * @param message
+	 * @param includeCopy
+	 */
+	static sendEmail(type = 'default', from, subject, message, includeCopy = false) {
+		return fetch(baseUrl + '/feedback', {
+			method: 'POST',
+			body: {
+				type,
+				from,
+				subject,
+				message,
+				includeCopy,
+			}
+		})
+			.then(response => response.json());
+	}
 }

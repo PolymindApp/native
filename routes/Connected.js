@@ -1,5 +1,5 @@
 import React from 'react';
-import Navigation from "../shared/Navigation";
+import Navigation from "./shared/Navigation";
 import { styles } from "../styles";
 import { View } from "react-native";
 import { StatusBar } from "expo-status-bar";

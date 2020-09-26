@@ -1,10 +1,10 @@
 import React from 'react';
-import Cards from '../routes/connected/Cards';
-import Sessions from '../routes/connected/Sessions';
-import Settings from '../routes/connected/Settings';
-import I18n from '../locales/i18n';
+import Cards from '../connected/Cards';
+import Sessions from '../connected/Sessions';
+import Settings from '../connected/Settings';
+import I18n from '../../locales/i18n';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { theme } from '../theme';
+import { theme } from '../../theme';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 export default function Navigation({ navigation, route }) {

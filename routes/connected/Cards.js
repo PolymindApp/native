@@ -1,35 +1,18 @@
 import React from 'react';
-import WordCard from "../../shared/WordCard";
-import SwipeableRow from "../../shared/SwipeableRow";
 import I18n from '../../locales/i18n';
 import SettingsContext from '../../contexts/SettingsContext';
-import Icon from '../../shared/Icon';
-import Warning from '../../shared/Warning';
-import Services from '../../shared/Services';
-import Contextual from '../../shared/Contextual';
 import logo from '../../assets/images/polymind-dark.png';
-import db from '../../shared/Database';
 import ProgressBar from 'react-native-progress/Bar';
-import { View, ScrollView, Keyboard, Image, FlatList, LayoutAnimation, UIManager, Text } from 'react-native';
-import {
-	Button,
-	IconButton,
-	Divider,
-	TextInput,
-	FAB,
-	List,
-	Snackbar,
-	Banner,
-	Title,
-	Paragraph,
-	ActivityIndicator,
-	Appbar
-} from 'react-native-paper';
+import db from "../../shared/Database";
+import { Icon, Warning, Services, Contextual, WordCard, SwipeableRow } from "../../shared";
+import { View, ScrollView, Keyboard, Image, FlatList, LayoutAnimation, UIManager, Platform, Alert } from 'react-native';
+import { Button, IconButton, Divider, TextInput, FAB, List, Snackbar, Banner, Title, Paragraph, ActivityIndicator } from 'react-native-paper';
 import { styles } from '../../styles';
 import { theme } from "../../theme";
-import { StatusBar } from "expo-status-bar";
-import { useIsFocused } from '@react-navigation/native';
 
+import { StatusBar } from "expo-status-bar";
+
+let isFocused = true;
 let inputRef = React.createRef();
 let queryTextTimeout;
 
@@ -39,32 +22,42 @@ if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental
 
 export default function Cards({ navigation, route }) {
 
-	const [settingsState, setSettingsState] = React.useContext(SettingsContext);
+	const [settingsState, patchSettingsState] = React.useContext(SettingsContext);
 	const settings = settingsState.cards;
-	const isFocused = useIsFocused();
 
-	const [querying, setQuerying] = React.useState(false);
-	const [text, setText] = React.useState('');
-	const [spellCheck, setSpellCheck] = React.useState({
-		data: '',
-		error: false,
+	const [state, setState] = React.useState({
+		querying: false,
+		recording: false,
+		front: '',
+		back: '',
+		networkError: false,
+		spellCheck: {
+			data: '',
+			error: false,
+		},
+		translations: {
+			data: [],
+			error: false,
+		},
+		selected: [],
+		keyboard: false,
+		snackbar: false,
+		words: false,
 	});
-	const [translations, setTranslations] = React.useState({
-		data: [],
-		error: false,
-	});
-	const [selected, setSelected] = React.useState([]);
-	const [keyboard, setKeyboard] = React.useState(false);
-	const [snackbar, setSnackbar] = React.useState(false);
-	const [words, setWords] = React.useState(false);
+	const patchState = function(params) {
+		setState(prev => ({
+			...prev,
+			...params,
+		}));
+	};
 
 	const queryText = (text, includeSpellCheck = true, includeTranslate = true) => {
-		setText(text);
+		patchState({ front: text });
 		clearTimeout(queryTextTimeout);
 
 		if (text.trim().length > 0) {
 			queryTextTimeout = setTimeout(() => {
-				setQuerying(true);
+				patchState({ querying: true, networkError: false });
 				Promise.all([
 					includeTranslate && Services.translate(text, settingsState.fromLang, settingsState.toLang) || false,
 					includeSpellCheck && Services.spellCheck(text, settingsState.fromLang) || false,
@@ -74,68 +67,80 @@ export default function Cards({ navigation, route }) {
 				]) => {
 
 					if (includeTranslate) {
-						const state = {
+						const stateTranslations = {
 							data: [],
 							error: false,
 						}
 						if (translateResponse.data && translateResponse.data.translations.length > 0) {
-							state.data = translateResponse.data.translations.map(item => item.translatedText);
+							stateTranslations.data = translateResponse.data.translations.map(item => item.translatedText);
 						}
 						else if(translateResponse.error) {
-							state.error = translateResponse.error;
+							stateTranslations.error = translateResponse.error;
 							console.log(translateResponse);
 						}
-						setTranslations(state);
+						patchState({ translations: stateTranslations });
 					}
 
 					if (includeSpellCheck) {
-						const state = {
+						const stateSpellCheck = {
 							data: '',
 							error: false,
 						}
 						if (spellCheckResponse.formatted === false) {
-							state.error = true;
+							stateSpellCheck.error = true;
 							console.log(spellCheckResponse);
 						}
 						else if (spellCheckResponse.formatted.suggestion.trim().toLowerCase() !== text.trim().toLowerCase()) {
-							state.data = spellCheckResponse.formatted.suggestion;
+							stateSpellCheck.data = spellCheckResponse.formatted.suggestion;
 						}
-						setSpellCheck(state);
+						patchState({ spellCheck: stateSpellCheck });
 					}
+				}).catch(reason => {
+					patchState({ networkError: true });
 				}).finally(() => {
-					setQuerying(false);
+					patchState({ querying: false });
 				});
-			}, 1000);
+			}, 750);
 		}
 	};
 
-	React.useEffect(() => {
-		db.transaction(tx => {
-			tx.executeSql("select * from words order by createdOn desc", [], (_, { rows }) => {
-				setWords(rows._array);
-			});
-		}, null);
-	}, []);
-
+	const _navigationFocus = () => {
+		isFocused = true;
+		if (route.params?.lang && route.params?.meta) {
+			settingsState[route.params.meta] = route.params.lang;
+			patchSettingsState(settingsState);
+		}
+		loadWords();
+	};
+	const _navigationBlur = () => {
+		isFocused = false;
+	};
 	const _keyboardShow = () => {
-		setKeyboard(true);
+		if (isFocused) {
+			patchState({ keyboard: true });
 
-		if (settings.hideHeaderOnFocus) {
-			navigation.dangerouslyGetParent().setOptions({
-				headerShown: false,
-			});
+			if (settings.hideHeaderOnFocus) {
+				navigation.dangerouslyGetParent().setOptions({
+					headerShown: false,
+				});
+			}
 		}
 	};
 	const _keyboardHide = () => {
-		setKeyboard(false);
+		if (isFocused) {
+			patchState({ keyboard: false });
 
-		if (settings.hideHeaderOnFocus) {
-			navigation.dangerouslyGetParent().setOptions({
-				headerShown: true,
-			});
+			if (settings.hideHeaderOnFocus) {
+				navigation.dangerouslyGetParent().setOptions({
+					headerShown: true,
+				});
+			}
 		}
 	};
 	React.useEffect(() => {
+
+		const _navigationFocusHandler = navigation.addListener('focus', _navigationFocus);
+		const _navigationBlurHandler = navigation.addListener('blur', _navigationBlur);
 
 		const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
 		const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
@@ -144,104 +149,132 @@ export default function Cards({ navigation, route }) {
 		Keyboard.addListener(hideEvent, _keyboardHide);
 
 		return () => {
+			_navigationFocusHandler();
+			_navigationBlurHandler();
 			Keyboard.removeListener(showEvent, _keyboardShow);
 			Keyboard.removeListener(hideEvent, _keyboardHide);
 		};
 	}, []);
 
-	React.useEffect(() => {
-		if (route.params?.lang && route.params?.meta) {
-			settingsState[route.params.meta] = route.params.lang;
-			setSettingsState(settingsState);
-		}
-	}, [route.params?.lang, route.params?.meta]);
+	const toggleRecord = () => {
+		patchState({ recording: !state.recording });
+	};
+
+	const loadWords = () => {
+		db.transaction(tx => {
+			tx.executeSql("select * from cards where archived = 0 order by createdOn desc", [], (_, { rows }) => {
+				patchState({ words: rows._array });
+			});
+		}, null);
+	};
 
 	const addWord = (front, back) => {
 
 		db.transaction(tx => {
-			tx.executeSql("insert into words (front, back, frontLang, backLang) values (?, ?, ?, ?)", [
+			tx.executeSql("insert into cards (front, back, frontLang, backLang) values (?, ?, ?, ?)", [
 				front,
 				back,
 				settingsState.fromLang,
 				settingsState.toLang,
 			], (tx, results) => {
 				const id = results.insertId;
-				const state = [...words];
-				state.unshift({
+				const words = [...state.words];
+				words.unshift({
 					id,
 					front,
 					back,
 					frontLang: settingsState.fromLang,
 					backLang: settingsState.toLang
 				});
-				setWords(state);
+				patchState({ words });
 
 				if (settings.addCardConfirmation) {
-					setSnackbar(true);
+					patchState({ snackbar: true });
 				}
-				setText('');
+				patchState({ front: '' });
+				patchState({ back: '' });
 				inputRef.blur();
+
+				if (settings.gotoSettingsOnAdd) {
+					navigation.push('Word', { id, adding: true });
+				}
 			});
 		}, null);
 	};
 
-	const removeWord = (item) => {
-		const index = words.findIndex(word => word.id === item.id);
+	const toggleSelectWord = id => {
+		const selected = [...state.selected];
+		const index = selected.indexOf(id);
 		if (index !== -1) {
-			db.transaction(tx => {
-				tx.executeSql("delete from words where id = ?", [item.id]);
-			}, null);
-
-			const state = [ ...words ];
-			state.splice(index, 1);
-			setWords(state);
-		}
-	};
-
-	const toggleSelectWord = (item) => {
-		const state = [...selected];
-		const index = selected.indexOf(item.id);
-		if (index !== -1) {
-			state.splice(index, 1);
+			selected.splice(index, 1);
 		} else {
-			state.push(item.id);
+			selected.push(id);
 		}
-		setSelected(state);
+		patchState({ selected });
 	};
 
 	const selectAll = function() {
-		if (selected.length !== words.length) {
-			const state = [...selected];
-			words.forEach(word => {
+		if (state.selected.length !== state.words.length) {
+			const selected = [...state.selected];
+			state.words.forEach(word => {
 				if (selected.indexOf(word.id) === -1) {
-					state.push(word.id);
+					selected.push(word.id);
 				}
 			});
-			setSelected(state);
+			patchState({ selected });
 		}
 	};
 
 	const unselectAll = function() {
-		if (selected.length !== 0) {
-			setSelected([]);
+		if (state.selected.length !== 0) {
+			patchState({ selected: [] })
 		}
 	};
 
-	const removeSelected = function() {
-		if (selected.length !== 0) {
-			setSelected([]);
+	const archiveWord = (id, callback = (idx) => {}) => {
+		const index = state.words.findIndex(word => word.id === id);
+		if (index !== -1) {
+
+			// If selected, remove from list
+			const selectedIdx = state.selected.indexOf(id);
+			if (selectedIdx !== -1) {
+				toggleSelectWord(id);
+			}
+
+			db.transaction(tx => {
+				tx.executeSql("update cards set archived = 1 where id = ?", [id]);
+			}, null);
+
+			callback(index);
 		}
 	};
 
-	const moveSelectedToList = function() {
-		if (selected.length !== 0) {
-			setSelected([]);
+	const archiveSelected = function(force = false) {
+		if (!force) {
+			Alert.alert(I18n.t('alert.archiveCardsTitle'), I18n.t('alert.archiveCardsDesc'), [
+				{ text: I18n.t('btn.archive'), onPress: () => {
+					archiveSelected(true);
+				}, style: 'destructive' },
+				{ text: I18n.t('btn.cancel'), style: "cancel" }
+			], { cancelable: false });
+		} else if (state.selected.length !== 0) {
+			let i = 0;
+			const words = [ ...state.words ];
+			state.selected.forEach(id => archiveWord(id, idx => {
+				words.splice(idx - i, 1);
+				i++;
+				if (state.selected.length === i) {
+					patchState({ words, selected: [] });
+				}
+			}));
 		}
 	};
 
 	const tagSelected = function() {
-		if (selected.length !== 0) {
-			setSelected([]);
+		if (state.selected.length !== 0) {
+			navigation.push('BulkEdit', {
+				ids: state.selected.join(',')
+			});
 		}
 	};
 
@@ -249,19 +282,16 @@ export default function Cards({ navigation, route }) {
 		{ name: 'Cancel', cancel: true, callback: () => {} },
 	];
 
-	if (selected.length > 0) {
-		contextualItems.unshift({ name: 'Remove selected', callback: removeSelected, destructive: true });
+	if (state.selected.length > 0) {
+		contextualItems.unshift({ name: 'Archive', callback: archiveSelected, destructive: true });
 	}
-	if (selected.length > 0) {
+	if (state.selected.length > 0) {
 		contextualItems.unshift({ name: 'Set tags', callback: tagSelected, });
 	}
-	if (selected.length > 0) {
-		contextualItems.unshift({ name: 'Move to list', callback: moveSelectedToList, });
-	}
-	if (selected.length > 0) {
+	if (state.selected.length > 0) {
 		contextualItems.unshift({ name: 'Unselect All', callback: unselectAll, });
 	}
-	if (selected.length !== words.length) {
+	if (state.selected.length !== state.words.length) {
 		contextualItems.unshift({ name: 'Select All', callback: selectAll, });
 	}
 
@@ -274,7 +304,7 @@ export default function Cards({ navigation, route }) {
 		</View> : null
 	});
 
-	if (words === false) {
+	if (state.words === false) {
 		return <View style={[styles.container, styles.middle]}>
 			<ActivityIndicator animating={true} color={theme.colors.primary} />
 		</View>
@@ -285,7 +315,7 @@ export default function Cards({ navigation, route }) {
 			<View style={[styles.horizontal, styles.min, styles.innerX]}>
 
 				{settings.hideHeaderOnFocus && (
-					<StatusBar animated={true} hidden={keyboard} style={'light'} />
+					<StatusBar animated={true} hidden={state.keyboard} style={'light'} />
 				)}
 
 				<Button mode="text" style={styles.max} onPress={() => {
@@ -299,7 +329,7 @@ export default function Cards({ navigation, route }) {
 				</Button>
 
 				<IconButton icon="tumblr-reblog" style={styles.min} onPress={() => {
-					setSettingsState({
+					patchSettingsState({
 						fromLang: settingsState.toLang,
 						toLang: settingsState.fromLang,
 					});
@@ -318,152 +348,178 @@ export default function Cards({ navigation, route }) {
 
 			<TextInput
 				ref={ref => inputRef = ref}
-				value={text}
-				placeholder={'Type a word here'}
-				right={<TextInput.Icon name="voice" disabled={text.trim().length === 0} />}
-				onChangeText={text => queryText(text)}
+				value={state.front}
+				label={state.front && 'Front'}
+				placeholder={'Type here...'}
+				right={<TextInput.Icon name="voice" disabled={state.front.trim().length === 0} />}
+				onChangeText={value => queryText(value)}
 				underlineColor={'transparent'}
 				style={[styles.elevated, { zIndex: 1 }]}
 				autoFocus={settings.autoFocus}
 			/>
-			{querying && (
+			{state.querying && (
 				<ProgressBar style={{marginTop: -2, zIndex: 2}} width={null} indeterminate={true} color={theme.colors.primary} borderWidth={0} borderRadius={0} height={2} />
 			)}
 
-			{((keyboard && text) || text) ? (
-				<View style={[styles.max, styles.sheet2]}>
-
-					{translations.data.length > 0 && (
-						<View style={[styles.sheet, styles.min]}>
-							{translations.data.map((translation, translationIdx) => (
-								<View key={translationIdx}>
-									{translationIdx > 0 && <Divider />}
-									<List.Item
-										title={translation}
-										right={() => <IconButton
-											icon="arrow-right"
-											color={theme.colors.primary}
-										/>}
-										onPress={() => addWord(text, translation)}
-									/>
-								</View>
-							))}
-						</View>
-					)}
-					{spellCheck.data.trim().length > 0 && (
-						<ScrollView style={styles.max}>
-							<View style={styles.inner}>
-								<List.Subheader>Did you mean?</List.Subheader>
-								<List.Item
-									title={spellCheck.data}
-									onPress={() => {
-										queryText(spellCheck.data, false);
-										const state = { ...spellCheck };
-										state.data = '';
-										setSpellCheck(state);
-									}}
-								/>
-							</View>
-						</ScrollView>
-					)}
-
-					{translations.error && (
-						<Warning icon={'alert'} text={'We got no answer from the translation service.'} style={{margin: 10}} rounded={true} />
-					)}
-
-					{spellCheck.error && (
-						<Warning icon={'alert'} text={'We got no answer from the spell check service.'} style={{margin: 10}} rounded={true} />
-					)}
+			{state.recording ? (
+				<View style={[styles.max, styles.inner, styles.middle]}>
+					<Title>Speak...</Title>
 				</View>
 			) : (
-				<View style={styles.max}>
-					<Banner
-						visible={settingsState.tips.cardsIntro}
-						style={styles.min}
-						actions={[{
-							label: 'Got it',
-							onPress: () => {
-								setSettingsState({
-									tips: {
-										cardsIntro: false
-									}
-								});
-							},
-						}]}
-						icon={({size}) => (
-							<Icon name={'lightbulb-on'} color={theme.colors.warning} size={size} />
-						)}
-					>
-						The words you search will appear below. You can organize them by selecting some and assign them tags.
-					</Banner>
+				((state.keyboard && state.front) || state.front) ? (
+					<View style={[styles.max, styles.sheet2]}>
 
-					{words.length === 0 ? (
-						<ScrollView contentContainerStyle={[styles.max, styles.inner]}>
-							<View style={[styles.max, styles.middle, { paddingBottom: settings.showLogo ? 60 : 0 }]}>
-								{settings.showLogo && !keyboard && (
+						{state.translations.data.length > 0 && (
+							<View style={[styles.sheet, styles.min]}>
+								{state.translations.data.map((translation, translationIdx) => (
+									<View key={translationIdx}>
+										{translationIdx > 0 && <Divider />}
+										<List.Item
+											title={translation}
+											right={() => <IconButton
+												icon="arrow-right"
+												color={theme.colors.primary}
+											/>}
+											onPress={() => addWord(state.front, translation)}
+										/>
+									</View>
+								))}
+							</View>
+						)}
+						{state.translations.length > 0 && <Divider />}
+						<TextInput
+							value={state.back}
+							label={'Back'}
+							placeholder={'Type a word here'}
+							right={<TextInput.Icon
+								name="arrow-right"
+								disabled={state.back.trim().length === 0}
+								onPress={() => addWord(state.front, state.back)}
+							/>}
+							onChangeText={value => patchState({ back: value })}
+							underlineColor={'transparent'}
+							style={[styles.elevated, { zIndex: 1 }]}
+						/>
+						{state.spellCheck.data.trim().length > 0 && (
+							<ScrollView style={styles.max}>
+								<View style={styles.inner}>
+									<List.Subheader>Did you mean?</List.Subheader>
+									<List.Item
+										title={state.spellCheck.data}
+										onPress={() => {
+											queryText(spellCheck.data, false);
+											const spellCheck = { ...state.spellCheck };
+											spellCheck.data = '';
+											patchState({ spellCheck });
+										}}
+									/>
+								</View>
+							</ScrollView>
+						)}
+
+						{state.networkError && (
+							<Warning icon={'alert'} text={'Network error. Check your internet connection.'} style={{margin: 10}} rounded={true} />
+						)}
+
+						{state.translations.error && (
+							<Warning icon={'alert'} text={'We got no answer from the translation service.'} style={{margin: 10}} rounded={true} />
+						)}
+
+						{state.spellCheck.error && (
+							<Warning icon={'alert'} text={'We got no answer from the spell check service.'} style={{margin: 10}} rounded={true} />
+						)}
+					</View>
+				) : (
+					<View style={styles.max}>
+						{!state.keyboard && <Banner
+							visible={settingsState.tips.cardsIntro}
+							style={styles.min}
+							actions={[{
+								label: 'Got it',
+								onPress: () => {
+									patchSettingsState({
+										tips: {
+											cardsIntro: false
+										}
+									});
+								},
+							}]}
+							icon={({size}) => (
+								<Icon name={'lightbulb-on'} color={theme.colors.warning} size={size} />
+							)}
+						>
+							The words you search will appear below. You can organize them by selecting some and assign them tags.
+						</Banner>}
+
+						{state.words.length === 0 ? (
+							<ScrollView contentContainerStyle={[styles.max, styles.inner]}>
+								<View style={[styles.max, styles.middle, { paddingBottom: settings.showLogo ? 60 : 0 }]}>
 									<Image source={logo} style={{
 										width: 100,
 										height: 116,
 										opacity: 0.33,
 									}} />
-								)}
-								<View style={[styles.middle, styles.halfWidth]}>
-									<Title style={[styles.primaryText, styles.center]}>No card yet</Title>
-									<Paragraph style={[styles.transparentText, styles.center]}>Add some by using the input field above.</Paragraph>
 								</View>
-							</View>
-						</ScrollView>
-					) : (
-						<FlatList
-							keyExtractor={item => item.id.toString()}
-							style={styles.max}
-							contentContainerStyle={{ paddingVertical: 10 }}
-							data={words}
-							renderItem={({item, index}) => (
-								<SwipeableRow
-									key={item.id}
-									item={item}
-									swipeThreshold={-150}
-									onSwipe={(item) => {
-										LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
-										removeWord(item);
-									}}
-								>
-									<WordCard
-										style={{marginHorizontal: 10, marginVertical: 5}}
-										word={item}
-										selected={selected.indexOf(item.id) !== -1}
-										selectable={selected.length > 0}
-										onPress={() => {
-											if (selected.length > 0) {
-												toggleSelectWord(item);
-											} else {
-												navigation.push('Word', {
-													id: item.id
-												});
-											}
+							</ScrollView>
+						) : (
+							<FlatList
+								keyExtractor={item => item.id.toString()}
+								style={styles.max}
+								contentContainerStyle={{ paddingVertical: 10 }}
+								data={state.words}
+								renderItem={({item, index}) => (
+									<SwipeableRow
+										key={item.id}
+										item={item}
+										swipeThreshold={-150}
+										onSwipe={(item) => {
+											archiveWord(item.id, index => {
+												const words = [ ...state.words ];
+												words.splice(index, 1);
+												patchState({ words });
+												LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+											});
 										}}
-										onLongPress={() => {
-											toggleSelectWord(item);
-										}} />
-								</SwipeableRow>
-							)}
-						/>
-					)}
-				</View>
+									>
+										<WordCard
+											style={{marginHorizontal: 10, marginVertical: 5}}
+											word={item}
+											selected={state.selected.indexOf(item.id) !== -1}
+											selectable={state.selected.length > 0}
+											onPress={() => {
+												if (state.selected.length > 0) {
+													toggleSelectWord(item.id);
+												} else {
+													navigation.push('Word', {
+														id: item.id,
+													});
+												}
+											}}
+											onLongPress={() => {
+												toggleSelectWord(item.id);
+											}} />
+									</SwipeableRow>
+								)}
+							/>
+						)}
+					</View>
+				)
 			)}
 
-			{!snackbar && settings.showMicrophone && <FAB
-				style={styles.fabCentered}
+			{!state.snackbar && settings.showMicrophone && <FAB
+				style={[styles.fabCentered, {
+					backgroundColor: state.recording ? theme.colors.primary : 'white'
+				}]}
 				icon="microphone"
-				color={'white'}
-				onPress={() => console.log('Pressed')}
+				color={state.recording ? 'white' : theme.colors.primary}
+				mode
+				onPress={() => toggleRecord()}
 			/>}
 
 			<Snackbar
-				visible={snackbar}
+				visible={state.snackbar}
 				duration={1000}
-				onDismiss={() => setSnackbar(false)}
+				onDismiss={() => patchState({ snackbar: false })}
 			>
 				Card added!
 			</Snackbar>

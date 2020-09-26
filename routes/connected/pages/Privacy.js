@@ -1,9 +1,10 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
 import { Title, Paragraph } from 'react-native-paper';
+import { Link } from '../../../shared';
 import { styles } from '../../../styles';
 
-export default function Terms() {
+export default function Terms({navigation, route}) {
 	return (
 		<ScrollView contentContainerStyle={[styles.inner]}>
 			<Paragraph>Last updated: 2019-09-08</Paragraph>
@@ -26,7 +27,9 @@ export default function Terms() {
 			<Paragraph>We reserve the right to update or change our Privacy Policy at any time and you should check this Privacy Policy periodically. Your continued use of the Service after we post any modifications to the Privacy Policy on this page will constitute your acknowledgment of the modifications and your consent to abide and be bound by the modified Privacy Policy.</Paragraph>
 			<Paragraph>If we make any material changes to this Privacy Policy, we will notify you either through the email address you have provided us, or by placing a prominent notice on our website.</Paragraph>
 			<Title>Contact Us</Title>
-			<Paragraph>If you have any questions about this Privacy Policy, please contact us.</Paragraph>
+			<Paragraph>If you have any questions about this Privacy Policy, please <Link onPress={() => {
+				navigation.push('Feedback');
+			}}>contact us</Link>.</Paragraph>
 		</ScrollView>
 	)
 }

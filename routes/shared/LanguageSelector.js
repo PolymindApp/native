@@ -1,14 +1,14 @@
 import React from 'react';
-import I18n from "../locales/i18n";
-import Flag from "./Flag";
-import SettingsContext from '../contexts/SettingsContext';
-import Icon from '../shared/Icon';
+import I18n from "../../locales/i18n";
+import Flag from "../../shared/Flag";
+import SettingsContext from '../../contexts/SettingsContext';
+import Icon from '../../shared/Icon';
 import { View, FlatList } from 'react-native';
 import { Searchbar, List, Checkbox, Banner, Paragraph, IconButton } from 'react-native-paper';
-import { styles } from '../styles';
-import { theme } from '../theme';
+import { styles } from '../../styles';
+import { theme } from '../../theme';
 import { StatusBar } from "expo-status-bar";
-import { awsLanguages, notAwsLanguages, nativeLanguageNames } from "./Constants";
+import { awsLanguages, notAwsLanguages, nativeLanguageNames } from "../../shared/Constants";
 
 export default function LanguageSelector({ navigation, route }) {
 

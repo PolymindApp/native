@@ -1,3 +1,5 @@
+import { theme } from "../theme";
+
 const awsLanguages = ['en', 'fr', 'es', 'it', 'cmn', 'cy', 'da', 'de', 'is', 'ja', 'hi', 'ko', 'nb', 'nl', 'pl', 'pt', 'ro', 'ru', 'sv', 'tr',];
 const googleTranslateLanguages = ['af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bs', 'bg', 'ca', 'ceb', 'zh-CN', 'zh-TW', 'co', 'hr', 'cs', 'da', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'fy', 'gl', 'ka', 'de', 'el', 'gu', 'ht', 'ha', 'haw', 'he', 'hi', 'hmn', 'hu', 'is', 'ig', 'id', 'ga', 'it', 'ja', 'jv', 'kn', 'kk', 'km', 'rw', 'ko', 'ku', 'ky', 'lo', 'la', 'lv', 'lt', 'lb', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mn', 'my', 'ne', 'no', 'ny', 'or', 'ps', 'fa', 'pl', 'pt', 'pa', 'ro', 'ru', 'sm', 'gd', 'sr', 'st', 'sn', 'sd', 'si', 'sk', 'sl', 'so', 'es', 'su', 'sw', 'sv', 'tl', 'tg', 'ta', 'tt', 'te', 'th', 'tr', 'tk', 'uk', 'ur','ug','uz','vi','cy','xh','yi','yo','zu',];
 
@@ -71,7 +73,27 @@ const pollyVoices = [
 	{ locale: 'cy-GB', name: 'Gwyneth', gender: 1, adult: true , default: true, },
 ];
 
+const sortOrderItem = [
+	{ title: 'ASC', key: 'asc', },
+	{ title: 'DESC', key: 'desc', },
+];
+
+const sortItems = [
+	{ title: 'Date added', key: 'date', },
+	{ title: 'Difficulty', key: 'difficulty', },
+	{ title: 'Alphabetically', key: 'alphanum', },
+];
+
+const difficulties = [
+	{ color: theme.colors.success, dark: true, id: 'easy', key: 'easy' },
+	{ color: theme.colors.warning, dark: false, id: 'medium', key: 'medium' },
+	{ color: theme.colors.error, dark: true, id: 'hard', key: 'hard' },
+];
+
 export {
+	difficulties,
+	sortOrderItem,
+	sortItems,
 	awsLanguages,
 	googleTranslateLanguages,
 	notAwsLanguages,

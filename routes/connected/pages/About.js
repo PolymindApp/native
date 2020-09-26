@@ -1,9 +1,9 @@
 import React from 'react';
-import danny from '../../../assets/images/danny.jpg';
-import FooterAction from '../../../shared/FooterAction';
+import logo from '../../../assets/images/polymind-dark.png';
+import { FooterAction } from '../../../shared';
 import { View, ScrollView, Image } from 'react-native';
 import { Title, Paragraph, Text, Button } from 'react-native-paper';
-import { styles } from '../../../styles';
+import { styles, large, small } from '../../../styles';
 import { theme } from '../../../theme';
 
 export default function Terms({ navigation, route }) {
@@ -11,22 +11,23 @@ export default function Terms({ navigation, route }) {
 		<View style={styles.max}>
 			<ScrollView contentContainerStyle={[styles.inner]}>
 				<View style={[styles.horizontal, styles.pushVertical]}>
-					<Image source={danny} style={[styles.min, {
+					<Image source={logo} style={[styles.min, {
 						width: 64,
-						height: 64,
-						borderRadius: 64,
+						height: 74,
 					}]} />
-					<View style={[styles.max, {marginLeft: 10}]}>
-						<Title style={{color: theme.colors.primary}}>For the sole benefit of helping</Title>
+					<View style={[styles.max, {marginLeft: large}]}>
+						<Title style={{ color: theme.colors.primary }}>
+							For the sole benefit of helping people discover languages
+						</Title>
 					</View>
 				</View>
 
 				<Paragraph style={styles.pushVertical}>
-					Polymind is designed as a language memorization companion for people with learning difficulties.
+					Polymind is designed as a language learning and memorization companion for self-taught people.
 				</Paragraph>
 
 				<Paragraph style={styles.pushVertical}>
-					As for me, I am a software developer from Montreal who likes working on projects that benefits the community. My goal with Polymind is to develop something that will help people understand <Text style={styles.underline}>and</Text> memorize foreign languages.
+					As for me, I am a software developer from Montreal who likes working on projects that benefits the community. My goal with Polymind is to develop something that will help people discover, understand <Text style={styles.underline}>and</Text> memorize foreign words.
 				</Paragraph>
 
 				<Paragraph style={styles.pushVertical}>
@@ -37,7 +38,7 @@ export default function Terms({ navigation, route }) {
 					All the best,
 				</Paragraph>
 
-				<Paragraph>
+				<Paragraph style={{marginTop: -small}}>
 					Danny
 				</Paragraph>
 

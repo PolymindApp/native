@@ -26,7 +26,7 @@ export default class Flag extends React.Component {
 
 	render() {
 
-		const { lang, size } = this.props;
+		const { lang, size, style, ...rest } = this.props;
 		const matches = {
 			cmn: flag_cmn,
 			fr: flag_fr,
@@ -53,9 +53,9 @@ export default class Flag extends React.Component {
 
 		const source = matches[lang] ? matches[lang] : placeholder;
 
-		return <Image source={source} style={{
+		return <Image source={source} style={[{
 			width: size,
 			height: size,
-		}} />
+		}, style]} {...rest} />
 	}
 }
